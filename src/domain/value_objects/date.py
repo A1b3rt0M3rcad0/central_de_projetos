@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 
 class Date:
 
@@ -15,6 +15,20 @@ class Date:
     
     def month(self) -> int:
         return self.__date.month
+    
+    def to_timestamp(self) -> float:
+        return datetime(
+            year=self.__date.year,
+            month=self.__date.month,
+            day=self.__date.day,
+            hour=0,
+            minute=0,
+            second=0,
+            tzinfo=timezone.utc
+        ).timestamp()
+
+    def to_date(self) -> date:
+        return self.__date
 
     def __date_format(self) -> str:
         return 'DD/MM/YYYY'
@@ -35,9 +49,6 @@ class Date:
             return date(year, month, day)
         except ValueError as e:
             raise ValueError(f'Invalid date: {e}') from e
-
-    def to_date(self) -> date:
-        return self.__date
 
     def __str__(self) -> str:
         return self.__date_string

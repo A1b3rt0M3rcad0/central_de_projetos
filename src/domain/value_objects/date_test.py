@@ -52,3 +52,8 @@ def test_equal_date() -> None:
     date1 = Date(str_date)
     date2 = Date(str_date)
     assert date1 == date2
+
+def test_to_timestamp() -> None:
+    str_date = "01/01/2023"
+    date = Date(str_date)
+    assert isinstance(date.to_timestamp(), float)
