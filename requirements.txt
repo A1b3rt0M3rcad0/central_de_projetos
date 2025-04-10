@@ -9,5 +9,6 @@ platformdirs==4.3.7
 pluggy==1.5.0
 pylint==3.3.6
 pytest==8.3.5
+python-dotenv==1.1.0
 setuptools==78.1.0
 tomlkit==0.13.2
