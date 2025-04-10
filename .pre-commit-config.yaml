@@ -3,21 +3,22 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
+        entry: .venv/bin/pylint
         language: system
         types: [python]
         args:
           [
             "-rn", # Only display messages
             "-sn", # Don't display the score
-            "--rcfile=.pylintrc", # Link to your config file
-            "--load-plugins=pylint.extensions.docparams", # Load an extension
+            "--rcfile=.pylintrc",
+            "--load-plugins=pylint.extensions.docparams",
           ]
+
   - repo: local
     hooks:
       - id: requirements
         name: requirements
-        entry: bash -c '.venv\Scripts\activate; pip freeze > requirements.txt; git add requirements.txt'
+        entry: bash -c 'source .venv/bin/activate && pip freeze > requirements.txt && git add requirements.txt'
         language: system
         pass_filenames: false
         stages: [pre-commit]
