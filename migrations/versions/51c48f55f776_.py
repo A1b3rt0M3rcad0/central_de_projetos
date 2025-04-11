@@ -22,7 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
-        'users',
+        'user',
         sa.Column('cpf', sa.String(15), primary_key=True),
         sa.Column('password', sa.LargeBinary(70), nullable=False),
         sa.Column('role', sa.String(50), nullable=False),
@@ -55,7 +55,7 @@ def upgrade() -> None:
     )
     op.create_table(
         'user_project',
-        sa.Column('user_cpf', sa.String(15), sa.ForeignKey('users.cpf'), nullable=False, primary_key=True),
+        sa.Column('user_cpf', sa.String(15), sa.ForeignKey('user.cpf'), nullable=False, primary_key=True),
         sa.Column('project_id', sa.Integer, sa.ForeignKey('project.id'), nullable=False, primary_key=True),
         sa.Column('assignment_date', sa.DateTime,)
     )
@@ -63,7 +63,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_table('users')
+    op.drop_table('user')
     op.drop_table('status')
     op.drop_table('project')
     op.drop_table('history_project')
