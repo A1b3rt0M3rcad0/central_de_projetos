@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table(
         'users',
         sa.Column('cpf', sa.String(15), primary_key=True),
-        sa.Column('password', sa.String(255), nullable=False),
+        sa.Column('password', sa.LargeBinary(70), nullable=False),
         sa.Column('role', sa.String(50), nullable=False),
         sa.Column('email', sa.String(50), nullable=False),
         sa.Column('created_at', sa.DateTime, nullable=False)
