@@ -4,6 +4,7 @@ from src.domain.entities.status import StatusEntity
 from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from sqlalchemy.exc import DataError
+from typing import Optional
 
 class StatusRepository(IStatusRepository):
 
@@ -23,9 +24,44 @@ class StatusRepository(IStatusRepository):
                 db.session.rollback()
                 raise e
     
-    def find(self, status_id:int) -> StatusEntity:
-        return None
-    
+    def find(self, status_id:Optional[int]=None, description:Optional[str]=None) -> StatusEntity:
+        status_id_entry = status_id
+        description_entry = description
+        with self.__db_connection_handler as db:
+            try:
+                if status_id_entry and description_entry:
+                    result = db.session.query(Status).where(
+                        Status.id == status_id_entry and \
+                        Status.description == description_entry
+                    ).first()
+                    return StatusEntity(
+                        status_id = result.id,
+                        description=result.description,
+                        created_at=result.created_at
+                    )
+                if status_id_entry:
+                    result = db.session.query(Status).where(
+                        Status.id == status_id
+                    ).first()
+                    return StatusEntity(
+                        status_id = result.id,
+                        description=result.description,
+                        created_at=result.created_at
+                    )
+                if description_entry:
+                    result = db.session.query(Status).where(
+                        Status.description == description_entry
+                    ).first()
+                    return StatusEntity(
+                        status_id = result.id,
+                        description=result.description,
+                        created_at=result.created_at
+                    )
+                raise ValueError('status_id and description, entry error')
+            except Exception as e:
+                db.session.rollback()
+                raise e
+
     def find_all(self) -> List[StatusEntity]:
         return None
     

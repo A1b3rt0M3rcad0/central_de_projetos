@@ -10,7 +10,7 @@ class Status(BaseModel):
     __tablename__ = 'status'
     
     id = Column(Integer, primary_key=True)
-    description = Column(String(255), nullable=False)
+    description = Column(String(255), nullable=False, unique=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     project = relationship(Project, backref=backref('status'))

@@ -33,7 +33,7 @@ def upgrade() -> None:
     op.create_table(
         'status',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('description', sa.String(255), nullable=False),
+        sa.Column('description', sa.String(255), nullable=False, unique=True),
         sa.Column('created_at', sa.DateTime, nullable=False)
     )
     op.create_table(
