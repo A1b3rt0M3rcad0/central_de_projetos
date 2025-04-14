@@ -65,3 +65,43 @@ def test_find_status(description) -> None:
         db.session.execute(delete_script)
 
         db.session.commit()
+
+def test_find_all_status(description) -> None:
+
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    status_repository = StatusRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+
+        insert_script = text('''insert into status (description, created_at) values (:description, :created_at)''')
+
+        now = datetime.now(timezone.utc)
+
+        db.session.execute(insert_script, {
+            'description': description + '0',
+            'created_at': now
+        })
+
+        db.session.execute(insert_script, {
+            'description': description + '1',
+            'created_at': now
+        })
+
+
+        db.session.execute(insert_script, {
+            'description': description + '2',
+            'created_at': now
+        })
+
+        db.session.commit()
+
+        results = status_repository.find_all()
+
+        assert len(results) == 3
+
+        for i, status_entity in enumerate(results):
+            assert status_entity.description == description + f'{i}'
+
+        delete_script = text('delete from status where id >= 1;')
+        db.session.execute(delete_script)
+        db.session.commit()
