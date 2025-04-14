@@ -7,7 +7,7 @@ from src.domain.value_objects.roles import Role
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
-from typing import Optional
+from typing import Optional, Dict
 
 class UserRepository(IUserRepository):
 
@@ -50,8 +50,14 @@ class UserRepository(IUserRepository):
             except Exception as e:
                 raise e
 
-    def update(self, cpf, update_params):
-        return None
+    def update(self, cpf:CPF, update_params:Dict) -> None:
+        cpf_entry = cpf.value
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(User).where(User.cpf == cpf_entry).update(update_params)
+                db.session.commit()
+            except Exception as e:
+                raise e
     
     def delete(self, cpf):
         return None
