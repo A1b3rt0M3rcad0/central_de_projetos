@@ -145,3 +145,38 @@ def test_update_status(description) -> None:
         delete_script = text('DELETE FROM status WHERE id >= 1')
         db.session.execute(delete_script)
         db.session.commit()
+
+def test_delete_status(description) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    status_repository = StatusRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Insere diretamente no banco
+        insert_script = text('''INSERT INTO status (description, created_at) VALUES (:description, :created_at)''')
+        now = datetime.now(timezone.utc)
+        db.session.execute(insert_script, {
+            'description': description,
+            'created_at': now
+        })
+        db.session.commit()
+
+        # Busca o status para pegar o ID
+        select_script = text('SELECT * FROM status WHERE description = :description')
+        result = db.session.execute(select_script, {'description': description}).fetchone()
+        assert result is not None
+
+        # Deleta usando o repositório
+        status_repository.delete(status_id=result.id)
+
+        # Verifica se foi deletado
+        deleted_result = db.session.execute(
+            text('SELECT * FROM status WHERE id = :id'),
+            {'id': result.id}
+        ).fetchone()
+
+        assert deleted_result is None
+
+        # Cleanup (por segurança)
+        delete_script = text('DELETE FROM status WHERE id >= 1')
+        db.session.execute(delete_script)
+        db.session.commit()
