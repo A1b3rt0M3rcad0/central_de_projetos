@@ -25,6 +25,7 @@ def upgrade() -> None:
         'user',
         sa.Column('cpf', sa.String(15), primary_key=True),
         sa.Column('password', sa.LargeBinary(70), nullable=False),
+        sa.Column('salt', sa.LargeBinary(100), nullable=False),
         sa.Column('role', sa.String(50), nullable=False),
         sa.Column('email', sa.String(50), nullable=False),
         sa.Column('created_at', sa.DateTime, nullable=False)

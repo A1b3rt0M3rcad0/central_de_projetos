@@ -9,6 +9,7 @@ class User(BaseModel):
 
     cpf = Column(String(15), primary_key=True)
     password = Column(LargeBinary(70), nullable=False)
+    salt = Column(LargeBinary(100), nullable=False)
     role = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime(timezone.utc))
