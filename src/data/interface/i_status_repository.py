@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from src.domain.entities.status import StatusEntity
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class IStatusRepository(ABC):
 
@@ -8,7 +8,7 @@ class IStatusRepository(ABC):
     def insert(self, description:str) -> None:pass
 
     @abstractmethod
-    def find(self, status_id:int) -> StatusEntity:pass
+    def find(self, status_id:Optional[int]=None, description:Optional[str]=None) -> StatusEntity:pass
 
     @abstractmethod
     def find_all(self) -> List[StatusEntity]:pass
