@@ -5,17 +5,17 @@ from src.security.cryptography.interface.i_salt import ISalt
 
 class HashedPassword(IHashedPassword):
 
-    def __init__(self, password: Password, cryptography: ICryptography, salt: ISalt) -> None:
+    def __init__(self, password: Password | bytes, cryptography: ICryptography, salt: ISalt) -> None:
         self.__salt = salt
         self.__cryptography = cryptography
-        self.__hashed_password = self.__cryptography.hash(password, self.__salt)
+        self.__hashed_password = self.__cryptography.hash(password, self.__salt) if isinstance(password, Password) else password
 
     @property
     def hashed_password(self) -> bytes:
         return self.__hashed_password
     
     @property
-    def salt(self) -> ISalt:
+    def salt(self) -> bytes:
         return self.__salt.salt
     
     @property
