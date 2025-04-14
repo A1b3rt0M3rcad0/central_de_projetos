@@ -11,6 +11,7 @@ from src.infra.relational.config.connection.db_connection_handler import DBConne
 from src.infra.relational.config.connection.string_connection import StringConnection
 from sqlalchemy import text
 from src.infra.relational.models.user import User
+from datetime import datetime, timezone
 import pytest
 
 @pytest.fixture
@@ -60,3 +61,42 @@ def test_insert_user(cpf, password, gen_salt, email, role) -> None:
         db.session.execute(deleter, {'cpf':cpf.value})
 
         db.session.commit()
+
+def test_find_user(cpf, password, gen_salt, email, role) -> None:
+
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    user_repository = UserRepository(db_connection_handler)
+
+    crypt = BlowfishCrypt()
+    hashed_password = HashedPassword(password, crypt, gen_salt)
+    salt = Salt(hashed_password.salt)
+    now = datetime.now(timezone.utc)
+
+    with db_connection_handler as db:
+        insert_script = text('''
+            INSERT INTO user (cpf, password, salt, role, email, created_at)
+            VALUES (:cpf, :password, :salt, :role, :email, :created_at)
+        ''')
+        db.session.execute(insert_script, {
+            'cpf': cpf.value,
+            'password': hashed_password.hashed_password,
+            'salt': salt.salt,
+            'role': role.value,
+            'email': email.email,
+            'created_at': now
+        })
+        db.session.commit()
+
+        result = user_repository.find(cpf=cpf)
+
+        assert result.cpf.value == cpf.value
+        assert result.email.email == email.email
+        assert result.password == hashed_password.hashed_password
+        assert result.role.value == role.value
+        assert result.salt == salt.salt
+
+        deleter = text("delete from user where cpf = :cpf;")
+        db.session.execute(deleter, {'cpf':cpf.value})
+
+        db.session.commit()
+
