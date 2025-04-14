@@ -137,3 +137,36 @@ def test_update_user(cpf, password, gen_salt, email, role) -> None:
         deleter = text("delete from user where cpf = :cpf;")
         db.session.execute(deleter, {'cpf':cpf.value})
         db.session.commit()
+
+
+def test_delete_user(cpf, password, gen_salt, email, role) -> None:
+
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    user_repository = UserRepository(db_connection_handler)
+
+    crypt = BlowfishCrypt()
+    hashed_password = HashedPassword(password, crypt, gen_salt)
+    salt = Salt(hashed_password.salt)
+    now = datetime.now(timezone.utc)
+
+    with db_connection_handler as db:
+        insert_script = text('''
+            INSERT INTO user (cpf, password, salt, role, email, created_at)
+            VALUES (:cpf, :password, :salt, :role, :email, :created_at)
+        ''')
+        db.session.execute(insert_script, {
+            'cpf': cpf.value,
+            'password': hashed_password.hashed_password,
+            'salt': salt.salt,
+            'role': role.value,
+            'email': email.email,
+            'created_at': now
+        })
+        db.session.commit()
+
+        user_repository.delete(cpf)
+
+        finder = text('select * from user where cpf = :cpf')
+        user_result = db.session.execute(finder, {'cpf':cpf.value}).fetchone()
+        
+        assert user_result is None
