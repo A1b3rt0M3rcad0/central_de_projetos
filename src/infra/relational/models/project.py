@@ -1,6 +1,7 @@
 from sqlalchemy import String, Column, DateTime, Integer, ForeignKey, Float
 from src.infra.relational.config.base.base_model import BaseModel
 from sqlalchemy.orm import backref, relationship
+from src.infra.relational.models.history_project import HistoryProject
 
 class Project(BaseModel):
 
@@ -14,4 +15,4 @@ class Project(BaseModel):
     expect_completion_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
 
-    history_project = relationship('HistoryProject', backref=backref('project'))
+    history_project = relationship(HistoryProject, backref=backref('project'))
