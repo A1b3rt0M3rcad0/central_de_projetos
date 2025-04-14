@@ -14,6 +14,10 @@ class Role:
     @property
     def role(self) -> __Roles__:
         return self.get_roles()[self.__role]
+    
+    @property
+    def value(self) -> str:
+        return self.__role
 
     @classmethod
     def get_roles(cls) -> __Roles__:

@@ -8,4 +8,4 @@ class UserProject(BaseModel):
 
     user_cpf = Column(ForeignKey('user.cpf'), nullable=False, primary_key=True)
     project_id = Column(ForeignKey('project.id'), nullable=False, primary_key=True)
-    assignment_date = Column(DateTime, default=datetime(timezone.utc), nullable=False)
+    assignment_date = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)

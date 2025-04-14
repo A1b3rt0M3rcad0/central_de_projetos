@@ -22,6 +22,9 @@ class HashedPassword(IHashedPassword):
     def cryptography(self) -> ICryptography:
         return self.__cryptography
     
+    def check(self, password:Password|bytes) -> bool:
+        return self.__cryptography.check(password, self.__hashed_password)
+    
     def __str__(self) -> str:
         return self.hashed_password.decode()
     

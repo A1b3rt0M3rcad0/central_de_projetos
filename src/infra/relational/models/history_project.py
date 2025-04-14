@@ -11,4 +11,4 @@ class HistoryProject(BaseModel):
     project_id = Column(ForeignKey('project.id'), nullable=False)
     column_name = Column(String(30), nullable=False)
     description = Column(String(255), nullable=False)
-    updated_at = Column(DateTime, default=datetime(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
