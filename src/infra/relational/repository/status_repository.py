@@ -4,6 +4,7 @@ from src.domain.entities.status import StatusEntity
 from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from sqlalchemy.exc import DataError
+from sqlalchemy import and_
 from typing import Optional
 
 class StatusRepository(IStatusRepository):
@@ -31,8 +32,10 @@ class StatusRepository(IStatusRepository):
             try:
                 if status_id_entry and description_entry:
                     result = db.session.query(Status).where(
-                        Status.id == status_id_entry and \
+                        and_(
+                        Status.id == status_id_entry,
                         Status.description == description_entry
+                        )
                     ).first()
                     return StatusEntity(
                         status_id = result.id,
