@@ -17,4 +17,4 @@ class IStatusRepository(ABC):
     def update(self, update_params:Dict, status_id:Optional[int]=None, description:Optional[str]=None) -> None:pass
 
     @abstractmethod
-    def delete(self, status_id:int) -> None:pass
+    def delete(self, status_id:Optional[int]=None, description:Optional[str]=None) -> None:pass
