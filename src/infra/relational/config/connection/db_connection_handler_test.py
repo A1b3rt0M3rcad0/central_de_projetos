@@ -1,6 +1,6 @@
 import pytest
-from src.infra.config.connection.db_connection_handler import DBConnectionHandler
-from src.infra.config.connection.string_connection import StringConnection
+from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
+from src.infra.relational.config.connection.string_connection import StringConnection
 from sqlalchemy import text
 
 @pytest.fixture

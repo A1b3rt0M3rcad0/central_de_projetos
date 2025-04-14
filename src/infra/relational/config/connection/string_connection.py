@@ -1,4 +1,4 @@
-from src.infra.config.interface.i_string_connection import IStringConnection
+from src.infra.relational.config.interface.i_string_connection import IStringConnection
 import dotenv
 import os
 from pathlib import Path

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, ForeignKey
-from src.infra.config.base.base_model import BaseModel
+from src.infra.relational.config.base.base_model import BaseModel
 from datetime import datetime, timezone
 
 class UserProject(BaseModel):

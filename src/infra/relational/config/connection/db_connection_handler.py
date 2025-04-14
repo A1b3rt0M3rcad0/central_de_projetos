@@ -1,8 +1,8 @@
-from src.infra.config.interface.i_db_connection_handler import IDBConnectionHandler
+from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 from sqlalchemy import Engine
-from src.infra.config.interface.i_string_connection import IStringConnection
+from src.infra.relational.config.interface.i_string_connection import IStringConnection
 from typing import Self
 
 class DBConnectionHandler(IDBConnectionHandler):
