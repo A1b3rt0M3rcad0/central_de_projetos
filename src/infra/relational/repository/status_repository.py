@@ -66,7 +66,20 @@ class StatusRepository(IStatusRepository):
                 raise e
 
     def find_all(self) -> List[StatusEntity]:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                result = db.session.query(Status).all()
+                status_entities = [
+                    StatusEntity(
+                        status_id=status.id,
+                        description=status.description,
+                        created_at=status.created_at
+                    ) for status in result
+                ]
+
+                return status_entities
+            except Exception as e:
+                raise e
     
     def update(self, status_id:int, update_params:Dict) -> None:
         return None
