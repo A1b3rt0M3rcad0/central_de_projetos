@@ -14,7 +14,7 @@ class IStatusRepository(ABC):
     def find_all(self) -> List[StatusEntity]:pass
 
     @abstractmethod
-    def update(self, status_id:int, update_params:Dict) -> None:pass
+    def update(self, update_params:Dict, status_id:Optional[int]=None, description:Optional[str]=None) -> None:pass
 
     @abstractmethod
     def delete(self, status_id:int) -> None:pass

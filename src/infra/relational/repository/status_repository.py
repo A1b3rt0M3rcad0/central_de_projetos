@@ -81,8 +81,33 @@ class StatusRepository(IStatusRepository):
             except Exception as e:
                 raise e
     
-    def update(self, status_id:int, update_params:Dict) -> None:
-        return None
-    
+    def update(self, update_params:Dict, status_id:Optional[int]=None, description:Optional[str]=None) -> None:
+        update_params_entry = update_params
+        status_id_entry = status_id
+        description_entry = description
+        with self.__db_connection_handler as db:
+            if status_id_entry and description_entry:
+                db.session.query(Status).where(
+                    and_(
+                        Status.id == status_id_entry,
+                        Status.description == description_entry
+                    )
+                ).update(update_params_entry)
+                db.session.commit()
+                return
+            if status_id_entry:
+                db.session.query(Status).where(
+                    Status.id == status_id_entry
+                ).update(update_params_entry)
+                db.session.commit()
+                return
+            if description_entry:
+                db.session.query(Status).where(
+                    Status.description == description_entry
+                ).update(update_params_entry)
+                db.session.commit()
+                return
+            raise ValueError('status_id and description, entry error')
+
     def delete(self, status_id:int) -> None:
         return None
