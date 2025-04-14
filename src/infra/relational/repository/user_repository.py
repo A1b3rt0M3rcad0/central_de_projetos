@@ -29,6 +29,7 @@ class UserRepository(IUserRepository):
                 )
                 db.session.commit()
             except Exception as e:
+                db.session.rollback()
                 raise e
 
     def find(self, cpf:CPF) -> Optional[UserEntity]:
@@ -48,6 +49,7 @@ class UserRepository(IUserRepository):
                     )
                 return None 
             except Exception as e:
+                db.session.rollback()
                 raise e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
@@ -57,7 +59,17 @@ class UserRepository(IUserRepository):
                 db.session.query(User).where(User.cpf == cpf_entry).update(update_params)
                 db.session.commit()
             except Exception as e:
+                db.session.rollback()
                 raise e
     
-    def delete(self, cpf):
-        return None
+    def delete(self, cpf:CPF) -> None:
+        cpf_entry = cpf.value
+        with self.__db_connection_handler as db:
+            try:
+                user = db.session.query(User).filter(User.cpf == cpf_entry).first()
+                if user:
+                    db.session.delete(user)
+                    db.session.commit()
+            except ExceptionGroup as e:
+                db.session.rollback()
+                raise e

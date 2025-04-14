@@ -1,4 +1,3 @@
-#pylint:disable=all
 from src.infra.relational.repository.user_repository import UserRepository
 from src.domain.value_objects.cpf import CPF
 from src.domain.value_objects.password import Password
@@ -10,7 +9,6 @@ from src.domain.value_objects.roles import Role
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.config.connection.string_connection import StringConnection
 from sqlalchemy import text
-from src.infra.relational.models.user import User
 from datetime import datetime, timezone
 import pytest
 
@@ -139,5 +137,3 @@ def test_update_user(cpf, password, gen_salt, email, role) -> None:
         deleter = text("delete from user where cpf = :cpf;")
         db.session.execute(deleter, {'cpf':cpf.value})
         db.session.commit()
-
-
