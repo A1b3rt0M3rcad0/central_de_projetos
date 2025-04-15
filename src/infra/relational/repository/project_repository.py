@@ -1,4 +1,3 @@
-#pylint:disable=all
 from src.data.interface.i_project_repository import IProjectRepository
 from typing import Optional, List, Dict
 from src.domain.entities.project import ProjectEntity
