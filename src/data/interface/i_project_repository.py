@@ -7,7 +7,7 @@ from src.domain.entities.project import ProjectEntity
 class IProjectRepository(ABC):
     
     @abstractmethod
-    def insert(self, status_id:int, description:Optional[str]=None, verba_disponivel:Optional[MonetaryValue]=None, andamento_project:Optional[str]=None, data_inicio:Optional[datetime]=None, data_final_prevista:Optional[datetime]=None, data_finalizacao:Optional[datetime]=None) -> None:pass
+    def insert(self, status_id:int, verba_disponivel:Optional[MonetaryValue]=None, andamento_do_projeto:Optional[str]=None, start_date:Optional[datetime]=None, expected_completion_date:Optional[datetime]=None, end_date:Optional[datetime]=None) -> None:pass
 
     @abstractmethod
     def find(self, project_id:int) -> ProjectEntity:pass
