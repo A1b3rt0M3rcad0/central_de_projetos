@@ -110,3 +110,46 @@ def test_find(
     assert project.status_id == status.id
     assert project.verba_disponivel == monetary_value.value
     assert project.andamento_do_projeto == andamento_do_projeto
+
+def test_find_all(
+    monetary_value,
+    andamento_do_projeto,
+    datetime_fixture,
+    insert_status_script,
+    select_status_script,
+    insert_project_script
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_repository = ProjectRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Test Status',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(select_status_script).first()
+
+        # Inserir dois projetos
+        for _ in range(2):
+            db.session.execute(insert_project_script, {
+                'status_id': status.id,
+                'verba_disponivel': monetary_value.value,
+                'andamento_do_projeto': andamento_do_projeto,
+                'start_date': datetime_fixture,
+                'expected_completion_date': datetime_fixture,
+                'end_date': datetime_fixture
+            })
+        db.session.commit()
+
+    # Buscar todos os projetos
+    result = project_repository.find_all()
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    for project in result:
+        assert project.status_id == status.id
+        assert project.verba_disponivel == monetary_value.value
+        assert project.andamento_do_projeto == andamento_do_projeto
