@@ -1,7 +1,7 @@
 from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_history_project import IHistoryProjectRepository
-from src.domain.entities.user_project import UserProjectEntity
+from src.domain.entities.history_project import HistoryProjectEntity
 from typing import Optional, Dict, List
 
 class HistoryProjectRepository(IHistoryProjectRepository):
@@ -23,10 +23,23 @@ class HistoryProjectRepository(IHistoryProjectRepository):
             except Exception as e:
                 raise e
     
-    def find(self, history_project_id:int) -> List[UserProjectEntity]:
-        return None
+    def find(self, history_project_id:int) -> HistoryProjectEntity:
+        with self.__db_connection_handler as db:
+            try:
+                history_project = db.session.query(HistoryProject).where(
+                    HistoryProject.id == history_project_id
+                ).first()
+                return HistoryProjectEntity(
+                    history_project_id = history_project.id,
+                    project_id = history_project.project_id,
+                    data_name = history_project.data_name,
+                    description = history_project.description,
+                    updated_at = history_project.updated_at
+                )
+            except Exception as e:
+                raise e
     
-    def find_all_from_project(self, project_id:int) -> List[UserProjectEntity]:
+    def find_all_from_project(self, project_id:int) -> List[HistoryProjectEntity]:
         return None
     
     def update(self, history_project_id:int, update_params:Dict) -> None:
