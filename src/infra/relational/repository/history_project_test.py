@@ -334,3 +334,63 @@ def test_update(
 
         assert updated_history is not None
         assert updated_history.description == new_description
+
+def test_delete(
+    insert_status_script,
+    select_status_script,
+    insert_project_script,
+    select_project_script,
+    andamento_do_projeto,
+    datetime_fixture
+) -> None:
+    db_handler = DBConnectionHandler(StringConnection())
+
+    with db_handler as db:
+        # Inserindo status
+        db.session.execute(
+            insert_status_script,
+            {"description": "Em Andamento", "created_at": datetime_fixture}
+        )
+        db.session.commit()
+
+        status_result = db.session.execute(select_status_script).fetchone()
+        assert status_result is not None
+        status_id = status_result.id
+
+        # Inserindo projeto
+        db.session.execute(
+            insert_project_script,
+            {
+                "status_id": status_id,
+                "verba_disponivel": 10000.0,
+                "andamento_do_projeto": andamento_do_projeto,
+                "start_date": datetime_fixture,
+                "expected_completion_date": datetime_fixture,
+                "end_date": None
+            }
+        )
+        db.session.commit()
+
+        project_result = db.session.execute(select_project_script, {"status_id": status_id}).fetchone()
+        assert project_result is not None
+        project_id = project_result.id
+
+        # Inserindo histórico via repositório
+        repo = HistoryProjectRepository(db_handler)
+        repo.insert(
+            project_id=project_id,
+            data_name="andamento_do_projeto",
+            description="Alterado para fase de protótipo"
+        )
+
+        # Verificando inserção
+        inserted = db.session.execute(text("SELECT id FROM history_project")).fetchone()
+        assert inserted is not None
+        history_project_id = inserted.id
+
+        # Deletando com o repositório
+        repo.delete(history_project_id)
+
+        # Verificando deleção
+        result = db.session.execute(text("SELECT * FROM history_project WHERE id = :id"), {"id": history_project_id}).fetchone()
+        assert result is None
