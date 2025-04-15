@@ -237,3 +237,42 @@ def test_update(monetary_value,
         
         assert project_updated.verba_disponivel != project_verba
         assert project_updated.verba_disponivel == 2000
+
+def test_delete(monetary_value,
+    andamento_do_projeto,
+    datetime_fixture,
+    insert_status_script,
+    select_status_script,
+    insert_project_script,
+    select_project_script
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_repository = ProjectRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Test Status',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(select_status_script).first()
+
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'verba_disponivel': monetary_value.value,
+            'andamento_do_projeto': andamento_do_projeto,
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': datetime_fixture
+            })
+        db.session.commit()
+
+        project = db.session.execute(select_project_script, {'status_id': status.id}).first()
+        project_id = project.id
+
+        project_repository.delete(project_id)
+
+        project = db.session.execute(select_project_script, {'status_id': status.id}).first()
+
+        assert project is None
