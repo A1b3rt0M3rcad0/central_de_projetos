@@ -40,7 +40,22 @@ class HistoryProjectRepository(IHistoryProjectRepository):
                 raise e
     
     def find_all_from_project(self, project_id:int) -> List[HistoryProjectEntity]:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                full_history = db.session.query(HistoryProject).where(
+                    HistoryProject.project_id == project_id
+                ).all()
+                return [
+                    HistoryProjectEntity(
+                        history_project_id=register.id,
+                        data_name=register.data_name,
+                        description=register.description,
+                        project_id=register.project_id,
+                        updated_at=register.updated_at
+                    ) for register in full_history
+                ]
+            except Exception as e:
+                raise e
     
     def update(self, history_project_id:int, update_params:Dict) -> None:
         return None
