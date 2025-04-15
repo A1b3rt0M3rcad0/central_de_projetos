@@ -68,4 +68,45 @@ def test_insert(monetary_value, andamento_do_projeto, datetime_fixture, select_p
         assert project.andamento_do_projeto  == andamento_do_projeto
         assert project.status_id == status.id
 
-        
+def test_find(
+    monetary_value, 
+    andamento_do_projeto, 
+    datetime_fixture, 
+    insert_status_script, 
+    select_status_script, 
+    insert_project_script
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_repository = ProjectRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir o status
+        db.session.execute(insert_status_script, {
+            'description': 'description_too_long',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(select_status_script).first()
+
+        # Inserir projeto com o status_id recém-criado
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'verba_disponivel': monetary_value.value,
+            'andamento_do_projeto': andamento_do_projeto,
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': datetime_fixture
+        })
+        db.session.commit()
+
+        # Recuperar ID do projeto inserido
+        result = db.session.execute(text("SELECT id FROM project WHERE status_id = :status_id"), {'status_id': status.id}).first()
+        project_id = result.id
+
+    # Buscar o projeto usando o repositório
+    project = project_repository.find(project_id)
+
+    assert project.project_id == project_id
+    assert project.status_id == status.id
+    assert project.verba_disponivel == monetary_value.value
+    assert project.andamento_do_projeto == andamento_do_projeto
