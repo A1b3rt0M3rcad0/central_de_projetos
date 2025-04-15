@@ -57,7 +57,15 @@ class UserProjectRepository(IUserProjectRepository):
                 raise e
     
     def update(self, cpf_user:CPF, project_id:int, update_params:Dict) -> None:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(UserProject).where(and_(
+                    UserProject.user_cpf == cpf_user.value,
+                    UserProject.project_id == project_id
+                )).update(update_params)
+                db.session.commit()
+            except Exception as e:
+                raise e
     
     def delete(self, cpf_user:CPF, project_id:int) -> None:
         return None
