@@ -93,8 +93,13 @@ class ProjectRepository(IProjectRepository):
                 raise e
         
     
-    def update(self, project_id, update_params):
-        return None
+    def update(self, project_id:int, update_params:Dict) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(Project).where(Project.id == project_id).update(update_params)
+                db.session.commit()
+            except Exception as e:
+                raise e
     
-    def delete(self, project_id):
+    def delete(self, project_id:int) -> None:
         return None
