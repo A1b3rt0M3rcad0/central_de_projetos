@@ -3,7 +3,7 @@ from src.domain.value_objects.cpf import CPF
 from src.domain.entities.user_project import UserProjectEntity
 from typing import List, Dict, Optional
 
-class IUserProject(ABC):
+class IUserProjectRepository(ABC):
 
     @abstractmethod
     def insert(self, cpf_user:CPF, project_id:int) -> None:pass

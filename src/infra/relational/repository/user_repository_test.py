@@ -36,7 +36,11 @@ def role() -> Role:
 def cleanup_all():
     db_connection_handler = DBConnectionHandler(StringConnection())
     with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM history_project'))
+        db.session.execute(text('DELETE FROM user_project'))
         db.session.execute(text('DELETE FROM user'))
+        db.session.execute(text('DELETE FROM project'))
+        db.session.execute(text('DELETE FROM status'))
         db.session.commit()
 
 def test_insert_user(cpf, password, gen_salt, email, role) -> None:

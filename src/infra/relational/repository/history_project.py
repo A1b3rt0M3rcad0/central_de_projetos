@@ -1,6 +1,6 @@
 from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from src.data.interface.i_history_project import IHistoryProjectRepository
+from src.data.interface.i_history_project_repository import IHistoryProjectRepository
 from src.domain.entities.history_project import HistoryProjectEntity
 from typing import Optional, Dict, List
 
