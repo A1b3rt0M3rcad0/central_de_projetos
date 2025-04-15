@@ -259,3 +259,78 @@ def test_find_all_from_project(
         assert "verba_disponivel" in data_names
         assert "Alterado para fase de protótipo" in descriptions
         assert "Ajuste de orçamento" in descriptions
+
+def test_update(
+    insert_status_script,
+    select_status_script,
+    insert_project_script,
+    select_project_script,
+    insert_history_project,
+    andamento_do_projeto,
+    datetime_fixture
+) -> None:
+    db_handler = DBConnectionHandler(StringConnection())
+
+    with db_handler as db:
+        # Inserindo status
+        db.session.execute(
+            insert_status_script,
+            {"description": "Em Andamento", "created_at": datetime_fixture}
+        )
+        db.session.commit()
+
+        status_result = db.session.execute(select_status_script).fetchone()
+        assert status_result is not None
+        status_id = status_result.id
+
+        # Inserindo projeto
+        db.session.execute(
+            insert_project_script,
+            {
+                "status_id": status_id,
+                "verba_disponivel": 10000.0,
+                "andamento_do_projeto": andamento_do_projeto,
+                "start_date": datetime_fixture,
+                "expected_completion_date": datetime_fixture,
+                "end_date": None
+            }
+        )
+        db.session.commit()
+
+        project_result = db.session.execute(select_project_script, {"status_id": status_id}).fetchone()
+        assert project_result is not None
+        project_id = project_result.id
+
+        # Inserindo histórico
+        db.session.execute(
+            insert_history_project,
+            {
+                "project_id": project_id,
+                "data_name": "verba_disponivel",
+                "description": "Valor inicial",
+                "updated_at": datetime_fixture
+            }
+        )
+        db.session.commit()
+
+        # Buscando ID do histórico inserido
+        history_project_id = db.session.execute(
+            text("SELECT id FROM history_project")
+        ).fetchone().id
+
+        # Atualizando o registro com o repositório
+        repo = HistoryProjectRepository(db_handler)
+        new_description = "Orçamento ajustado para nova etapa"
+        repo.update(
+            history_project_id,
+            {"description": new_description}
+        )
+
+        # Verificando atualização no banco
+        updated_history = db.session.execute(
+            text("SELECT * FROM history_project WHERE id = :id"),
+            {"id": history_project_id}
+        ).fetchone()
+
+        assert updated_history is not None
+        assert updated_history.description == new_description
