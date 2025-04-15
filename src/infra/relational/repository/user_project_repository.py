@@ -42,7 +42,19 @@ class UserProjectRepository(IUserProjectRepository):
                 raise e
     
     def find_all(self) -> List[Optional[UserProjectEntity]]:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                user_projects = db.session.query(UserProject).all()
+                relations = [
+                    UserProjectEntity(
+                        cpf=relation.user_cpf,
+                        project_id=relation.project_id,
+                        data_atribuicao=relation.assignment_date
+                    ) for relation in user_projects
+                ]
+                return relations
+            except Exception as e:
+                raise e
     
     def update(self, cpf_user:CPF, project_id:int, update_params:Dict) -> None:
         return None

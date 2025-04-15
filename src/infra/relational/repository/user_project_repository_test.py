@@ -245,3 +245,72 @@ def test_find(
     assert user_project_entity is not None
     assert user_project_entity.cpf == cpf.value
     assert user_project_entity.project_id == project_id
+
+def test_find_all(
+    insert_status_script,
+    select_status_script,
+    monetary_value,
+    andamento_do_projeto,
+    datetime_fixture,
+    insert_project_script,
+    select_project_script,
+    insert_user,
+    cpf,
+    password,
+    email,
+    role,
+    insert_user_project
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Ativo',
+            'created_at': datetime_fixture
+        })
+        status_result = db.session.execute(select_status_script).fetchone()
+        status_id = status_result.id
+
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status_id,
+            'verba_disponivel': monetary_value.value,
+            'andamento_do_projeto': andamento_do_projeto,
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': datetime_fixture,
+        })
+        project_result = db.session.execute(select_project_script, {
+            'status_id': status_id
+        }).fetchone()
+        project_id = project_result.id
+
+        # Inserir usuário
+        db.session.execute(insert_user, {
+            'cpf': cpf.value,
+            'password': password.hashed_password,
+            'salt': password.salt,
+            'role': role.value,
+            'email': email.email,
+            'created_at': datetime_fixture,
+        })
+
+        # Inserir user_project manualmente
+        db.session.execute(insert_user_project, {
+            'user_cpf': cpf.value,
+            'project_id': project_id,
+            'assignment_date': datetime_fixture
+        })
+        db.session.commit()
+
+    # Testar método find_all
+    repo = UserProjectRepository(db_connection_handler)
+    result = repo.find_all()
+
+    assert isinstance(result, list)
+    assert len(result) > 0
+    assert any(
+        r.cpf == cpf.value and r.project_id == project_id
+        for r in result
+    )
