@@ -54,8 +54,24 @@ class ProjectRepository(IProjectRepository):
             except Exception as e:
                 raise e
     
-    def find_all(self):
-        return None
+    def find_all(self) -> List[ProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                projects = db.session.query(Project).all()
+                project_list = [
+                    ProjectEntity(
+                    project_id=project.id,
+                    andamento_do_projeto=project.andamento_do_projeto,
+                    start_date=project.start_date,
+                    expected_completion_date=project.expected_completion_date,
+                    verba_disponivel=project.verba_disponivel,
+                    status_id=project.status_id,
+                    end_date=project.end_date
+                    ) for project in projects
+                ]
+                return project_list
+            except Exception as e:
+                raise e
     
     def find_by_status(self, status_id):
         return None
