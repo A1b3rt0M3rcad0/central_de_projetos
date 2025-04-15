@@ -36,7 +36,7 @@ class ProjectRepository(IProjectRepository):
             except Exception as e:
                 raise e
     
-    def find(self, project_id) -> ProjectEntity:
+    def find(self, project_id:int) -> ProjectEntity:
         with self.__db_connection_handler as db:
             try:
                 project = db.session.query(Project).where(
@@ -73,8 +73,25 @@ class ProjectRepository(IProjectRepository):
             except Exception as e:
                 raise e
     
-    def find_by_status(self, status_id):
-        return None
+    def find_by_status(self, status_id:int) -> List[ProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                projects = db.session.query(Project).where(Project.status_id == status_id)
+                project_list = [
+                    ProjectEntity(
+                    project_id=project.id,
+                    andamento_do_projeto=project.andamento_do_projeto,
+                    start_date=project.start_date,
+                    expected_completion_date=project.expected_completion_date,
+                    verba_disponivel=project.verba_disponivel,
+                    status_id=project.status_id,
+                    end_date=project.end_date
+                    ) for project in projects
+                ]
+                return project_list
+            except Exception as e:
+                raise e
+        
     
     def update(self, project_id, update_params):
         return None
