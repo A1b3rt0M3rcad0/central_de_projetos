@@ -3,6 +3,7 @@ from src.domain.value_objects.cpf import CPF
 from src.domain.entities.user_project import UserProjectEntity
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.relational.models.user_project import UserProject
+from sqlalchemy import and_
 from typing import Optional, List, Dict
 
 class UserProjectRepository(IUserProjectRepository):
@@ -24,7 +25,21 @@ class UserProjectRepository(IUserProjectRepository):
                 raise e
 
     def find(self, cpf_user:CPF, project_id:int) -> UserProjectEntity:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                user_project = db.session.query(UserProject).where(
+                    and_(
+                        UserProject.user_cpf == cpf_user.value,
+                        UserProject.project_id == project_id
+                    )
+                ).first()
+                return UserProjectEntity(
+                    cpf=user_project.user_cpf,
+                    project_id=user_project.project_id,
+                    data_atribuicao=user_project.assignment_date
+                )
+            except Exception as e:
+                raise e
     
     def find_all(self) -> List[Optional[UserProjectEntity]]:
         return None
