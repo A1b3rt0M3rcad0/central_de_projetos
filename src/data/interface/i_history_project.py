@@ -5,7 +5,7 @@ from typing import List, Dict, Optional
 class IHistoryProjectRepository(ABC):
 
     @abstractmethod
-    def insert(self, project_id:int, column_name:str, description:Optional[str]=None) -> None:pass
+    def insert(self, project_id:int, data_name:str, description:Optional[str]=None) -> None:pass
 
     @abstractmethod
     def find(self, history_project_id:int) -> HistoryProjectEntity:pass
