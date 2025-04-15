@@ -102,4 +102,9 @@ class ProjectRepository(IProjectRepository):
                 raise e
     
     def delete(self, project_id:int) -> None:
-        return None
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(Project).where(Project.id == project_id).delete()
+                db.session.commit()
+            except Exception as e:
+                raise e
