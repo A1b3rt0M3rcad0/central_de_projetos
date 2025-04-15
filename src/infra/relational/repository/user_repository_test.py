@@ -7,7 +7,7 @@ from src.security.cryptography.utils.salt import Salt
 from src.domain.value_objects.email import Email
 from src.domain.value_objects.roles import Role
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
-from src.infra.relational.config.connection.string_connection import StringConnection
+from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
 from sqlalchemy import text
 from datetime import datetime, timezone
 import pytest
@@ -32,6 +32,12 @@ def email() -> Email:
 def role() -> Role:
     return Role('admin')
 
+@pytest.fixture(autouse=True)
+def cleanup_all():
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM user'))
+        db.session.commit()
 
 def test_insert_user(cpf, password, gen_salt, email, role) -> None:
 
@@ -53,12 +59,6 @@ def test_insert_user(cpf, password, gen_salt, email, role) -> None:
         assert user_result.salt == gen_salt.salt
         assert user_result.email == email.email
         assert user_result.role == role.value
-
-
-        deleter = text("delete from user where cpf = :cpf;")
-        db.session.execute(deleter, {'cpf':cpf.value})
-
-        db.session.commit()
 
 def test_find_user(cpf, password, gen_salt, email, role) -> None:
 
@@ -92,11 +92,6 @@ def test_find_user(cpf, password, gen_salt, email, role) -> None:
         assert result.password == hashed_password.hashed_password
         assert result.role.value == role.value
         assert result.salt == salt.salt
-
-        deleter = text("delete from user where cpf = :cpf;")
-        db.session.execute(deleter, {'cpf':cpf.value})
-
-        db.session.commit()
 
 def test_update_user(cpf, password, gen_salt, email, role) -> None:
 
@@ -133,11 +128,6 @@ def test_update_user(cpf, password, gen_salt, email, role) -> None:
         user_result = db.session.execute(finder, {'cpf':cpf.value}).fetchone()
         
         assert user_result.role == Role('vereador').value
-
-        deleter = text("delete from user where cpf = :cpf;")
-        db.session.execute(deleter, {'cpf':cpf.value})
-        db.session.commit()
-
 
 def test_delete_user(cpf, password, gen_salt, email, role) -> None:
 

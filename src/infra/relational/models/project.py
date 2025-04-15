@@ -12,7 +12,7 @@ class Project(BaseModel):
     verba_disponivel = Column(Float, nullable=True)
     andamento_do_projeto = Column(String(255), nullable=True)
     start_date = Column(DateTime, nullable=True)
-    expect_completion_date = Column(DateTime, nullable=True)
+    expected_completion_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
 
     history_project = relationship(HistoryProject, backref=backref('project'))
