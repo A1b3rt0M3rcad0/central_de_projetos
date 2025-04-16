@@ -1,4 +1,3 @@
-import os
 import dotenv
 from pymongo import MongoClient
 from pymongo.database import Database
@@ -11,7 +10,7 @@ class DBConnectionHandler(IDBConnectionHandler):
     def __init__(self, connection: IStringConnection):
         dotenv.load_dotenv()
         self.__connection = connection.string
-        self.__database_name = os.getenv("DB_NAME")
+        self.__database_name = connection.database_name()
         self.__client:Optional[MongoClient] = None
         self.__db_connection:Optional[Database] = None
 
@@ -24,6 +23,7 @@ class DBConnectionHandler(IDBConnectionHandler):
         return self.__db_connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.__client.close()
+        if self.__client is not None:
+            self.__client.close()
         self.__db_connection = None
         self.__client = None
