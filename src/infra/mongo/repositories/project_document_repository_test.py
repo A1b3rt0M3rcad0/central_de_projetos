@@ -42,3 +42,28 @@ def test_find_project_document(db_connection_handler) -> None:
     documents = project_document_repository.find_project_document(1)
 
     assert len(documents) == 3
+
+def test_insert_documents_into_project(db_connection_handler) -> None:
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+
+    # Novos documentos a serem inseridos
+    new_documents = [
+        Word(b'word_extra', 'doc_extra_word'),
+        PDF(b'pdf_extra', 'doc_extra_pdf')
+    ]
+
+    updated_model = ProjectDocumentModel(
+        project_id=1,
+        documents=new_documents
+    )
+
+    # Inserção dos novos documentos no projeto existente
+    project_document_repository.insert_documents_into_project(updated_model)
+
+    with db_connection_handler as db:
+        if db is not None:
+            project_document = db['projectdocument'].find_one({'project_id': 1})
+            assert project_document is not None
+            assert len(project_document['documents']) == 5
+            assert any(doc['document_name'] == 'doc_extra_word' for doc in project_document['documents'])
+            assert any(doc['document_name'] == 'doc_extra_pdf' for doc in project_document['documents'])

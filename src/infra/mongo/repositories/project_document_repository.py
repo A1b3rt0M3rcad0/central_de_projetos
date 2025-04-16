@@ -34,8 +34,18 @@ class ProjectDocumentRepository:
         except Exception as e:
             raise e
     
-    # def insert_documents_into_project(self, project_model:ProjectDocumentModel) -> None:
-    #     return None
+    def insert_documents_into_project(self, project_model: ProjectDocumentModel) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                if db is not None:
+                    db[self.__project_document.document].update_one(
+                        {'project_id': project_model.project_id},
+                        {'$push': {'documents': {'$each': [document.to_dict() for document in project_model.documents]}}}
+                    )
+                    return
+                raise ValueError('Connection is None')
+        except Exception as e:
+            raise e
     
     # def delete_document_from_project(self, project_id:int, document_name:str) -> None:
     #     return None

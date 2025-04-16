@@ -23,6 +23,14 @@ class PDF:
     def value(self) -> bytes:
         return self.__pdf.getvalue()
     
+    def to_dict(self) -> dict:
+        return {
+            'document': self.value(),
+            'content_type': self.__content_type,
+            'document_name': self.document_name,
+            'name': self.__name
+        }
+    
     def __str__(self) -> str:
         return self.pdf.getvalue().hex()
 
