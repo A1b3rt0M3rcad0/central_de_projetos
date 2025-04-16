@@ -29,3 +29,16 @@ def db_connection_handler() -> DBConnectionHandler:
 def test_create_project_document(project_document_model, db_connection_handler) -> None:
     project_document_repository = ProjectDocumentRepository(db_connection_handler)
     project_document_repository.create_project_document(project_document_model)
+
+    with db_connection_handler as db:
+        if db is not None:
+            project_document = db['projectdocument'].find_one(
+                {'project_id': 1}
+            )
+            assert len(project_document['documents']) == 3
+
+def test_find_project_document(db_connection_handler) -> None:
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+    documents = project_document_repository.find_project_document(1)
+
+    assert len(documents) == 3

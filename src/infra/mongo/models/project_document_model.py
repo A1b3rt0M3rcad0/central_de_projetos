@@ -33,9 +33,11 @@ class ProjectDocumentModel:
         return {
             'project_id': self.__project_id,
             'documents': [
-                {
-                    document.document_name:document.value() for document in self.documents
-
-                    }
+                    {
+                        'document':document.value(),
+                        'content_type': document.content_type,
+                        'document_name': document.document_name,
+                        'name': document.name,
+                    } for document in self.documents
                 ]
         }

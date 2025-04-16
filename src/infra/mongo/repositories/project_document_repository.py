@@ -2,7 +2,7 @@ from src.infra.mongo.config.connection.interface.i_db_connection_handler import 
 from src.infra.mongo.models.project_document_model import ProjectDocumentModel
 from src.infra.mongo.documents.project_document import ProjectDocument
 from pymongo.errors import DuplicateKeyError
-# from typing import List, Union
+from typing import List, Dict
 
 class ProjectDocumentRepository:
 
@@ -21,6 +21,18 @@ class ProjectDocumentRepository:
                 raise ValueError('Connection is None')
         except DuplicateKeyError as e:
             raise ValueError('This Project already exists') from e
+    
+    def find_project_document(self, project_id:int) -> List[Dict[str, bytes]]:
+        try:
+            with self.__db_connection_handler as db:
+                if db is not None:
+                    project_document = db[self.__project_document.document].find_one(
+                        {'project_id': project_id}
+                    )
+                    return project_document['documents']
+                raise ValueError('Connection is None')
+        except Exception as e:
+            raise e
     
     # def insert_documents_into_project(self, project_model:ProjectDocumentModel) -> None:
     #     return None
