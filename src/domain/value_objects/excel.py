@@ -2,7 +2,8 @@ from io import BytesIO
 
 class Excel:
 
-    def __init__(self, xlsx: bytes):
+    def __init__(self, xlsx: bytes, document_name:str|None=None):
+        self.document_name = document_name
         self.__xlsx = BytesIO(xlsx)
         self.__content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         self.__name = "document.xlsx"

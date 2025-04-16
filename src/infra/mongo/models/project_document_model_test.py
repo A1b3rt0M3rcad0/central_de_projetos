@@ -7,17 +7,17 @@ from src.infra.mongo.models.project_document_model import ProjectDocumentModel
 @pytest.fixture
 def excel_document():
     # Mock de um documento Excel
-    return Excel(xlsx=b"Excel content here")
+    return Excel(xlsx=b"Excel content here", document_name='excel')
 
 @pytest.fixture
 def pdf_document():
     # Mock de um documento PDF
-    return PDF(pdf=b"PDF content here")
+    return PDF(pdf=b"PDF content here", document_name='pdf')
 
 @pytest.fixture
 def word_document():
     # Mock de um documento Word
-    return Word(docx=b"Word content here")
+    return Word(docx=b"Word content here", document_name='word')
 
 @pytest.fixture
 def project_document_model(excel_document, pdf_document, word_document):
@@ -45,32 +45,32 @@ def test_project_document_model_project_id_property(project_document_model):
 
 def test_excel_equality(excel_document):
     # Verifica se dois objetos Excel com o mesmo conteúdo são iguais
-    excel_2 = Excel(xlsx=b"Excel content here")
+    excel_2 = Excel(xlsx=b"Excel content here", document_name='excel')
     assert excel_document == excel_2
 
 def test_pdf_equality(pdf_document):
     # Verifica se dois objetos PDF com o mesmo conteúdo são iguais
-    pdf_2 = PDF(pdf=b"PDF content here")
+    pdf_2 = PDF(pdf=b"PDF content here", document_name='pdf')
     assert pdf_document == pdf_2
 
 def test_word_equality(word_document):
     # Verifica se dois objetos Word com o mesmo conteúdo são iguais
-    word_2 = Word(docx=b"Word content here")
+    word_2 = Word(docx=b"Word content here", document_name='word')
     assert word_document == word_2
 
 def test_excel_inequality(excel_document):
     # Verifica se dois objetos Excel com conteúdo diferente são diferentes
-    excel_2 = Excel(xlsx=b"Different Excel content")
+    excel_2 = Excel(xlsx=b"Different Excel content", document_name='excel')
     assert excel_document != excel_2
 
 def test_pdf_inequality(pdf_document):
     # Verifica se dois objetos PDF com conteúdo diferente são diferentes
-    pdf_2 = PDF(pdf=b"Different PDF content")
+    pdf_2 = PDF(pdf=b"Different PDF content", document_name='pdf')
     assert pdf_document != pdf_2
 
 def test_word_inequality(word_document):
     # Verifica se dois objetos Word com conteúdo diferente são diferentes
-    word_2 = Word(docx=b"Different Word content")
+    word_2 = Word(docx=b"Different Word content", document_name='work')
     assert word_document != word_2
 
 def test_documents_equality_in_project_document(project_document_model, excel_document, pdf_document, word_document):

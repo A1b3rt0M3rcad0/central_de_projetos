@@ -2,7 +2,8 @@ from io import BytesIO
 
 class PDF:
 
-    def __init__(self, pdf: bytes):
+    def __init__(self, pdf: bytes, document_name:str|None=None):
+        self.document_name = document_name
         self.__pdf = BytesIO(pdf)
         self.__content_type = "application/pdf"
         self.__name = "document.pdf"

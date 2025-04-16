@@ -8,6 +8,7 @@ class ProjectDocumentModel:
     def __init__(self, project_id:int, documents: List[Union[Excel, PDF, Word]]) -> None:
         self.__project_id = project_id
         self.__documents = documents
+        self.__valid_documents()
     
     @property
     def documents(self) -> List[Union[Excel, PDF, Word]]:
@@ -16,6 +17,11 @@ class ProjectDocumentModel:
     @property
     def project_id(self) -> int:
         return self.__project_id
+    
+    def __valid_documents(self) -> None:
+        for document in self.documents:
+            if not document.document_name:
+                raise ValueError('Document does not have a name')
     
     def __eq__(self, other):
         if not isinstance(other, ProjectDocumentModel):

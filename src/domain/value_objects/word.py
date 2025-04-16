@@ -2,7 +2,8 @@ from io import BytesIO
 
 class Word:
 
-    def __init__(self, docx: bytes):
+    def __init__(self, docx: bytes, document_name:str|None=None):
+        self.document_name = document_name
         self.__docx = BytesIO(docx)
         self.__content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         self.__name = "document.docx"
