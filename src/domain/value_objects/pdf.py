@@ -20,6 +20,9 @@ class PDF:
     def name(self) -> str:
         return self.__name
     
+    def value(self) -> bytes:
+        return self.__pdf.getvalue()
+    
     def __str__(self) -> str:
         return self.pdf.getvalue().hex()
 

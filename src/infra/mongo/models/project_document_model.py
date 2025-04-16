@@ -27,3 +27,15 @@ class ProjectDocumentModel:
         if not isinstance(other, ProjectDocumentModel):
             return False
         return self.project_id == other.project_id and self.documents == other.documents
+    
+    def to_dict(self) -> dict:
+
+        return {
+            'project_id': self.__project_id,
+            'documents': [
+                {
+                    document.document_name:document.value() for document in self.documents
+
+                    }
+                ]
+        }

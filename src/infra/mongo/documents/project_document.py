@@ -9,6 +9,10 @@ class ProjectDocument:
         self.__db_connection_handler = db_connection_handler
         self.__initialize()
 
+    @property
+    def document(self) -> str:
+        return self.__document
+
     def __initialize(self) -> None:
         if not self.init:
             with self.__db_connection_handler as db:

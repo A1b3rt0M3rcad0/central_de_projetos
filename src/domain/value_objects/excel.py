@@ -19,6 +19,9 @@ class Excel:
     @property
     def name(self) -> str:
         return self.__name
+    
+    def value(self) -> bytes:
+        return self.__xlsx.getvalue()
 
     def __str__(self) -> str:
         return self.xlsx.getvalue().hex()
