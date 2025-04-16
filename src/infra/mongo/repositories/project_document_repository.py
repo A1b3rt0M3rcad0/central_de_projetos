@@ -47,5 +47,30 @@ class ProjectDocumentRepository:
         except Exception as e:
             raise e
     
-    # def delete_document_from_project(self, project_id:int, document_name:str) -> None:
-    #     return None
+    def delete_document_from_project(self, project_id: int, document_name: str) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                if db is not None:
+                    # Usa o operador $pull para remover o documento da lista baseado no document_name
+                    db[self.__project_document.document].update_one(
+                        {'project_id': project_id},
+                        {'$pull': {'documents': {'document_name': document_name}}}
+                    )
+                    return
+                raise ValueError('Connection is None')
+        except Exception as e:
+            raise e
+    
+    def delete_all_documents_from_project(self, project_id: int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                if db is not None:
+                    # Remove todos os documentos da lista de documentos do projeto
+                    db[self.__project_document.document].update_one(
+                        {'project_id': project_id},
+                        {'$set': {'documents': []}}  # Define a lista de documentos como vazia
+                    )
+                    return
+                raise ValueError('Connection is None')
+        except Exception as e:
+            raise e
