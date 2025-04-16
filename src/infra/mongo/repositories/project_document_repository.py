@@ -2,9 +2,10 @@ from src.infra.mongo.config.connection.interface.i_db_connection_handler import 
 from src.infra.mongo.models.project_document_model import ProjectDocumentModel
 from src.infra.mongo.documents.project_document import ProjectDocument
 from pymongo.errors import DuplicateKeyError
+from src.data.interface.i_project_document_repository import IProjectDocumentRepository
 from typing import List, Dict
 
-class ProjectDocumentRepository:
+class ProjectDocumentRepository(IProjectDocumentRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
