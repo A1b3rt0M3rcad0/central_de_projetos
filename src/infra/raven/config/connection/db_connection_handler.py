@@ -1,0 +1,23 @@
+from pyravendb.store.document_store import DocumentStore
+from pyravendb.store.document_session import DocumentSession
+from src.infra.raven.config.connection.interface.i_data_connection import IDataConnection
+from typing import Optional
+
+
+class DBConnectionHandler:
+
+    def __init__(self, data_connection:IDataConnection) -> None:
+        self.data_connection = data_connection
+        self.engine:DocumentStore = self.__create_engine()
+        self.session:Optional[DocumentSession] = None
+    
+    def __create_engine(self) -> DocumentStore:
+        return DocumentStore(**self.data_connection.data())
+    
+    def __enter__(self) -> DocumentSession:
+        self.engine.initialize()
+        self.session = self.engine.open_session()
+        return self.session
+    
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.engine.close()
