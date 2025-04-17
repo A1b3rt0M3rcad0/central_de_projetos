@@ -4,6 +4,8 @@ from src.infra.raven.config.connection.db_connection_handler import DBConnection
 from src.infra.raven.config.connection.data_connection import DataConnection
 from src.infra.raven.documents.project_documents import ProjectDocuments
 from src.domain.value_objects.pdf import PDF
+from src.domain.value_objects.word import Word
+from src.domain.value_objects.excel import Excel
 
 def test_insert() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
@@ -62,3 +64,52 @@ def test_delete() -> None:
 
         assert all(att['Name'] != document_name for att in attachments), \
             f"O anexo '{document_name}' ainda está presente no documento."
+
+def test_insert_and_get_documents() -> None:
+    db_connection_handler = DBConnectionHandler(DataConnection())
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+    
+    project_id = 19203701273
+
+    # Carregar os arquivos
+    with open('src/infra/raven/repositories/__test/001-1.pdf', 'rb') as doc:
+        pdf_document = doc.read()
+    pdf = PDF(pdf_document, document_name='test_pdf')
+    
+    with open('src/infra/raven/repositories/__test/test.docx', 'rb') as doc:
+        word_document = doc.read()
+    word = Word(word_document, document_name='test_word')
+    
+    with open('src/infra/raven/repositories/__test/test.xlsx', 'rb') as doc:
+        excel_document = doc.read()
+    excel = Excel(excel_document, document_name='test_excel')
+    
+    # Documentos a tentar inserir
+    documents_to_try = [pdf, word, excel]
+    project_documents = ProjectDocuments('Rua João Verde', 'Pavimentação da rua')
+
+    with db_connection_handler as db:
+        key = f'ProjectDocuments/{project_id}'
+        entity = db.load(key)
+
+        if entity:
+            metadata = db.advanced.get_metadata_for(entity)
+            existing_attachments = metadata.get('@attachments', [])
+            existing_names = [att['Name'] for att in existing_attachments]
+
+            # Filtra apenas os documentos que ainda não foram inseridos
+            new_documents = [doc for doc in documents_to_try if doc.document_name not in existing_names]
+
+            if new_documents:
+                project_document_repository.insert_documents(
+                    project_id=project_id,
+                    project_documents=project_documents,
+                    documents=new_documents
+                )
+        else:
+            # Nenhum documento existente, insere todos
+            project_document_repository.insert_documents(
+                project_id=project_id,
+                project_documents=project_documents,
+                documents=documents_to_try
+            )
