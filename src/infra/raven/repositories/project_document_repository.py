@@ -14,13 +14,29 @@ class ProjectDocumentRepository:
     def insert_documents(self, project_id:int, project_documents:ProjectDocuments, documents:List[Union[Optional[Excel | Word | PDF]]]):
         with self.__db_connection_handler as db:
             
-            store = project_documents.make_to_store(project_id=project_id)
+            project_document_data = project_documents.make_to_store(project_id=project_id)
 
-            db.store(store['entity'], store['key'])
+            db.store(project_document_data['entity'], project_document_data['key'])
 
             db.save_changes()
 
             for document in documents:
-                db.advanced.attachment.store(store['entity'], document.document_name, document.value(), document.content_type)
+                db.advanced.attachment.store(project_document_data['entity'], document.document_name, document.value(), document.content_type)
             
+            db.save_changes()
+    
+    def delete_document(self, project_id: int, document_name: str) -> None:
+        with self.__db_connection_handler as db:
+            
+            # 1. Criar um ProjectDocuments "fake" só pra poder gerar a chave (key)
+            dummy_project_documents = ProjectDocuments(name="", description=None)
+            project_document_data = dummy_project_documents.make_to_store(project_id=project_id)
+
+            # 2. Carregar o documento pelo ID (key)
+            entity = db.load(project_document_data["key"])
+
+            # 3. Deletar o anexo
+            db.advanced.attachment.delete(entity, document_name)
+
+            # 4. Salvar alterações
             db.save_changes()
