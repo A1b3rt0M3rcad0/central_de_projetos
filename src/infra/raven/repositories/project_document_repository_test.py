@@ -13,7 +13,7 @@ def test_insert() -> None:
 
     project_id = 999999999
 
-    with open('src/infra/raven/repositories/__test/001-1.pdf', 'rb') as doc:
+    with open('src/infra/raven/repositories/__test/test.pdf', 'rb') as doc:
         document = doc.read()
     
     pdf = PDF(document, document_name='test_pdf')
@@ -72,7 +72,7 @@ def test_insert_and_get_documents() -> None:
     project_id = 19203701273
 
     # Carregar os arquivos
-    with open('src/infra/raven/repositories/__test/001-1.pdf', 'rb') as doc:
+    with open('src/infra/raven/repositories/__test/test.pdf', 'rb') as doc:
         pdf_document = doc.read()
     pdf = PDF(pdf_document, document_name='test_pdf')
     
