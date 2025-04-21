@@ -2,9 +2,10 @@ from src.domain.value_objects.document import Document
 from src.infra.raven.config.connection.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.raven.documents.project_documents import ProjectDocuments
 from src.infra.raven.models.document import DocumentModel
+from src.data.interface.i_raven_project_document_repository import IProjectDocumentRepository
 from typing import List
 
-class ProjectDocumentRepository:
+class ProjectDocumentRepository(IProjectDocumentRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
