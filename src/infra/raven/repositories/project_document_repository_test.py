@@ -58,6 +58,13 @@ def test_get_document_names() -> None:
     assert len(document_names) > 0, \
         f"Não foram encontrados anexos para o projeto com ID {project_id}."
 
+    assert isinstance(document_names, list)
+    assert all(isinstance(name, str) for name in document_names), \
+        f"Alguns nomes dos anexos não são strings."
+
+    assert 'test_pdf_get' in document_names, \
+        f"O nome do anexo 'test_pdf_get' não foi encontrado nos nomes dos anexos."
+
 def test_get_document() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
     project_document_repository = ProjectDocumentRepository(db_connection_handler)
