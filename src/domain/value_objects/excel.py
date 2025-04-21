@@ -1,6 +1,7 @@
 from io import BytesIO
+from src.domain.value_objects.document import Document
 
-class Excel:
+class Excel(Document):
 
     def __init__(self, xlsx: bytes, document_name:str|None=None):
         self.document_name = document_name

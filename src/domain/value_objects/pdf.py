@@ -1,6 +1,7 @@
 from io import BytesIO
+from src.domain.value_objects.document import Document
 
-class PDF:
+class PDF(Document):
 
     def __init__(self, pdf: bytes, document_name:str|None=None):
         self.document_name = document_name
