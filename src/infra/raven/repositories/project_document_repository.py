@@ -3,7 +3,7 @@ from src.domain.value_objects.word import Word
 from src.domain.value_objects.pdf import PDF
 from src.infra.raven.config.connection.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.raven.documents.project_documents import ProjectDocuments
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Dict
 
 class ProjectDocumentRepository:
 
@@ -21,7 +21,7 @@ class ProjectDocumentRepository:
             db.save_changes()
 
             for document in documents:
-                db.advanced.attachment.store(project_document_data['entity'], document.document_name, document.value(), document.content_type)
+                db.advanced.attachments.store(project_document_data['entity'], document.document_name, document.value(), document.content_type)
                 db.save_changes()
     
     def delete_document(self, project_id: int, document_name: str) -> None:
@@ -32,6 +32,46 @@ class ProjectDocumentRepository:
 
             entity = db.load(project_document_data["key"])
 
-            db.advanced.attachment.delete(entity, document_name)
+            db.advanced.attachments.delete(entity, document_name)
 
             db.save_changes()
+    
+    def get_document_names(self, project_id:int) -> List[str]:
+        document_names = []
+
+        with self.__db_connection_handler as db:
+
+            dummy_project_documents = ProjectDocuments()
+            project_document_data = dummy_project_documents.make_to_store(project_id=project_id)
+            entity = db.load(project_document_data["key"])
+
+            if entity is None:
+                return document_names
+
+            metadata = db.advanced.get_metadata_for(entity)
+            attachments = metadata.get('@attachments', [])
+
+            for attachment in attachments:
+                document_names.append(attachment['Name'])
+
+        return document_names
+
+    def get_document(self, project_id:int, document_name:str) -> Dict[str, bytes|str]:
+        with self.__db_connection_handler as db:
+
+            dummy_project_documents = ProjectDocuments()
+            project_document_data = dummy_project_documents.make_to_store(project_id=project_id)
+            entity = db.load(project_document_data["key"])
+
+            if entity is None:
+                return None
+
+            attachment_result = db.advanced.attachments.get(entity, document_name)
+            if attachment_result is None:
+                return None
+
+            return {
+                'data': attachment_result.data,
+                'document_type': attachment_result.details.content_type,
+                'document_name': attachment_result.details.name
+                }

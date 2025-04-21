@@ -38,6 +38,43 @@ def test_insert() -> None:
         assert any(att['Name'] == 'test_pdf' for att in attachments), \
             f"O anexo 'test_pdf' não foi encontrado no documento."
 
+def test_get_document_names() -> None:
+    db_connection_handler = DBConnectionHandler(DataConnection())
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+
+    project_id = 999999999
+
+    # Inserir um documento de teste para garantir que há anexos
+    with open('src/infra/raven/repositories/__test/test.pdf', 'rb') as doc:
+        document = doc.read()
+    
+    pdf = PDF(document, document_name='test_pdf_get')
+    project_documents = ProjectDocuments('Rua João Verde', 'Pavimentação da rua')
+    project_document_repository.insert_documents(project_id=project_id, project_documents=project_documents, documents=[pdf])
+
+    # Obtém os nomes dos anexos
+    document_names = project_document_repository.get_document_names(project_id=project_id)
+
+    assert len(document_names) > 0, \
+        f"Não foram encontrados anexos para o projeto com ID {project_id}."
+
+def test_get_document() -> None:
+    db_connection_handler = DBConnectionHandler(DataConnection())
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+
+    project_id = 999999999
+    document_name = 'test_pdf_get'
+
+    # Obtém o documento
+    document = project_document_repository.get_document(
+        project_id=project_id,
+        document_name=document_name 
+    )
+    assert document is not None, \
+        f"O documento '{document_name}' não foi encontrado para o projeto com ID {project_id}."
+
+    assert isinstance(document, dict)
+
 def test_delete() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
     project_document_repository = ProjectDocumentRepository(db_connection_handler)
