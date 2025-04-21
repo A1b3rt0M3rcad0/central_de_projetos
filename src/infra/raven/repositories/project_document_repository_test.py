@@ -4,8 +4,7 @@ from src.infra.raven.config.connection.db_connection_handler import DBConnection
 from src.infra.raven.config.connection.data_connection import DataConnection
 from src.infra.raven.documents.project_documents import ProjectDocuments
 from src.domain.value_objects.pdf import PDF
-from src.domain.value_objects.word import Word
-from src.domain.value_objects.excel import Excel
+from src.domain.value_objects.document import Document
 
 def test_insert() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
@@ -75,12 +74,15 @@ def test_get_document() -> None:
     # Obtém o documento
     document = project_document_repository.get_document(
         project_id=project_id,
-        document_name=document_name 
+        document_name=document_name,
+        _document_class=PDF
     )
     assert document is not None, \
         f"O documento '{document_name}' não foi encontrado para o projeto com ID {project_id}."
 
-    assert isinstance(document, dict)
+    assert isinstance(document, Document)
+    assert document.document_name == document_name, \
+        f"O nome do documento retornado não corresponde ao nome esperado."
 
 def test_delete() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())

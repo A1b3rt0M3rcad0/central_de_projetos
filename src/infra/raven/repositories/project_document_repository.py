@@ -1,7 +1,8 @@
 from src.domain.value_objects.document import Document
 from src.infra.raven.config.connection.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.raven.documents.project_documents import ProjectDocuments
-from typing import List, Dict
+from src.infra.raven.models.document import DocumentModel
+from typing import List
 
 class ProjectDocumentRepository:
 
@@ -54,7 +55,7 @@ class ProjectDocumentRepository:
 
         return document_names
 
-    def get_document(self, project_id:int, document_name:str) -> Dict[str, bytes|str]:
+    def get_document(self, project_id:int, document_name:str, _document_class:Document) -> Document:
         with self.__db_connection_handler as db:
 
             dummy_project_documents = ProjectDocuments()
@@ -67,9 +68,8 @@ class ProjectDocumentRepository:
             attachment_result = db.advanced.attachments.get(entity, document_name)
             if attachment_result is None:
                 return None
+            
+            model = DocumentModel(_document_class=_document_class)
+            document = model.make_document(document_value=attachment_result.data, document_name=attachment_result.details.name)
 
-            return {
-                'data': attachment_result.data,
-                'document_type': attachment_result.details.content_type,
-                'document_name': attachment_result.details.name
-                }
+            return document
