@@ -7,5 +7,5 @@ class IGetDocument(ABC):
     def document(self, project_id:int, document_name:str, _document_class:Document=Document) -> Document:
         '''
         Coleta o project_id o document_name para retornar o documento buscado,
-        Caso não encontre o documento, retorne 401, DocumentNotFoundedError
+        Caso não encontre o documento, retorne 404, DocumentNotFoundedError
         '''

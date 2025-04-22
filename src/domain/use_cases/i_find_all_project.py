@@ -8,6 +8,6 @@ class IFindAllProjects(ABC):
     def find(self) -> List[ProjectEntity]:
         '''
         Pega todos os projectos e envia eles em uma lista entidades do sistema,
-        caso não encontre um projeto retornar: 400 ProjectNorFounded,
+        caso não encontre um projeto retornar: 404 ProjectNorFounded,
         caso aconteça qualquer outro erro, retorna 500, InternalServerError
         '''

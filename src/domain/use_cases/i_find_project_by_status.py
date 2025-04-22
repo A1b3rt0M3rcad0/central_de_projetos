@@ -8,6 +8,6 @@ class IFindProjectByStatus(ABC):
     def find(self, status_id:int) -> List[ProjectEntity]:
         '''
         Procura todos os projetos possivel pelo status_id e retorna uma lista de entidades do domain,
-        caso nenhum projeto tenha sido encontrado, retorna: 400, ProjectNotFoundError
+        caso nenhum projeto tenha sido encontrado, retorna: 404, ProjectNotFoundError
         qualquer outro error retorna 500, InternalServerError
         '''
