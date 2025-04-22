@@ -12,10 +12,17 @@ class ProjectRepository(IProjectRepository):
         self.__db_connection_handler = db_connection_handler
     
     def insert(self, 
-               status_id:int, 
-               verba_disponivel:Optional[MonetaryValue]=None, andamento_do_projeto:Optional[str]=None, start_date:Optional[datetime]=None, expected_completion_date:Optional[datetime]=None, end_date:Optional[datetime]=None) -> None:
+               status_id:int,
+               name:str|None=None, 
+               verba_disponivel:Optional[MonetaryValue]=None, 
+               andamento_do_projeto:Optional[str]=None, 
+               start_date:Optional[datetime]=None, 
+               expected_completion_date:Optional[datetime]=None, 
+               end_date:Optional[datetime]=None
+               ) -> None:
         with self.__db_connection_handler as db:
             status_id_entry = status_id
+            name_entry = name
             verba_disponivel_entry = verba_disponivel.value
             andamento_do_projeto_entry = andamento_do_projeto
             start_date_entry = start_date
@@ -24,6 +31,7 @@ class ProjectRepository(IProjectRepository):
             try:
                 db.session.add(Project(
                     status_id=status_id_entry,
+                    name=name_entry,
                     verba_disponivel=verba_disponivel_entry,
                     andamento_do_projeto=andamento_do_projeto_entry,
                     start_date = start_date_entry,
