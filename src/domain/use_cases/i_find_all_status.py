@@ -6,8 +6,13 @@ class IFindAllStatus(ABC):
 
     @abstractmethod
     def find(self) -> List[StatusEntity]:
-        '''
-        Encontra todos os status e retorna em uma lista de entidades do domain
-        caso não encontre um status retorna 404, StatusNotFoundError,
-        qualquer outro erro retorne 500, InternalServerError
-        '''
+        """
+        Retorna todos os status registrados no sistema.
+
+        Retorno:
+            Lista de instâncias de StatusEntity representando todos os status encontrados.
+
+        Levanta:
+            StatusNotFoundError (404): Se nenhum status for encontrado.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

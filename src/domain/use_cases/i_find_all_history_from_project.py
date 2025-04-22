@@ -6,8 +6,16 @@ class IFindAllHistoryFromProject(ABC):
 
     @abstractmethod
     def find(self, project_id:int) -> List[HistoryProjectEntity]:
-        '''
-        Coleta todo o historico demodificações do projeto em uma lista de entidades do domain,
-        caso não encontreo projeto retorna 404, ProjectNotFound
-        qualquer outro erro retorna 500 InternalServerError
-        '''
+        """
+        Retorna todo o histórico de modificações de um projeto.
+
+        Parâmetros:
+            project_id: ID do projeto para o qual o histórico de modificações será recuperado.
+
+        Retorno:
+            Lista de instâncias de HistoryProjectEntity representando as modificações do projeto.
+
+        Levanta:
+            ProjectNotFoundError (404): Se o projeto com o ID informado não for encontrado.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

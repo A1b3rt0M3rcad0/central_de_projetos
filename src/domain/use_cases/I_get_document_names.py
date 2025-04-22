@@ -5,7 +5,16 @@ class IGetDocumentNames(ABC):
 
     @abstractmethod
     def names(self, project_id:int) -> List[str]:
-        '''
-        Coleta o numero do projeto para retornar uma lista dos nomes dos arquivos do projeto,
-        caso não encontre nenhum nome retorn um erro chamado 404, DocumentsNotFoundedError
-        '''
+        """
+        Retorna uma lista com os nomes dos documentos associados ao projeto.
+
+        Parâmetros:
+            project_id: ID do projeto para o qual os documentos serão recuperados.
+
+        Retorno:
+            Lista de strings contendo os nomes dos documentos associados ao projeto.
+
+        Levanta:
+            DocumentsNotFoundError (404): Se não forem encontrados documentos associados ao projeto.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

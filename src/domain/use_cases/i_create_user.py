@@ -8,14 +8,22 @@ class ICreateUser(ABC):
 
     @abstractmethod
     def create(self, cpf:CPF, email:Email, role:Role, password:Password) -> None:
-        '''
-        coleta o cpf, email, role e password, para criar um usuario, para criar o usuario e salvar no banco de dados primeiro e necessario
-        cruptografar e fazer hashedpassword no coletando o password hashedado e o salt para salvar no banco de dados,
-        caso no consiga criar o usuario:
-        usuario ja existe (cpf): 400, CpfAlreadyExistsError
-        cpf com formato incorreto: 400 InvalidCpfError
-        email ja existe: 400, EmailAlreadyExistsError
-        email com formato incorreto: 400, InvalidEmailError
-        password com formato incorreto: 400, InvalidPasswordError
-        não consegue por outro motivo: 500, UserNotCreatedError
-        '''
+        """
+        Cria um novo usuário no sistema.
+
+        Antes de salvar no banco de dados, a senha é criptografada e transformada em um hash com salt.
+
+        Parâmetros:
+            cpf: CPF do usuário.
+            email: Endereço de e-mail do usuário.
+            role: Papel do usuário no sistema.
+            password: Senha em texto plano que será criptografada.
+
+        Levanta:
+            CpfAlreadyExistsError (400): Se já existir um usuário com o mesmo CPF.
+            InvalidCpfError (400): Se o CPF estiver em formato inválido.
+            EmailAlreadyExistsError (400): Se já existir um usuário com o mesmo e-mail.
+            InvalidEmailError (400): Se o e-mail estiver em formato inválido.
+            InvalidPasswordError (400): Se a senha não atender aos critérios de segurança.
+            UserNotCreatedError (500): Para qualquer outro erro ao tentar criar o usuário.
+        """

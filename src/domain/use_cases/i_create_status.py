@@ -4,7 +4,12 @@ class ICreateStatus(ABC):
 
     @abstractmethod
     def create(self, description:str) -> None:
-        '''
-        Cria o status e insere no banco de dados, caso o status n seja criado
-        retorne um erro 500, InternalServerError
-        '''
+        """
+        Cria um novo status e o insere no banco de dados.
+
+        Parâmetros:
+            description: Descrição do status a ser criado.
+
+        Levanta:
+            InternalServerError (500): Se ocorrer qualquer erro durante a criação do status.
+        """

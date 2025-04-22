@@ -5,8 +5,14 @@ class IUpdateUserPassword(ABC):
 
     @abstractmethod
     def update(self, password:Password) -> None:
-        '''
-        Busca o usuario no banco de dados, e faz a alteração para o novo password no sistema, criando um novo hashedpassword, juntamente com seu salt
-        para ser salvo no lugar dos antigos
-        password com formato incorreto: 400, InvalidPasswordError
-        '''
+        """
+        Atualiza a senha de um usuário no banco de dados, criando um novo hashed password 
+        e o salt correspondente para substituir a senha antiga.
+
+        Parâmetros:
+            password: A nova senha a ser atribuída ao usuário.
+
+        Levanta:
+            InvalidPasswordError (400): Caso a nova senha fornecida tenha um formato incorreto.
+            InternalServerError (500): Caso ocorra um erro inesperado durante a atualização da senha.
+        """

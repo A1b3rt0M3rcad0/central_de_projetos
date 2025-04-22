@@ -5,8 +5,16 @@ class IFindProject(ABC):
 
     @abstractmethod
     def find(self, project_id:int) -> ProjectEntity:
-        '''
-        Procura o projeto no banco de dados e retorna uma entidade do domain, 
-        Caso o projeto não tenha sido encotrado retorn 404, ProjectNotFoundedError,
-        qualquer outro erro retorne 500, InternalServerError
-        '''
+        """
+        Retorna o projeto com o ID especificado.
+
+        Parâmetros:
+            project_id: ID do projeto a ser recuperado.
+
+        Retorno:
+            Instância de ProjectEntity representando o projeto encontrado.
+
+        Levanta:
+            ProjectNotFoundError (404): Se o projeto com o ID especificado não for encontrado.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

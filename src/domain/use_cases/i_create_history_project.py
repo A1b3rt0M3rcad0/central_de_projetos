@@ -5,10 +5,17 @@ class ICreateHistoryProject(ABC):
 
     @abstractmethod
     def create(self, project_id:int, data_name:str, description:Optional[str]=None) -> None:
-        '''
-        Cria um historico de modificações do projeto no banco de dados, para cada alteração de dados, ou adição de documentos
-        é criado um historico do projeto.
-        caso não consiga criar um historico do projeto pois o project_id não existe,
-        lança um erro 404, ProjectNotFoundError
-        qualquer outro erro, lança 500 InternalServerError
-        '''
+        """
+        Cria um registro de histórico de modificações para um projeto.
+
+        Esse histórico é gerado a cada alteração de dados ou adição de documentos ao projeto.
+
+        Parâmetros:
+            project_id: ID do projeto que será associado ao histórico.
+            data_name: Nome do dado ou evento registrado.
+            description: (Opcional) Descrição adicional da modificação.
+
+        Levanta:
+            ProjectNotFoundError (404): Se o projeto informado não existir.
+            InternalServerError (500): Para erros inesperados.
+        """

@@ -4,7 +4,13 @@ class IDeleteDocument(ABC):
 
     @abstractmethod
     def delete(self, project_id:int, document_name:str) -> None:
-        '''
-        Pega o project_id e o nome do documento, para relizar a deleção do documento no banco de dados do projeto,
-        caso não tenha encontrado um documento com o nome buscado, retorne o erro 404, DocumentNotFoundedError
-        '''
+        """
+        Deleta um documento associado a um projeto no banco de dados.
+
+        Parâmetros:
+            project_id: ID do projeto ao qual o documento está vinculado.
+            document_name: Nome do documento a ser deletado.
+
+        Levanta:
+            DocumentNotFoundError (404): Se não for encontrado um documento com o nome informado no projeto.
+        """

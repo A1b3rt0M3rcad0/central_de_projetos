@@ -7,7 +7,16 @@ class ILogin(ABC):
     @abstractmethod
     def check(self, cpf:CPF, password:Password) -> str:
         """
-        Recebe o cpf e password, realiza a busca no banco de dados utilizando cpf,
-        coleta o password e salt diretamente do banco de dados, verifica o password, se valido retorna
-        um jwt, caso contrario retorna um erro 404 (UserNotFoundError)
+        Verifica as credenciais de login de um usuário.
+
+        Parâmetros:
+            cpf: CPF do usuário que está tentando fazer login.
+            password: Senha fornecida pelo usuário.
+
+        Retorno:
+            Um JWT (JSON Web Token) se as credenciais forem válidas.
+
+        Levanta:
+            UserNotFoundError (404): Caso o CPF não seja encontrado ou a senha não seja válida.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
         """

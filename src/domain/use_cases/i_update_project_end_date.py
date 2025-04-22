@@ -5,8 +5,14 @@ class IUpdateProjectEndDate(ABC):
 
     @abstractmethod
     def update(self, project_id:int, end_date:datetime) -> None:
-        '''
-        Faz o updade do end_date, procurando ele pelo id,
-        caso nao consiga fazer o update do projeto retorne 500, InternalServerError,
-        se a data de termino for menor que a data de inicio retorne um erro, 400, InvalidEndDateError
-        '''
+        """
+        Atualiza a data de término de um projeto no banco de dados, identificando o projeto pelo ID.
+
+        Parâmetros:
+            project_id: O ID do projeto a ser atualizado.
+            end_date: A nova data de término do projeto.
+
+        Levanta:
+            InternalServerError (500): Caso ocorra um erro ao atualizar a data de término do projeto no banco de dados.
+            InvalidEndDateError (400): Caso a data de término fornecida seja anterior à data de início do projeto.
+        """

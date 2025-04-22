@@ -5,8 +5,16 @@ class IFindStatus(ABC):
 
     @abstractmethod
     def find(self, status_id:int) -> StatusEntity:
-        '''
-        Encontra o status e retorna em um entidade do domain
-        caso não encontreo status retorn 404, StatusNotFoundError,
-        qualquer outro erro retorne 500, InternalServerError
-        '''
+        """
+        Retorna o status com o ID especificado.
+
+        Parâmetros:
+            status_id: ID do status a ser recuperado.
+
+        Retorno:
+            Instância de StatusEntity representando o status encontrado.
+
+        Levanta:
+            StatusNotFoundError (404): Se o status com o ID especificado não for encontrado.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

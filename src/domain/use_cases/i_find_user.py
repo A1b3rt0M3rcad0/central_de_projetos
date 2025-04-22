@@ -6,8 +6,16 @@ class IFindUser(ABC):
 
     @abstractmethod
     def find(self, cpf:CPF) -> UserEntity:
-        '''
-        Procura o usuario e retorna uma entidade do domain, 
-        caso n entre co usuario retorna, 404 UserNotFound,
-        outros errors, retorne 500 InternalServerError
-        '''
+        """
+        Retorna o usuário com o CPF especificado.
+
+        Parâmetros:
+            cpf: CPF do usuário a ser recuperado.
+
+        Retorno:
+            Instância de UserEntity representando o usuário encontrado.
+
+        Levanta:
+            UserNotFoundError (404): Se o usuário com o CPF especificado não for encontrado.
+            InternalServerError (500): Para qualquer outro erro durante a operação.
+        """

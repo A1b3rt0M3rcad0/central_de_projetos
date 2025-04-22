@@ -6,7 +6,13 @@ class ISaveDocument(ABC):
 
     @abstractmethod
     def save(self, project_id:int, document:List[Document]) -> None:
-        '''
-        Pega o project_id e a lista de documents, para realizar a adição dos documentos no banco de dados do projeto,
-        caso não consiga salvar o document, retorne 500, FileSaveError
-        '''
+        """
+        Adiciona uma lista de documentos a um projeto no banco de dados.
+
+        Parâmetros:
+            project_id: O ID do projeto ao qual os documentos serão associados.
+            document: Lista de documentos a serem salvos no banco de dados.
+
+        Levanta:
+            FileSaveError (500): Caso ocorra um erro ao salvar os documentos no banco de dados.
+        """
