@@ -1,6 +1,7 @@
 from io import BytesIO
+from src.domain.value_objects.document import Document
 
-class Word:
+class Word(Document):
 
     def __init__(self, docx: bytes, document_name:str|None=None):
         self.document_name = document_name

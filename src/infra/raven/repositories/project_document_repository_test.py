@@ -4,8 +4,7 @@ from src.infra.raven.config.connection.db_connection_handler import DBConnection
 from src.infra.raven.config.connection.data_connection import DataConnection
 from src.infra.raven.documents.project_documents import ProjectDocuments
 from src.domain.value_objects.pdf import PDF
-from src.domain.value_objects.word import Word
-from src.domain.value_objects.excel import Excel
+from src.domain.value_objects.document import Document
 
 def test_insert() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
@@ -38,6 +37,53 @@ def test_insert() -> None:
         assert any(att['Name'] == 'test_pdf' for att in attachments), \
             f"O anexo 'test_pdf' não foi encontrado no documento."
 
+def test_get_document_names() -> None:
+    db_connection_handler = DBConnectionHandler(DataConnection())
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+
+    project_id = 999999999
+
+    # Inserir um documento de teste para garantir que há anexos
+    with open('src/infra/raven/repositories/__test/test.pdf', 'rb') as doc:
+        document = doc.read()
+    
+    pdf = PDF(document, document_name='test_pdf_get')
+    project_documents = ProjectDocuments('Rua João Verde', 'Pavimentação da rua')
+    project_document_repository.insert_documents(project_id=project_id, project_documents=project_documents, documents=[pdf])
+
+    # Obtém os nomes dos anexos
+    document_names = project_document_repository.get_document_names(project_id=project_id)
+
+    assert len(document_names) > 0, \
+        f"Não foram encontrados anexos para o projeto com ID {project_id}."
+
+    assert isinstance(document_names, list)
+    assert all(isinstance(name, str) for name in document_names), \
+        f"Alguns nomes dos anexos não são strings."
+
+    assert 'test_pdf_get' in document_names, \
+        f"O nome do anexo 'test_pdf_get' não foi encontrado nos nomes dos anexos."
+
+def test_get_document() -> None:
+    db_connection_handler = DBConnectionHandler(DataConnection())
+    project_document_repository = ProjectDocumentRepository(db_connection_handler)
+
+    project_id = 999999999
+    document_name = 'test_pdf_get'
+
+    # Obtém o documento
+    document = project_document_repository.get_document(
+        project_id=project_id,
+        document_name=document_name,
+        _document_class=PDF
+    )
+    assert document is not None, \
+        f"O documento '{document_name}' não foi encontrado para o projeto com ID {project_id}."
+
+    assert isinstance(document, Document)
+    assert document.document_name == document_name, \
+        f"O nome do documento retornado não corresponde ao nome esperado."
+
 def test_delete() -> None:
     db_connection_handler = DBConnectionHandler(DataConnection())
     project_document_repository = ProjectDocumentRepository(db_connection_handler)
@@ -64,52 +110,3 @@ def test_delete() -> None:
 
         assert all(att['Name'] != document_name for att in attachments), \
             f"O anexo '{document_name}' ainda está presente no documento."
-
-def test_insert_and_get_documents() -> None:
-    db_connection_handler = DBConnectionHandler(DataConnection())
-    project_document_repository = ProjectDocumentRepository(db_connection_handler)
-    
-    project_id = 19203701273
-
-    # Carregar os arquivos
-    with open('src/infra/raven/repositories/__test/test.pdf', 'rb') as doc:
-        pdf_document = doc.read()
-    pdf = PDF(pdf_document, document_name='test_pdf')
-    
-    with open('src/infra/raven/repositories/__test/test.docx', 'rb') as doc:
-        word_document = doc.read()
-    word = Word(word_document, document_name='test_word')
-    
-    with open('src/infra/raven/repositories/__test/test.xlsx', 'rb') as doc:
-        excel_document = doc.read()
-    excel = Excel(excel_document, document_name='test_excel')
-    
-    # Documentos a tentar inserir
-    documents_to_try = [pdf, word, excel]
-    project_documents = ProjectDocuments('Rua João Verde', 'Pavimentação da rua')
-
-    with db_connection_handler as db:
-        key = f'ProjectDocuments/{project_id}'
-        entity = db.load(key)
-
-        if entity:
-            metadata = db.advanced.get_metadata_for(entity)
-            existing_attachments = metadata.get('@attachments', [])
-            existing_names = [att['Name'] for att in existing_attachments]
-
-            # Filtra apenas os documentos que ainda não foram inseridos
-            new_documents = [doc for doc in documents_to_try if doc.document_name not in existing_names]
-
-            if new_documents:
-                project_document_repository.insert_documents(
-                    project_id=project_id,
-                    project_documents=project_documents,
-                    documents=new_documents
-                )
-        else:
-            # Nenhum documento existente, insere todos
-            project_document_repository.insert_documents(
-                project_id=project_id,
-                project_documents=project_documents,
-                documents=documents_to_try
-            )

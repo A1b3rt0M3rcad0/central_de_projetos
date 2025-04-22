@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from pyravendb.store.document_session import DocumentSession
+from ravendb import DocumentSession
 
 
 class IDBConnectionHandler(ABC):

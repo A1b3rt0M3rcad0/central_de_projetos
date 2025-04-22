@@ -1,5 +1,5 @@
-from pyravendb.store.document_store import DocumentStore
-from pyravendb.store.document_session import DocumentSession
+from ravendb import DocumentStore
+from ravendb import DocumentSession
 from src.infra.raven.config.connection.interface.i_data_connection import IDataConnection
 from typing import Optional
 
