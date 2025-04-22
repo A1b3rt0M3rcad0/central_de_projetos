@@ -7,7 +7,8 @@ class ICreateProject(ABC):
 
     @abstractmethod
     def create(self, 
-               status_id:int, 
+               status_id:int,
+               name:str, 
                verba_disponivel:Optional[MonetaryValue]=None, 
                andamento_do_projeto:Optional[str]=None, 
                start_date:Optional[datetime]=None, 
@@ -15,6 +16,6 @@ class ICreateProject(ABC):
                end_date:Optional[datetime]=None
                ) -> None:
         '''
-        Cria um Projeto novo no banco de dados, sendo necessário apenas o id do status do projeto,
+        Cria um Projeto novo no banco de dados, sendo necessário apenas o id do status do projeto e o nome do projeto,
         caso não consiga criar retorne um error: 500, CreateProjectError
         '''
