@@ -12,6 +12,9 @@ class IUserProjectRepository(ABC):
     def find(self, cpf_user:CPF, project_id:int) -> UserProjectEntity:pass
 
     @abstractmethod
+    def find_all_from_cpf(self, cpf_user:CPF) -> List[UserProjectEntity]:pass
+
+    @abstractmethod
     def find_all(self) -> List[Optional[UserProjectEntity]]:pass
 
     @abstractmethod

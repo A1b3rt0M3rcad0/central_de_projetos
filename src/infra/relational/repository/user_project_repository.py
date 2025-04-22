@@ -40,6 +40,23 @@ class UserProjectRepository(IUserProjectRepository):
                 )
             except Exception as e:
                 raise e
+            
+    def find_all_from_cpf(self, cpf_user:CPF) -> List[UserProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                user_projects = db.session.query(UserProject).where(
+                    UserProject.user_cpf == cpf_user.value,
+                ).all()
+                relations = [
+                    UserProjectEntity(
+                        cpf=relation.user_cpf,
+                        project_id=relation.project_id,
+                        data_atribuicao=relation.assignment_date
+                    ) for relation in user_projects
+                ]
+                return relations
+            except Exception as e:
+                raise e
     
     def find_all(self) -> List[Optional[UserProjectEntity]]:
         with self.__db_connection_handler as db:
