@@ -61,6 +61,7 @@ class ProjectRepository(IProjectRepository):
             except Exception as e:
                 raise e
     
+    ## Refatorar no futuro, para utilizar chunks (pages), carregando um numero determinado de projetos por yield
     def find_all(self) -> List[ProjectEntity]:
         with self.__db_connection_handler as db:
             try:
