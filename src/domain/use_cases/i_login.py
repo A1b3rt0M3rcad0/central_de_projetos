@@ -15,6 +15,12 @@ class ILogin(ABC):
 
         Retorno:
             Um JWT (JSON Web Token) se as credenciais forem válidas.
+            Payload Antes do Encode: 
+            {
+                'cpf': numero_do_cpf (int),
+                'role': role_do_usuario (str),
+                'exp': data_de_expiração (datetime)
+            }
 
         Levanta:
             UserNotFoundError (404): Caso o CPF não seja encontrado ou a senha não seja válida.
