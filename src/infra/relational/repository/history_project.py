@@ -2,6 +2,8 @@ from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_history_project_repository import IHistoryProjectRepository
 from src.domain.entities.history_project import HistoryProjectEntity
+from src.errors.repository.project_id_not_exists import ProjectIdNotExistsError
+from sqlalchemy.exc import IntegrityError
 from typing import Optional, Dict, List
 
 class HistoryProjectRepository(IHistoryProjectRepository):
@@ -20,8 +22,10 @@ class HistoryProjectRepository(IHistoryProjectRepository):
                     )
                 )
                 db.session.commit()
-            except Exception as e:
-                raise e
+            except IntegrityError as e:
+                raise ProjectIdNotExistsError(
+                    message=f'Project {project_id} does not exists: {e}'
+                ) from e
     
     def find(self, history_project_id:int) -> HistoryProjectEntity:
         with self.__db_connection_handler as db:
