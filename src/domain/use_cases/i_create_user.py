@@ -20,9 +20,7 @@ class ICreateUser(ABC):
             password: Senha em texto plano que será criptografada.
 
         Levanta:
-            CpfAlreadyExistsError (400): Se já existir um usuário com o mesmo CPF.
             InvalidCpfError (400): Se o CPF estiver em formato inválido.
-            EmailAlreadyExistsError (400): Se já existir um usuário com o mesmo e-mail.
             InvalidEmailError (400): Se o e-mail estiver em formato inválido.
             InvalidPasswordError (400): Se a senha não atender aos critérios de segurança.
             UserNotCreatedError (500): Para qualquer outro erro ao tentar criar o usuário.
