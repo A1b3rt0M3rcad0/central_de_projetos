@@ -31,6 +31,5 @@ class CreateProject(ICreateProject):
             )
         except Exception as e:
             raise CreateProjectError(
-                title='CreateProjectError',
                 message=f'Error on create project: {e}'
             ) from e
