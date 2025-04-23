@@ -7,6 +7,8 @@ from src.domain.value_objects.roles import Role
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.errors.repository.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
 from typing import Optional, Dict
 
 class UserRepository(IUserRepository):
@@ -28,9 +30,14 @@ class UserRepository(IUserRepository):
                     User(cpf=cpf_entry, password=password_entry, salt=salt_entry, role=role_entry, email=email_entry)
                 )
                 db.session.commit()
-            except Exception as e:
+            except IntegrityError as e:
                 db.session.rollback()
-                raise e
+                raise CPFOrEmailAlreadyExists(message=f"Usuário com CPF ou e-mail já existente: {e}") from e
+
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                raise RuntimeError(f"Erro ao inserir usuário no banco de dados: {e}") from e
+
 
     def find(self, cpf:CPF) -> Optional[UserEntity]:
         cpf_entry = cpf.value
@@ -48,9 +55,8 @@ class UserRepository(IUserRepository):
                         created_at=result.created_at
                     )
                 return None 
-            except Exception as e:
-                db.session.rollback()
-                raise e
+            except SQLAlchemyError as e:
+                raise RuntimeError(f"Erro ao buscar usuário com CPF {cpf.value}: {e}") from e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value
@@ -58,9 +64,10 @@ class UserRepository(IUserRepository):
             try:
                 db.session.query(User).where(User.cpf == cpf_entry).update(update_params)
                 db.session.commit()
-            except Exception as e:
+            except SQLAlchemyError as e:
                 db.session.rollback()
-                raise e
+                raise RuntimeError(f"Erro ao atualizar usuário com CPF {cpf.value}: {e}") from e
+
     
     def delete(self, cpf:CPF) -> None:
         cpf_entry = cpf.value
@@ -70,6 +77,6 @@ class UserRepository(IUserRepository):
                 if user:
                     db.session.delete(user)
                     db.session.commit()
-            except ExceptionGroup as e:
+            except SQLAlchemyError as e:
                 db.session.rollback()
-                raise e
+                raise RuntimeError(f"Erro ao deletar usuário com CPF {cpf.value}: {e}") from e
