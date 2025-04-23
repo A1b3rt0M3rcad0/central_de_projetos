@@ -1,7 +1,7 @@
 from src.data.interface.i_project_repository import IProjectRepository
 from src.domain.use_cases.i_create_project import ICreateProject
 from src.domain.value_objects.monetary_value import MonetaryValue
-from src.errors.http.http_internal_server_error import InternalServerError
+from src.errors.use_cases.create_project_error import CreateProjectError
 from datetime import datetime
 from typing import Optional
 
@@ -30,7 +30,7 @@ class CreateProject(ICreateProject):
                 end_date=end_date
             )
         except Exception as e:
-            raise InternalServerError(
+            raise CreateProjectError(
                 title='CreateProjectError',
                 message=f'Error on create project: {e}'
             ) from e
