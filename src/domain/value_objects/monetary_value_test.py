@@ -18,7 +18,6 @@ def test_invalid_monetary_value() -> None:
         'invalid',
         [],
         {},
-        None
     ]
     for value in invalid_values:
         with pytest.raises(TypeError):

@@ -2,8 +2,10 @@ from decimal import Decimal
 
 class MonetaryValue:
 
-    def __init__(self, value: float | int | Decimal) -> None:
+    def __init__(self, value: float | int | Decimal | None = None) -> None:
         self.__validate(value)
+        if value is None:
+            value = 0
         self.__value = Decimal(value)
 
     @property
@@ -52,9 +54,9 @@ class MonetaryValue:
         )
 
     @staticmethod
-    def __validate_value_entry(value: float | int | Decimal) -> None:
-        if not isinstance(value, (float, int, Decimal)):
+    def __validate_value_entry(value: float | int | Decimal | None) -> None:
+        if not isinstance(value, (float, int, Decimal, type(None))):
             raise TypeError("Value must be a number")
 
-    def __validate(self, value: float | int | Decimal) -> None:
+    def __validate(self, value: float | int | Decimal | None) -> None:
         self.__validate_value_entry(value)
