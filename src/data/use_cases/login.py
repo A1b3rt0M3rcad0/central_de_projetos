@@ -28,8 +28,8 @@ class Login(ILogin):
                 encrypt = auth_factory()
                 dotenv.load_dotenv()
                 hours = os.getenv('EXPIRE_TIME_TOKEN')
-                if not hours.isnumeric():
-                    raise ValueError(f'The {hours} is not a number')
+                if hours is None or not hours.replace('.', '', 1).isdigit():
+                    raise ValueError(f'The EXPIRE_TIME_TOKEN value is invalid: {hours}')
                 hours = float(hours)
                 return encrypt.encode(
                     {
