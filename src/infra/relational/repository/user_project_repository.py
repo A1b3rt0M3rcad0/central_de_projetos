@@ -5,6 +5,8 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.infra.relational.models.user_project import UserProject
 from sqlalchemy import and_
 from typing import Optional, List, Dict
+from sqlalchemy.exc import IntegrityError
+from src.errors.repository.registry_already_exists import RegistryAlreadyExists
 
 class UserProjectRepository(IUserProjectRepository):
     
@@ -21,6 +23,8 @@ class UserProjectRepository(IUserProjectRepository):
                     )
                 )
                 db.session.commit()
+            except IntegrityError as e:
+                raise RegistryAlreadyExists(message=f'The registry with this keys: cpf: {cpf_user.value} and project_id:{project_id} already exists') from e
             except Exception as e:
                 raise e
 
