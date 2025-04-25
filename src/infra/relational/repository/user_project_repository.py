@@ -7,6 +7,7 @@ from sqlalchemy import and_
 from typing import Optional, List, Dict
 from sqlalchemy.exc import IntegrityError
 from src.errors.repository.registry_already_exists import RegistryAlreadyExists
+from src.errors.repository.user_project_not_exists import UserProjectNotExists
 
 class UserProjectRepository(IUserProjectRepository):
     
@@ -37,6 +38,8 @@ class UserProjectRepository(IUserProjectRepository):
                         UserProject.project_id == project_id
                     )
                 ).first()
+                if not user_project:
+                    raise UserProjectNotExists(message=f'The user project: "{(cpf_user, project_id)}" not exists')
                 return UserProjectEntity(
                     cpf=user_project.user_cpf,
                     project_id=user_project.project_id,
