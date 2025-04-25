@@ -58,6 +58,25 @@ class UserRepository(IUserRepository):
             except SQLAlchemyError as e:
                 raise RuntimeError(f"Erro ao buscar usuário com CPF {cpf.value}: {e}") from e
 
+    def find_by_email(self, email:Email) -> Optional[UserEntity]:
+        email_entry = email.email
+
+        with self.__db_connection_handler as db:
+            try:
+                result = db.session.query(User).where(User.email == email_entry).first()
+                if result:
+                    return UserEntity(
+                        cpf=CPF(result.cpf),
+                        password=result.password, # bytes
+                        salt=result.salt, # bytes
+                        role=Role(result.role),
+                        email=Email(result.email),
+                        created_at=result.created_at
+                    )
+                return None 
+            except SQLAlchemyError as e:
+                raise RuntimeError(f"Erro ao buscar usuário com email {email.email}: {e}") from e
+
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value
         with self.__db_connection_handler as db:
