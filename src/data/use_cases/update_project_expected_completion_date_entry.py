@@ -12,7 +12,7 @@ class UpdateProjectExpectedCompletionDate(IUpdateProjectExpectedCompletionDate):
             update_params = {'expected_completion_date':expected_completion_date}
             self.__project_repository.update(
                 project_id=project_id,
-                expected_completion_date=update_params
+                update_params=update_params
             )
         except Exception as e:
             raise e from e

@@ -17,9 +17,10 @@ class UpdateProjectEndDate(IUpdateProjectEndDate):
             if project_start_date is not None:
                 if project_start_date > end_date:
                     raise InvalidEndDateError(message=f'the end date is less than the initial date: initial:{project_start_date}, end:{end_date}')
+            update_params = {'end_date': end_date}
             self.__project_repository.update(
                 project_id=project_id,
-                end_date=end_date
+                update_params=update_params
             )
         except Exception as e:
             raise e from e

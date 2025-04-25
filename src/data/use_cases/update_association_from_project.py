@@ -25,10 +25,11 @@ class UpdateAssociationFromProject(IUpdateAssociationFromProject):
                 cpf_user=cpf,
                 project_id=project_id
             )
+            update_params = {'cpf': new_cpf.value}
             self.__user_project_repository.update(
                 cpf_user=cpf,
                 project_id=project_id,
-                new_cpf=new_cpf
+                update_params=update_params
             )
         except RuntimeError as e:
             raise UserNotFoundError(f'Cpf: {new_cpf} not founded from user: {e}') from e
