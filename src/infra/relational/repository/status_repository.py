@@ -3,9 +3,10 @@ from typing import Dict, List
 from src.domain.entities.status import StatusEntity
 from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from sqlalchemy.exc import DataError
+from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy import and_
 from typing import Optional
+from src.errors.repository.status_description_already_exists import StatusDescriptionAlreadyExists
 
 class StatusRepository(IStatusRepository):
 
@@ -109,6 +110,8 @@ class StatusRepository(IStatusRepository):
                     db.session.commit()
                     return
                 raise ValueError('status_id and description, entry error')
+            except IntegrityError as e:
+                raise StatusDescriptionAlreadyExists(message=f'Status "{description}" Description Already Exists: {e}') from e
             except Exception as e:
                 raise e
 

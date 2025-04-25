@@ -5,6 +5,9 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.infra.relational.models.user_project import UserProject
 from sqlalchemy import and_
 from typing import Optional, List, Dict
+from sqlalchemy.exc import IntegrityError
+from src.errors.repository.registry_already_exists import RegistryAlreadyExists
+from src.errors.repository.user_project_not_exists import UserProjectNotExists
 
 class UserProjectRepository(IUserProjectRepository):
     
@@ -21,6 +24,8 @@ class UserProjectRepository(IUserProjectRepository):
                     )
                 )
                 db.session.commit()
+            except IntegrityError as e:
+                raise RegistryAlreadyExists(message=f'The registry with this keys: cpf: {cpf_user.value} and project_id:{project_id} already exists') from e
             except Exception as e:
                 raise e
 
@@ -33,11 +38,30 @@ class UserProjectRepository(IUserProjectRepository):
                         UserProject.project_id == project_id
                     )
                 ).first()
+                if not user_project:
+                    raise UserProjectNotExists(message=f'The user project: "{(cpf_user, project_id)}" not exists')
                 return UserProjectEntity(
                     cpf=user_project.user_cpf,
                     project_id=user_project.project_id,
                     data_atribuicao=user_project.assignment_date
                 )
+            except Exception as e:
+                raise e
+            
+    def find_all_from_cpf(self, cpf_user:CPF) -> List[UserProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                user_projects = db.session.query(UserProject).where(
+                    UserProject.user_cpf == cpf_user.value,
+                ).all()
+                relations = [
+                    UserProjectEntity(
+                        cpf=relation.user_cpf,
+                        project_id=relation.project_id,
+                        data_atribuicao=relation.assignment_date
+                    ) for relation in user_projects
+                ]
+                return relations
             except Exception as e:
                 raise e
     

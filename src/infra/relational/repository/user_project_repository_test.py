@@ -470,3 +470,101 @@ def test_delete(
             'project_id': project_id
         }).fetchone()
         assert result_after is None
+
+def test_find_all_from_cpf(
+    insert_status_script,
+    select_status_script,
+    monetary_value,
+    datetime_fixture,
+    insert_project_script,
+    select_project_script,
+    insert_user,
+    cpf,
+    password,
+    email,
+    role,
+    insert_user_project
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    
+    with db_connection_handler as db:
+
+        # Inserir usuário
+        db.session.execute(insert_user, {
+            'cpf': cpf.value,
+            'password': password.hashed_password,
+            'salt': password.salt,
+            'role': role.value,
+            'email': email.email,
+            'created_at': datetime_fixture,
+        })
+
+        db.session.commit()
+
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Ativo',
+            'created_at': datetime_fixture
+        })
+        status_result = db.session.execute(select_status_script).fetchone()
+        status_id = status_result.id
+
+        project_ids = []
+
+        # Criar 4 projetos e associar ao usuário sem repetir ID
+        for i in range(1, 5):
+            # Inserir novo projeto
+            db.session.execute(insert_project_script, {
+                'status_id': status_id,
+                'verba_disponivel': monetary_value.value,
+                'andamento_do_projeto': f'Andamento {i}',
+                'start_date': datetime_fixture,
+                'expected_completion_date': datetime_fixture,
+                'end_date': datetime_fixture,
+            })
+            db.session.commit()
+
+            # Buscar todos os projetos com este status
+            all_projects = db.session.execute(select_project_script, {
+                'status_id': status_id
+            }).fetchall()
+
+            # Encontrar um ID ainda não usado
+            for project in all_projects:
+                if project.id not in project_ids:
+                    project_id = project.id
+                    break
+
+            # Adicionar à lista e associar ao usuário
+            project_ids.append(project_id)
+
+            db.session.execute(insert_user_project, {
+                'user_cpf': cpf.value,
+                'project_id': project_id,
+                'assignment_date': datetime_fixture
+            })
+
+                # --- Asserts ---
+
+        # Buscar projetos associados ao usuário
+        result = db.session.execute(
+        text("""
+        SELECT up.project_id, p.andamento_do_projeto
+        FROM user_project up
+        JOIN project p ON p.id = up.project_id
+        WHERE up.user_cpf = :cpf
+        """),
+        {'cpf': cpf.value}
+        ).fetchall()
+
+
+        assert len(result) == 4, "Usuário deveria estar associado a 4 projetos"
+        
+        # IDs únicos
+        associated_project_ids = [row.project_id for row in result]
+        assert len(set(associated_project_ids)) == 4, "IDs dos projetos associados devem ser únicos"
+
+        # Verifica os andamentos esperados
+        expected_andamentos = {f"Andamento {i}" for i in range(1, 5)}
+        actual_andamentos = {row.andamento_do_projeto for row in result}
+        assert actual_andamentos == expected_andamentos, "Andamentos dos projetos não correspondem aos esperados"
