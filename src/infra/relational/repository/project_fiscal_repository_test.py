@@ -1,0 +1,116 @@
+from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
+from sqlalchemy import text
+import pytest
+from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
+from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
+from datetime import datetime, timezone
+from sqlalchemy import TextClause
+from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlreadyExists
+
+
+@pytest.fixture(autouse=True)
+def cleanup_all():
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM project_fiscal'))
+        db.session.execute(text('DELETE FROM refresh_token'))
+        db.session.execute(text('DELETE FROM history_project'))
+        db.session.execute(text('DELETE FROM user_project'))
+        db.session.execute(text('DELETE FROM user'))
+        db.session.execute(text('DELETE FROM project'))
+        db.session.execute(text('DELETE FROM status'))
+        db.session.execute(text('DELETE FROM fiscal'))
+        db.session.commit()
+
+@pytest.fixture
+def insert_project_script() -> TextClause:
+    return text('''
+    insert into project (status_id, verba_disponivel, andamento_do_projeto, start_date, expected_completion_date, end_date) VALUES (:status_id, :verba_disponivel, :andamento_do_projeto, :start_date, :expected_completion_date, :end_date)
+    ''')
+
+@pytest.fixture
+def insert_status_script() -> TextClause:
+    return text('''INSERT INTO status (description, created_at) VALUES (:description, :created_at)''')
+
+
+def test_insert(insert_project_script, insert_status_script) -> None:
+
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_fiscal_repository = ProjectFiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {
+                'name': 'nome_teste',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+
+        db.session.execute(
+            insert_status_script,
+            {
+                'description': 'my_description',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+
+        status = db.session.execute(
+            text('''SELECT * FROM status WHERE description = :description '''),
+            {
+                'description': 'my_description'
+            }
+        ).fetchone()
+        status_id = status.id
+
+        db.session.execute(
+            insert_project_script,
+            {
+                'status_id': status_id, 
+                'verba_disponivel': 0, 
+                'andamento_do_projeto': datetime.now(timezone.utc), 
+                'start_date': datetime.now(timezone.utc), 
+                'expected_completion_date': datetime.now(timezone.utc), 
+                'end_date':datetime.now(timezone.utc)
+            }
+        )
+
+        project = db.session.execute(
+            text('''SELECT * FROM project WHERE status_id = :status_id '''),
+            {
+                'status_id': status_id
+            }
+        ).first()
+
+        fiscal = db.session.execute(
+            text('''SELECT * FROM fiscal WHERE name = :name '''),
+            {
+                'name': 'nome_teste'
+            }
+        ).first()
+
+        db.session.commit()
+    
+    project_fiscal_repository.insert(
+        project_id=project.id,
+        fiscal_id=fiscal.id
+    )
+
+    project_fiscal = db.session.execute(
+            text('''SELECT * FROM project_fiscal WHERE project_id = :project_id AND fiscal_id = :fiscal_id '''),
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id
+            }
+        ).first()
+
+    assert project_fiscal
+    assert project_fiscal.project_id == project.id
+    assert project_fiscal.fiscal_id == fiscal.id
+
+
+    with pytest.raises(ProjectFiscalAlreadyExists):
+        project_fiscal_repository.insert(
+        project_id=project.id,
+        fiscal_id=fiscal.id
+        )
