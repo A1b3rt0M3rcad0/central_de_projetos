@@ -5,8 +5,9 @@ from src.domain.entities.refresh_token import RefreshTokenEntity
 from src.errors.repository.refresh_token_already_exists import RefreshTokenAlreadyExists
 from src.errors.repository.refresh_token_not_exists import RefreshTokenNotExists
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.data.interface.i_refresh_token_repository import IRefreshTokenRepository
 
-class RefreshTokenRepository:
+class RefreshTokenRepository(IRefreshTokenRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler  = db_connection_handler
