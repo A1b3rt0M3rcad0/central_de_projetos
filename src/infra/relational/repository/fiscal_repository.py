@@ -1,6 +1,8 @@
-#from src.domain.entities.fiscal import FiscalEntity
+from src.domain.entities.fiscal import FiscalEntity
 from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
+from src.errors.repository.fiscal_not_exists import FiscalNotExists
+from src.errors.repository.fiscal_already_exists import FiscalAlreadyExists
 
 class FiscalRepository():
 
@@ -10,9 +12,30 @@ class FiscalRepository():
     def insert(self, name:str) -> None:
         try:
             with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(
+                    Fiscal.name == name
+                ).first()
+                if fiscal:
+                    raise FiscalAlreadyExists('The fiscal with this name already exists')
                 db.session.add(
                     Fiscal(name=name)
                 )
                 db.session.commit()
+        except Exception as e:
+            raise e
+
+    def find_by_name(self, name:str) -> FiscalEntity:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(
+                    Fiscal.name == name
+                ).first()
+                if fiscal is None:
+                    raise FiscalNotExists(message=f'The fiscal with name {name} does not exists')
+                return FiscalEntity(
+                    fiscal_id=fiscal.id,
+                    name=fiscal.name,
+                    created_at=fiscal.created_at
+                )
         except Exception as e:
             raise e
