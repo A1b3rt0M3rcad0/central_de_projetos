@@ -20,6 +20,7 @@ def cleanup_all():
         db.session.execute(text('DELETE FROM history_project'))
         db.session.execute(text('DELETE FROM project'))
         db.session.execute(text('DELETE FROM status'))
+        db.session.execute(text('DELETE FROM user'))
         db.session.commit()
 
 @pytest.fixture
@@ -29,6 +30,10 @@ def insert_user() -> TextClause:
 @pytest.fixture
 def find_refresh_token() -> TextClause:
     return text('SELECT * FROM refresh_token')
+
+@pytest.fixture
+def insert_refresh_token() -> TextClause:
+    return text('INSERT INTO refresh_token (user_cpf, token) VALUES (:user_cpf, :token)')
 
 @pytest.fixture
 def hashedpassword() -> HashedPassword:
@@ -66,7 +71,21 @@ def find_refresh_token_execute(find_refresh_token, database) -> Callable[[None],
         return result.fetchone()
     return executor
 
-def test_insert_refresh_tokenn(insert_user_execute, database, find_refresh_token_execute) -> None:
+@pytest.fixture
+def insert_refresh_token_execute(insert_refresh_token, database) -> Callable[[None], None]:
+    def executor() -> None:
+        with database as db:
+            db.session.execute(
+                insert_refresh_token,
+                {
+                    'user_cpf': '16290598031',
+                    'token': 'asd12easd'
+                }
+            )
+            db.session.commit()
+    return executor
+
+def test_insert_refresh_token(insert_user_execute, database, find_refresh_token_execute) -> None:
 
     insert_user_execute()
 
@@ -81,3 +100,16 @@ def test_insert_refresh_tokenn(insert_user_execute, database, find_refresh_token
     assert result is not None
     assert result.user_cpf == '16290598031'
     assert result.token is not None
+
+def test_find_refresh_token(insert_refresh_token_execute, insert_user_execute, database) -> None:
+    insert_user_execute()
+    insert_refresh_token_execute()
+
+    refresh_token = RefreshTokenRepository(database)
+    entity = refresh_token.find(
+        user_cpf=CPF('16290598031')
+    )
+
+    assert entity is not None
+    assert entity.cpf == '16290598031'
+    assert entity.token == 'asd12easd'
