@@ -2,6 +2,7 @@ from sqlalchemy import String, Column, DateTime, Integer, ForeignKey, Float
 from src.infra.relational.config.base.base_model import BaseModel
 from sqlalchemy.orm import backref, relationship
 from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project_fiscal import ProjectFiscal
 
 class Project(BaseModel):
 
@@ -17,3 +18,4 @@ class Project(BaseModel):
     end_date = Column(DateTime, nullable=True)
 
     history_project = relationship(HistoryProject, backref=backref('project'))
+    project_fiscal = relationship(ProjectFiscal, backref=backref('project'))
