@@ -3,6 +3,7 @@ from src.infra.relational.config.base.base_model import BaseModel
 from datetime import datetime, timezone
 from sqlalchemy.orm import relationship, backref
 from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.refresh_token import RefreshToken
 
 class User(BaseModel):
     
@@ -16,3 +17,4 @@ class User(BaseModel):
     created_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     user_project = relationship(UserProject, backref=backref('user'))
+    refresh_token = relationship(RefreshToken, backref=backref('user'))
