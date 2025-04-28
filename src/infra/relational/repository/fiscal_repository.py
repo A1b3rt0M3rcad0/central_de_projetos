@@ -3,8 +3,9 @@ from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.errors.repository.fiscal_not_exists import FiscalNotExists
 from src.errors.repository.fiscal_already_exists import FiscalAlreadyExists
+from src.data.interface.i_fiscal_repository import IFiscalRepository
 
-class FiscalRepository():
+class FiscalRepository(IFiscalRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
