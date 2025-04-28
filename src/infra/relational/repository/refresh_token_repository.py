@@ -47,3 +47,16 @@ class RefreshTokenRepository:
                 )
         except Exception as e:
             raise e
+    
+    def update(self, user_cpf:CPF, new_token:str) -> None:
+        try:
+            user_cpf_entry = user_cpf.value
+            with self.__db_connection_handler as db:
+                db.session.query(RefreshToken).where(RefreshToken.user_cpf == user_cpf_entry).update(
+                    {'token': new_token}
+                )
+                db.session.commit()
+        except SQLAlchemyError as e:
+            raise RefreshTokenNotExists(f'The token from cpf: "{user_cpf_entry}" does not exists: {e}') from e
+        except Exception as e:
+            raise e

@@ -113,3 +113,19 @@ def test_find_refresh_token(insert_refresh_token_execute, insert_user_execute, d
     assert entity is not None
     assert entity.cpf == '16290598031'
     assert entity.token == 'asd12easd'
+
+def test_update_refresh_token(insert_refresh_token_execute, insert_user_execute, find_refresh_token_execute, database) -> None:
+    insert_user_execute()
+    insert_refresh_token_execute()
+
+    refresh_token = RefreshTokenRepository(database)
+    refresh_token.update(
+        user_cpf=CPF('16290598031'),
+        new_token='asd12easd123'
+    )
+
+    refresh_token = find_refresh_token_execute()
+
+    assert refresh_token is not None
+    assert refresh_token.token == 'asd12easd123'
+    assert refresh_token.user_cpf == '16290598031'
