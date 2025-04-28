@@ -49,3 +49,13 @@ class FiscalRepository():
                 db.session.commit()
         except Exception as e:
             raise e
+    
+    def delete(self, name:str) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(Fiscal).where(
+                    Fiscal.name == name
+                ).delete()
+                db.session.commit()
+        except Exception as e:
+            raise e

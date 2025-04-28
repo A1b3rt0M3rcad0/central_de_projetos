@@ -71,3 +71,24 @@ def test_update() -> None:
 
     assert result
     assert result.name == 'new_nome_teste'
+
+def test_delete() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    fiscal_repository = FiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {
+                'name': 'nome_teste',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        db.session.commit()
+
+    fiscal_repository.delete('nome_teste')
+
+    with db_connection_handler as db:
+        result = db.session.execute(text('SELECT * FROM fiscal')).fetchone()
+    
+    assert not result
