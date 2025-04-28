@@ -49,3 +49,25 @@ def test_find_by_name() -> None:
 
     assert fiscal
     assert fiscal.name == 'nome_teste'
+
+def test_update() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    fiscal_repository = FiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {
+                'name': 'nome_teste',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        db.session.commit()
+
+    fiscal_repository.update('nome_teste', 'new_nome_teste')
+
+    with db_connection_handler as db:
+        result = db.session.execute(text('SELECT * FROM fiscal')).fetchone()
+
+    assert result
+    assert result.name == 'new_nome_teste'

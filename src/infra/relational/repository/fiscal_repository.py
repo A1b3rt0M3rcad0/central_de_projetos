@@ -39,3 +39,13 @@ class FiscalRepository():
                 )
         except Exception as e:
             raise e
+    
+    def update(self, name:str, new_name:str) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(Fiscal).where(
+                    Fiscal.name == name
+                ).update({'name':new_name})
+                db.session.commit()
+        except Exception as e:
+            raise e
