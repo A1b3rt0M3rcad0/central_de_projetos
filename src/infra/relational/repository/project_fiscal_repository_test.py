@@ -6,6 +6,7 @@ from src.infra.relational.config.connection.t_string_connection import TStringCo
 from datetime import datetime, timezone
 from sqlalchemy import TextClause
 from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlreadyExists
+from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
 
 
 @pytest.fixture(autouse=True)
@@ -114,3 +115,68 @@ def test_insert(insert_project_script, insert_status_script) -> None:
         project_id=project.id,
         fiscal_id=fiscal.id
         )
+
+def test_find_all_from_fiscal(insert_project_script, insert_status_script) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_fiscal_repository = ProjectFiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir fiscal
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {'name': 'Fiscal de Teste', 'created_at': datetime.now(timezone.utc)}
+        )
+        fiscal = db.session.execute(
+            text('SELECT * FROM fiscal WHERE name = :name'),
+            {'name': 'Fiscal de Teste'}
+        ).fetchone()
+
+        # Inserir status
+        db.session.execute(
+            insert_status_script,
+            {'description': 'Status Teste', 'created_at': datetime.now(timezone.utc)}
+        )
+        status = db.session.execute(
+            text('SELECT * FROM status WHERE description = :description'),
+            {'description': 'Status Teste'}
+        ).fetchone()
+
+        # Inserir projeto
+        db.session.execute(
+            insert_project_script,
+            {
+                'status_id': status.id,
+                'verba_disponivel': 1000,
+                'andamento_do_projeto': datetime.now(timezone.utc),
+                'start_date': datetime.now(timezone.utc),
+                'expected_completion_date': datetime.now(timezone.utc),
+                'end_date': datetime.now(timezone.utc)
+            }
+        )
+        project = db.session.execute(
+            text('SELECT * FROM project WHERE status_id = :status_id'),
+            {'status_id': status.id}
+        ).fetchone()
+
+        # Relacionar projeto ao fiscal
+        db.session.execute(
+            text('INSERT INTO project_fiscal (project_id, fiscal_id, created_at) VALUES (:project_id, :fiscal_id, :created_at)'),
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        db.session.commit()
+
+    # Testar busca
+    results = project_fiscal_repository.find_all_from_fiscal(fiscal_id=fiscal.id)
+
+    assert isinstance(results, list)
+    assert len(results) == 1
+    assert results[0].fiscal_id == fiscal.id
+    assert results[0].project_id == project.id
+
+    # Testar exceção para fiscal sem projetos
+    with pytest.raises(ProjectsFromFiscalDoesNotExists):
+        project_fiscal_repository.find_all_from_fiscal(fiscal_id=9999)
