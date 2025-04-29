@@ -5,6 +5,7 @@ from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlr
 from src.domain.entities.project_fiscal import ProjectFiscalEntity
 from typing import List
 from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
+from sqlalchemy import and_
 
 class ProjectFiscalRepository():
 
@@ -42,3 +43,24 @@ class ProjectFiscalRepository():
                 return results
         except Exception as e:
             raise e from e
+    
+    def find(self, fiscal_id:int, project_id:int) -> ProjectFiscalEntity:
+        try:
+            with self.__db_connection_handler as db:
+                project = db.session.query(ProjectFiscal).where(
+                    and_(
+                        ProjectFiscal.fiscal_id == fiscal_id,
+                        ProjectFiscal.project_id == project_id
+                    )
+                ).first()
+                if project is None:
+                    raise ProjectsFromFiscalDoesNotExists(
+                        message=f'The project fiscal association ({fiscal_id}, {project_id}) does not exists'
+                    )
+                return ProjectFiscalEntity(
+                    project_id=project_id,
+                    fiscal_id=fiscal_id,
+                    created_at=project.created_at
+                )
+        except Exception as e:
+            raise e
