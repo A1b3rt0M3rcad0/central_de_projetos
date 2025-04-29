@@ -8,8 +8,9 @@ from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsF
 from src.errors.repository.error_on_update_fiscal_from_project import ErrorOnUpdateFiscalFromProject
 from src.errors.repository.error_on_delete_project_fiscal import ErrorOnDeleteProjectFiscal
 from sqlalchemy import and_
+from src.data.interface.i_project_fiscal_repository import IProjectFiscalRepository
 
-class ProjectFiscalRepository():
+class ProjectFiscalRepository(IProjectFiscalRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
