@@ -3,6 +3,7 @@ from src.infra.relational.config.base.base_model import BaseModel
 from sqlalchemy.orm import backref, relationship
 from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.project_bairro import ProjectBairro
 
 class Project(BaseModel):
 
@@ -19,3 +20,4 @@ class Project(BaseModel):
 
     history_project = relationship(HistoryProject, backref=backref('project'))
     project_fiscal = relationship(ProjectFiscal, backref=backref('project'))
+    project_bairro = relationship(ProjectBairro, backref=backref('project'))
