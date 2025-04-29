@@ -6,6 +6,7 @@ from src.domain.entities.project_fiscal import ProjectFiscalEntity
 from typing import List
 from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
 from src.errors.repository.error_on_update_fiscal_from_project import ErrorOnUpdateFiscalFromProject
+from src.errors.repository.error_on_delete_project_fiscal import ErrorOnDeleteProjectFiscal
 from sqlalchemy import and_
 
 class ProjectFiscalRepository():
@@ -83,4 +84,19 @@ class ProjectFiscalRepository():
         except Exception as e:
             raise ErrorOnUpdateFiscalFromProject(
                 message=f'Error on update project_fiscal (project:{project_id}, fiscal:{fiscal_id}) to {new_fiscal_id}'
+            ) from e
+    
+    def delete(self, project_id:int, fiscal_id:int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(ProjectFiscal).where(
+                    and_(
+                        ProjectFiscal.project_id == project_id,
+                        ProjectFiscal.fiscal_id == fiscal_id
+                    )
+                ).delete()
+                db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectFiscal(
+                message=f'Error on delete project fiscal association: {e}'
             ) from e
