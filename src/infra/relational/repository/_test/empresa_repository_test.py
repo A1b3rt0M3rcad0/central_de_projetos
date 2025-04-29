@@ -11,6 +11,7 @@ from src.infra.relational.config.connection.t_string_connection import TStringCo
 def cleanup_empresa():
     db_connection_handler = DBConnectionHandler(StringConnection())
     with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM project_empresa'))
         db.session.execute(text('DELETE FROM empresa'))
         db.session.commit()
 

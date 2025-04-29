@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 def cleanup_all():
     db_connection_handler = DBConnectionHandler(StringConnection())
     with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM project_empresa'))
         db.session.execute(text('DELETE FROM fiscal'))
         db.session.execute(text('DELETE FROM history_project'))
         db.session.execute(text('DELETE FROM project'))

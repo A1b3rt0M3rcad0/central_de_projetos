@@ -12,6 +12,7 @@ from src.errors.repository.bairro_already_exists import BairroAlreadyExists
 def cleanup_bairro_table():
     db_connection_handler = DBConnectionHandler(StringConnection())
     with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM project_empresa'))
         db.session.execute(text('DELETE FROM bairro'))
         db.session.commit()
 
