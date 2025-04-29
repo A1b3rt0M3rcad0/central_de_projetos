@@ -244,3 +244,80 @@ def test_find(insert_project_script, insert_status_script) -> None:
     # Teste de exceção ao buscar associação inexistente
     with pytest.raises(ProjectsFromFiscalDoesNotExists):
         project_fiscal_repository.find(fiscal_id=9999, project_id=9999)
+
+def test_update_fiscal(insert_project_script, insert_status_script) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_fiscal_repository = ProjectFiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir dois fiscais
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {'name': 'Fiscal Original', 'created_at': datetime.now(timezone.utc)}
+        )
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {'name': 'Fiscal Novo', 'created_at': datetime.now(timezone.utc)}
+        )
+
+        fiscal_original = db.session.execute(
+            text('SELECT * FROM fiscal WHERE name = :name'),
+            {'name': 'Fiscal Original'}
+        ).fetchone()
+
+        fiscal_novo = db.session.execute(
+            text('SELECT * FROM fiscal WHERE name = :name'),
+            {'name': 'Fiscal Novo'}
+        ).fetchone()
+
+        # Inserir status e projeto
+        db.session.execute(
+            insert_status_script,
+            {'description': 'Status Update', 'created_at': datetime.now(timezone.utc)}
+        )
+        status = db.session.execute(
+            text('SELECT * FROM status WHERE description = :description'),
+            {'description': 'Status Update'}
+        ).fetchone()
+
+        db.session.execute(
+            insert_project_script,
+            {
+                'status_id': status.id,
+                'verba_disponivel': 3000,
+                'andamento_do_projeto': datetime.now(timezone.utc),
+                'start_date': datetime.now(timezone.utc),
+                'expected_completion_date': datetime.now(timezone.utc),
+                'end_date': datetime.now(timezone.utc)
+            }
+        )
+        project = db.session.execute(
+            text('SELECT * FROM project WHERE status_id = :status_id'),
+            {'status_id': status.id}
+        ).fetchone()
+
+        # Inserir relação original
+        db.session.execute(
+            text('INSERT INTO project_fiscal (project_id, fiscal_id, created_at) VALUES (:project_id, :fiscal_id, :created_at)'),
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal_original.id,
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        db.session.commit()
+
+    # Atualizar para o novo fiscal
+    project_fiscal_repository.update_fiscal(
+        project_id=project.id,
+        fiscal_id=fiscal_original.id,
+        new_fiscal_id=fiscal_novo.id
+    )
+
+    with db_connection_handler as db:
+        updated = db.session.execute(
+            text('SELECT * FROM project_fiscal WHERE project_id = :project_id'),
+            {'project_id': project.id}
+        ).fetchone()
+
+    assert updated.fiscal_id == fiscal_novo.id
