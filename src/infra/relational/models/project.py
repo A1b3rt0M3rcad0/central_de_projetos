@@ -5,7 +5,7 @@ from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.models.project_bairro import ProjectBairro
 from src.infra.relational.models.project_empresa import ProjectEmpresa
-from src.infra.relational.models.project_types import ProjectTypes
+from src.infra.relational.models.project_type import ProjectType
 
 class Project(BaseModel):
 
@@ -24,4 +24,4 @@ class Project(BaseModel):
     project_fiscal = relationship(ProjectFiscal, backref=backref('project'))
     project_bairro = relationship(ProjectBairro, backref=backref('project'))
     project_empresa = relationship(ProjectEmpresa, backref=backref('project'))
-    project_types = relationship(ProjectTypes, backref=backref('project'))
+    project_types = relationship(ProjectType, backref=backref('project'))
