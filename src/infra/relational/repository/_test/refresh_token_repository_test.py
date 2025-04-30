@@ -16,6 +16,7 @@ import pytest
 def cleanup_all():
     db_connection_handler = DBConnectionHandler(StringConnection())
     with db_connection_handler as db:
+        db.session.execute(text('DELETE FROM project_type'))
         db.session.execute(text('DELETE FROM project_empresa'))
         db.session.execute(text('DELETE FROM refresh_token'))
         db.session.execute(text('DELETE FROM history_project'))

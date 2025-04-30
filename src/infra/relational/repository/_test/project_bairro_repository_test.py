@@ -11,6 +11,7 @@ from src.errors.repository.projects_from_bairro_does_not_exists import ProjectsF
 def cleanup_tables():
     db = DBConnectionHandler(TStringConnection())
     with db as conn:
+        db.session.execute(text('DELETE FROM project_type'))
         db.session.execute(text('DELETE FROM project_empresa'))
         conn.session.execute(text('DELETE FROM project_bairro'))
         conn.session.execute(text('DELETE FROM bairro'))
