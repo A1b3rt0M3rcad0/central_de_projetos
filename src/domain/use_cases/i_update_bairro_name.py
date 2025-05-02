@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class UpdateBairroName(ABC):
+class IUpdateBairroName(ABC):
 
     @abstractmethod
     def update(self, name:str, new_name:str) -> None:

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class DeleteBairro(ABC):
+class IDeleteBairro(ABC):
 
     @abstractmethod
     def delete(self, name:str) -> None:
