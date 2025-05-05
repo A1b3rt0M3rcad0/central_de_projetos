@@ -40,6 +40,22 @@ class FiscalRepository(IFiscalRepository):
                 )
         except Exception as e:
             raise e
+     
+    def find_by_id(self, fiscal_id:int) -> FiscalEntity:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(
+                    Fiscal.id == fiscal_id
+                ).first()
+                if fiscal is None:
+                    raise FiscalNotExists(message=f'The fiscal with id {fiscal_id} does not exists')
+                return FiscalEntity(
+                    fiscal_id=fiscal.id,
+                    name=fiscal.name,
+                    created_at=fiscal.created_at
+                )
+        except Exception as e:
+            raise e
     
     def update(self, name:str, new_name:str) -> None:
         try:
