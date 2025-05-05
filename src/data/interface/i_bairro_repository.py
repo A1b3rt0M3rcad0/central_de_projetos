@@ -12,6 +12,10 @@ class IBairroRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_id(self, bairro_id: int) -> BairroEntity:
+        pass
+
+    @abstractmethod
     def update(self, name: str, new_name: str) -> None:
         pass
 
