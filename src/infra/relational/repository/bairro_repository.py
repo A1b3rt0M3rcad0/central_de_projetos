@@ -38,6 +38,22 @@ class BairroRepository(IBairroRepository):
                 )
         except Exception as e:
             raise e
+    
+    def find_by_id(self, bairro_id:int) -> BairroEntity:
+        try:
+            with self.__db_connection_handler as db:
+                bairro = db.session.query(Bairro).where(
+                    Bairro.id == bairro_id
+                ).first()
+                if bairro is None:
+                    raise BairroNotExists(f'bairro with id "{bairro_id}" does not exists')
+                return BairroEntity(
+                    bairro_id=bairro.id,
+                    name=bairro.name,
+                    created_at=bairro.created_at
+                )
+        except Exception as e:
+            raise e from e
 
     def update(self, name: str, new_name: str) -> None:
         try:

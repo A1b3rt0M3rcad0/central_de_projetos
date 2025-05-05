@@ -102,3 +102,37 @@ def test_delete_bairro() -> None:
         result = db.session.execute(text('SELECT * FROM bairro')).fetchone()
 
     assert result is None
+
+def test_find_by_id_success() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    bairro_repository = BairroRepository(db_connection_handler)
+
+    now = datetime.now(timezone.utc)
+    with db_connection_handler as db:
+        # Inserir o bairro
+        db.session.execute(
+            text('INSERT INTO bairro (name, created_at) VALUES (:name, :created_at)'),
+            {'name': 'bairro_id_teste', 'created_at': now}
+        )
+        db.session.commit()
+
+        # Buscar o ID do bairro recém-inserido
+        result = db.session.execute(
+            text('SELECT id FROM bairro WHERE name = :name'),
+            {'name': 'bairro_id_teste'}
+        ).fetchone()
+        inserted_id = result.id
+
+    # Testar o método find_by_id
+    bairro = bairro_repository.find_by_id(inserted_id)
+
+    assert bairro is not None
+    assert bairro.bairro == inserted_id
+    assert bairro.name == 'bairro_id_teste'
+
+def test_find_by_id_not_found() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    bairro_repository = BairroRepository(db_connection_handler)
+
+    with pytest.raises(BairroNotExists):
+        bairro_repository.find_by_id(9999)  # ID que sabemos que não existe
