@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from src.domain.entities.project_bairro import ProjectBairroEntity
 
-class FindProjectBairro(ABC):
+class IFindProjectBairro(ABC):
 
     @abstractmethod
     def find(self, project_id:int, bairro_id:int) -> ProjectBairroEntity:
