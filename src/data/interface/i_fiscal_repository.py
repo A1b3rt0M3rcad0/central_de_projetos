@@ -10,6 +10,9 @@ class IFiscalRepository(ABC):
     def find_by_name(self, name:str) -> FiscalEntity:pass
 
     @abstractmethod
+    def find_by_id(self, fiscal_id:int) -> FiscalEntity:pass
+
+    @abstractmethod
     def update(self, name:str, new_name:str) -> None:pass
 
     @abstractmethod
