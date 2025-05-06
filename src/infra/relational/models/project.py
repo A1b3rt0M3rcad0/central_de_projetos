@@ -13,7 +13,7 @@ class Project(BaseModel):
 
     id = Column(Integer, primary_key=True)
     status_id = Column(ForeignKey('status.id'), nullable=False)
-    name = Column(String(255), nullable=True)
+    name = Column(String(255), unique=True, nullable=True)
     verba_disponivel = Column(Float, nullable=True)
     andamento_do_projeto = Column(String(255), nullable=True)
     start_date = Column(DateTime, nullable=True)
