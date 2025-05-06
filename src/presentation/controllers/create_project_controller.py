@@ -1,9 +1,11 @@
 from src.domain.use_cases.i_create_project import ICreateProject
 from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.domain.use_cases.i_find_project_by_name import IFindProjectByName
+from src.domain.value_objects.monetary_value import MonetaryValue
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
+from datetime import datetime
 
 class CreateProjectController(ControllerInterface):
 
@@ -20,11 +22,11 @@ class CreateProjectController(ControllerInterface):
             body = http_request.body
             status_id = body['status_id']
             name = body['name']
-            verba_disponivel = body['verba_dispponivel']
+            verba_disponivel = MonetaryValue(body['verba_disponivel'])
             andamento_do_projeto = body['andamento_do_projeto']
-            start_date = body['start_date']
-            expected_completion_date = body['expected_completion_date']
-            end_date = body['end_date']
+            start_date = datetime.fromisoformat(body['start_date']) if body['start_date'] else None
+            expected_completion_date = datetime.fromisoformat(body['expected_completion_date']) if body['expected_completion_date'] else None
+            end_date = datetime.fromisoformat(body['end_date']) if body['end_date'] else None
             self.__create_project_case.create(
                 status_id=status_id,
                 name=name,
