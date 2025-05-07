@@ -10,7 +10,9 @@ class ProjectEntity:
                  andamento_do_projeto:str, 
                  start_date:datetime, 
                  expected_completion_date:datetime, 
-                 end_date:datetime) -> None:
+                 end_date:datetime,
+                 name:str|None=None
+                 ) -> None:
         self.project_id = project_id
         self.status_id = status_id
         self.verba_disponivel = verba_disponivel
@@ -18,3 +20,4 @@ class ProjectEntity:
         self.start_date = start_date
         self.expected_completion_date = expected_completion_date
         self.end_date = end_date
+        self.name = name

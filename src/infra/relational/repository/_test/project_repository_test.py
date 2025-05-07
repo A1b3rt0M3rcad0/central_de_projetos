@@ -201,6 +201,44 @@ def test_find_by_status(
         assert project.verba_disponivel == monetary_value.value
         assert project.andamento_do_projeto == andamento_do_projeto
 
+def test_find_by_name(
+    monetary_value,
+    andamento_do_projeto,
+    datetime_fixture,
+    insert_status_script,
+    select_status_script,
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_repository = ProjectRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Test Status',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(select_status_script).first()
+
+        # Inserir dois projetos
+        project_script = text('''
+            insert into project (status_id, name, verba_disponivel, andamento_do_projeto, start_date, expected_completion_date, end_date) VALUES (:status_id, :name, :verba_disponivel, :andamento_do_projeto, :start_date, :expected_completion_date, :end_date)
+        ''')
+        db.session.execute(project_script, {
+            'status_id': status.id,
+            'name': 'teste_name_0',
+            'verba_disponivel': monetary_value.value,
+            'andamento_do_projeto': andamento_do_projeto,
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': datetime_fixture
+            })
+        db.session.commit()
+
+    # Buscar todos os projetos pelo nome
+    result = project_repository.find_by_name(name='teste_name_0')
+    assert result.name == 'teste_name_0'
+
 def test_update(monetary_value,
     andamento_do_projeto,
     datetime_fixture,

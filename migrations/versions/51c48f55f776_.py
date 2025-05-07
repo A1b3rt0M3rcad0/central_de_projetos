@@ -40,7 +40,7 @@ def upgrade() -> None:
         'project',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('status_id', sa.Integer, sa.ForeignKey('status.id'), nullable=False),
-        sa.Column('name', sa.String(255), nullable=True),
+        sa.Column('name', sa.String(255), unique=True, nullable=True),
         sa.Column('verba_disponivel', sa.Float, nullable=True),
         sa.Column('andamento_do_projeto', sa.String(255), nullable=True),
         sa.Column('start_date', sa.DateTime, nullable=True),

@@ -4,6 +4,7 @@ from src.domain.entities.project import ProjectEntity
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.relational.models.project import Project
+from src.errors.repository.projects_does_not_exists import ProjectsDoesNotExists
 from datetime import datetime
 
 class ProjectRepository(IProjectRepository):
@@ -18,7 +19,7 @@ class ProjectRepository(IProjectRepository):
                andamento_do_projeto:Optional[str]=None, 
                start_date:Optional[datetime]=None, 
                expected_completion_date:Optional[datetime]=None, 
-               end_date:Optional[datetime]=None
+               end_date:Optional[datetime]=None,
                ) -> None:
         with self.__db_connection_handler as db:
             status_id_entry = status_id
@@ -49,6 +50,8 @@ class ProjectRepository(IProjectRepository):
                 project = db.session.query(Project).where(
                     Project.id == project_id
                 ).first()
+                if not project:
+                    raise ProjectsDoesNotExists(message=f'Project with id: {project_id} does not exists')
                 return ProjectEntity(
                     project_id=project.id,
                     andamento_do_projeto=project.andamento_do_projeto,
@@ -56,7 +59,8 @@ class ProjectRepository(IProjectRepository):
                     expected_completion_date=project.expected_completion_date,
                     verba_disponivel=project.verba_disponivel,
                     status_id=project.status_id,
-                    end_date=project.end_date
+                    end_date=project.end_date,
+                    name=project.name
                 )
             except Exception as e:
                 raise e
@@ -66,6 +70,8 @@ class ProjectRepository(IProjectRepository):
         with self.__db_connection_handler as db:
             try:
                 projects = db.session.query(Project).all()
+                if not projects:
+                    raise ProjectsDoesNotExists('Projects does not exists')
                 project_list = [
                     ProjectEntity(
                     project_id=project.id,
@@ -74,7 +80,8 @@ class ProjectRepository(IProjectRepository):
                     expected_completion_date=project.expected_completion_date,
                     verba_disponivel=project.verba_disponivel,
                     status_id=project.status_id,
-                    end_date=project.end_date
+                    end_date=project.end_date,
+                    name=project.name
                     ) for project in projects
                 ]
                 return project_list
@@ -85,6 +92,8 @@ class ProjectRepository(IProjectRepository):
         with self.__db_connection_handler as db:
             try:
                 projects = db.session.query(Project).where(Project.status_id == status_id)
+                if not projects:
+                    raise ProjectsDoesNotExists(message=f'Projects with status_id: {status_id} does not exists')
                 project_list = [
                     ProjectEntity(
                     project_id=project.id,
@@ -93,14 +102,35 @@ class ProjectRepository(IProjectRepository):
                     expected_completion_date=project.expected_completion_date,
                     verba_disponivel=project.verba_disponivel,
                     status_id=project.status_id,
-                    end_date=project.end_date
+                    end_date=project.end_date,
+                    name=project.name
                     ) for project in projects
                 ]
                 return project_list
             except Exception as e:
                 raise e
-        
     
+    def find_by_name(self, name:str) -> ProjectEntity:
+        with self.__db_connection_handler as db:
+            try:
+                project = db.session.query(Project).where(
+                    Project.name == name
+                ).first()
+                if not project:
+                    raise ProjectsDoesNotExists(message=f'Project with name: {name}')
+                return ProjectEntity(
+                    project_id=project.id,
+                    andamento_do_projeto=project.andamento_do_projeto,
+                    start_date=project.start_date,
+                    expected_completion_date=project.expected_completion_date,
+                    verba_disponivel=project.verba_disponivel,
+                    status_id=project.status_id,
+                    end_date=project.end_date,
+                    name=project.name
+                )
+            except Exception as e:
+                raise e
+        
     def update(self, project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
             try:
