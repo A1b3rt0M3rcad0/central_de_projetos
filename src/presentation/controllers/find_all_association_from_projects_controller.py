@@ -18,7 +18,7 @@ class FindAllAssociationFromProjectsController(ControllerInterface):
                 body={
                     'message': 'Association From Projects Founded',
                     'content': [
-                        [association.cpf, association.project_id, association.data_atriuicao]
+                        {'cpf': association.cpf, 'project_id':association.project_id, 'data_atribuicao':association.data_atriuicao}
                         for association in results
                     ]
                 }

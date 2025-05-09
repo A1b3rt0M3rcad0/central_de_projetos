@@ -18,7 +18,7 @@ class FindAllStatus(ControllerInterface):
                 body={
                     'message': 'Status Founded',
                     'content': [
-                        [status.status_id, status.description, status.created_at]
+                        {'id': status.status_id, 'description':status.description, 'created_at':status.created_at}
                         for status in results
                     ]
                 }

@@ -18,14 +18,14 @@ class FindAllProjectsController(ControllerInterface):
                 body={
                     'message': 'Projects Founded',
                     'content': [
-                        [project.project_id,
-                         project.status_id,
-                         project.verba_disponivel,
-                         project.andamento_do_projeto,
-                         project.start_date,
-                         project.expected_completion_date,
-                         project.end_date,
-                         project.name]
+                        {'id': project.project_id,
+                         'status_id': project.status_id,
+                         'verba_disponivel': project.verba_disponivel,
+                         'andamento_do_projeto': project.andamento_do_projeto,
+                         'start_date': project.start_date,
+                         'expected_completion_date': project.expected_completion_date,
+                         'end_date': project.end_date,
+                         'name': project.name}
                         for project in results
                     ]
                 }

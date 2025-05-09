@@ -17,7 +17,7 @@ class FindBairrobyNameController(ControllerInterface):
                 status_code=200,
                 body={
                     'messsage': 'Bairro Founded',
-                    'content': [result.bairro, result.name, result.created_at]
+                    'content': {'id':result.bairro, 'name':result.name, 'created_at':result.created_at}
                 }
             )
         except Exception as e:

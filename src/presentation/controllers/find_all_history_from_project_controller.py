@@ -18,11 +18,11 @@ class FindAllHistoryFromProjectController(ControllerInterface):
                 body={
                     'message':'History from project founded',
                     'content': [
-                        [history.history_project_id, 
-                         history.project_id, 
-                         history.data_name, 
-                         history.description,
-                         history.updated_at]
+                        {'id': history.history_project_id, 
+                         'project_id': history.project_id, 
+                         'data_name': history.data_name, 
+                         'description': history.description,
+                         'updated_at': history.updated_at}
                         for history in results
                     ]
                 }
