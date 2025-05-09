@@ -22,7 +22,7 @@ class FindAllHistoryFromProjectController(ControllerInterface):
                          'project_id': history.project_id, 
                          'data_name': history.data_name, 
                          'description': history.description,
-                         'updated_at': history.updated_at}
+                         'updated_at': history.updated_at.strftime(r'%d/%m/%Y')}
                         for history in results
                     ]
                 }
