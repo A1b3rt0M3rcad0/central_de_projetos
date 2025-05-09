@@ -17,14 +17,14 @@ class FindAllHistoryFromProjectController(ControllerInterface):
                 status_code=200,
                 body={
                     'message':'History from project founded',
-                    'content': {[
+                    'content': [
                         [history.history_project_id, 
                          history.project_id, 
                          history.data_name, 
                          history.description,
                          history.updated_at]
                         for history in results
-                    ]}
+                    ]
                 }
             )
         except Exception as e:

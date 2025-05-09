@@ -17,10 +17,10 @@ class FindAllAssociationFromProjectsController(ControllerInterface):
                 status_code=200,
                 body={
                     'message': 'Association From Projects Founded',
-                    'content': {[
+                    'content': [
                         [association.cpf, association.project_id, association.data_atriuicao]
                         for association in results
-                    ]}
+                    ]
                 }
             )
         except Exception as e:

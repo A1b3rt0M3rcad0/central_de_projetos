@@ -17,7 +17,7 @@ class FindAllProjectsController(ControllerInterface):
                 status_code=200,
                 body={
                     'message': 'Projects Founded',
-                    'content': {[
+                    'content': [
                         [project.project_id,
                          project.status_id,
                          project.verba_disponivel,
@@ -27,7 +27,7 @@ class FindAllProjectsController(ControllerInterface):
                          project.end_date,
                          project.name]
                         for project in results
-                    ]}
+                    ]
                 }
             )
         except Exception as e:

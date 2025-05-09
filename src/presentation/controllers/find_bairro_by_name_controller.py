@@ -1,25 +1,23 @@
-from src.domain.use_cases.I_get_document_names import IGetDocumentNames
+from src.data.use_cases.find_bairro_by_name import IFindBairroByName
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 
-class GetDocumentNamesController(ControllerInterface):
+class FindBairrobyNameController(ControllerInterface):
 
-    def __init__(self, get_document_names_case:IGetDocumentNames) -> None:
-        self.__get_document_names_case = get_document_names_case
+    def __init__(self, find_bairro_by_name_case:IFindBairroByName) -> None:
+        self.__find_bairro_by_name_case = find_bairro_by_name_case
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
             body = http_request.body
-            project_id = body['project_id']
-            names = self.__get_document_names_case.names(
-                project_id=project_id
-            )
+            name = body['bairro_name']
+            result = self.__find_bairro_by_name_case.find(name=name)
             return HttpResponse(
                 status_code=200,
                 body={
-                    'message': 'projects_founded',
-                    'content': names
+                    'messsage': 'Bairro Founded',
+                    'content': [result.bairro, result.name, result.created_at]
                 }
             )
         except Exception as e:

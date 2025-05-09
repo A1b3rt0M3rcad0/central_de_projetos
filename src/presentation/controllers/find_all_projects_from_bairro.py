@@ -22,7 +22,7 @@ class FindAllProjectsFromBairro(ControllerInterface):
                 status_code=200,
                 body={
                     'message': 'Projects Founded',
-                    'content': {[
+                    'content': [
                         [project.project_id,
                          project.status_id,
                          project.verba_disponivel,
@@ -32,7 +32,7 @@ class FindAllProjectsFromBairro(ControllerInterface):
                          project.end_date,
                          project.name]
                         for project in projects
-                    ]}
+                    ]
                 }
             )
         except Exception as e:
