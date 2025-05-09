@@ -6,11 +6,11 @@ from typing import List
 class FindAllProjectsFromBairro(IFindAllProjectsFromBairro):
 
     def __init__(self, project_bairro_repository:IProjectBairroRepository) -> None:
-        self.__project_bairro_repoisoty = project_bairro_repository
+        self.__project_bairro_repository = project_bairro_repository
     
     def find(self, bairro_id:int) -> List[ProjectBairroEntity]:
         try:
-            results = self.__project_bairro_repoisoty.find_all_from_bairro(
+            results = self.__project_bairro_repository.find_all_from_bairro(
                 bairro_id=bairro_id
             )
             return results
