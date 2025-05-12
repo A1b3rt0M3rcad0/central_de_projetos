@@ -22,7 +22,7 @@ class FindFiscalByNameController(ControllerInterface):
                     'content': {
                         'id': result.fiscal_id,
                         'name': result.name,
-                        'created_at': result.created_at
+                        'created_at': result.created_at.strftime(r'%d/%m/%Y')
                     }
                 }
             )

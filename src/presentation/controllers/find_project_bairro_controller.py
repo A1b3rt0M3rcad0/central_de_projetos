@@ -24,7 +24,7 @@ class FindProjectBairroController(ControllerInterface):
                     'content': {
                         'bairro_id': result.bairro_id,
                         'project_id': result.project_id,
-                        'created_at': result.created_at
+                        'created_at': result.created_at.strftime(r'%d/%m/%Y')
                     }
                 }
             )
