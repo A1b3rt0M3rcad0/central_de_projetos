@@ -11,7 +11,7 @@ class UpdateProjectStartDateController(ControllerInterface):
                  update_project_start_date_case:IUpdateProjectStartDate,
                  create_history_project_case:ICreateHistoryProject
                  ) -> None:
-        self.__update_project_start_date = update_project_start_date_case
+        self.__update_project_start_date_case = update_project_start_date_case
         self.__create_history_project_case = create_history_project_case
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
@@ -19,7 +19,7 @@ class UpdateProjectStartDateController(ControllerInterface):
             body = http_request.body
             project_id = body['project_id']
             start_date = body['start_date']
-            self.__update_project_start_date.update(
+            self.__update_project_start_date_case.update(
                 project_id=project_id,
                 start_date=datetime.strptime(start_date, format=r'%d/%m/%Y')
             )
