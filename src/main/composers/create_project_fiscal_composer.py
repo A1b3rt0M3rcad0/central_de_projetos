@@ -21,4 +21,4 @@ def create_project_fiscal_composer() -> Callable[[HttpRequest], HttpResponse]:
         find_fiscal_by_id_case=FindFiscalById(
             fiscal_repository=FiscalRepository(db_connection_handler_factory())
         ),
-    )
+    ).handle
