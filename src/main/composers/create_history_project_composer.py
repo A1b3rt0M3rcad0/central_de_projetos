@@ -3,17 +3,14 @@ from src.presentation.controllers.create_history_project_controller import Creat
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.infra.relational.repository.history_project import HistoryProjectRepository
-from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
-from src.infra.relational.config.connection.string_connection import StringConnection
+from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from typing import Callable
 
 def create_history_project_composer() -> Callable[[HttpRequest], HttpResponse]:
     return CreateHistoryProjectController(
         CreateHistoryProject(
             HistoryProjectRepository(
-                DBConnectionHandler(
-                    StringConnection()
-                )
+                db_connection_handler_factory()
             )
         )
-    ).handle
+    )
