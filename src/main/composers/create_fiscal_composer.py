@@ -13,4 +13,4 @@ def create_fiscal_composer() -> Callable[[HttpRequest], HttpResponse]:
                 db_connection_handler_factory()
             )
         )
-    )
+    ).handle

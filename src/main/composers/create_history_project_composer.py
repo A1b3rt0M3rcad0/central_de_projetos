@@ -13,4 +13,4 @@ def create_history_project_composer() -> Callable[[HttpRequest], HttpResponse]:
                 db_connection_handler_factory()
             )
         )
-    )
+    ).handle
