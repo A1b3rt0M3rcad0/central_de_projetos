@@ -16,4 +16,4 @@ def create_fiscal_composer() -> Callable[[HttpRequest], HttpResponse]:
                 )
             )
         )
-    )
+    ).handle

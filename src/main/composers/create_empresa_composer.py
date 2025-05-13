@@ -16,4 +16,4 @@ def create_empresa_composer() -> Callable[[HttpRequest], HttpResponse]:
                 )
             )
         )
-    )
+    ).handle

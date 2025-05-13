@@ -8,7 +8,7 @@ from typing import Optional, Dict, List
 
 class HistoryProjectRepository(IHistoryProjectRepository):
 
-    def __init__(self, db_connection_handler = IDBConnectionHandler) -> None:
+    def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
     
     def insert(self, project_id:int, data_name:str, description:Optional[str] = None) -> None:
