@@ -12,8 +12,8 @@ class FindAllProjectsFromBairroController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            bairro_id = body['bairro_id']
+            query_params = http_request.query_params
+            bairro_id = query_params['bairro_id']
             project_bairro_results = self.__find_all_projects_from_bairro_case.find(bairro_id=bairro_id)
             projects = [self.__find_project_case.find(project_id=project_bairro.project_id)
                         for project_bairro in project_bairro_results

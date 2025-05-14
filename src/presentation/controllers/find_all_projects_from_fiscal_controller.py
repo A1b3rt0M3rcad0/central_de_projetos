@@ -12,8 +12,8 @@ class FindAllProjectsFromFiscalController(ControllerInterface):
 
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request['body']
-            fiscal_id = body['fiscal_id']
+            query_params = http_request['body']
+            fiscal_id = query_params['fiscal_id']
             project_fiscal_results = self.__find_all_projects_from_fiscal_case.find(fiscal_id=fiscal_id)
             projects = [self.__find_project_case.find(project_id=project_bairro.project_id)
                         for project_bairro in project_fiscal_results

@@ -11,9 +11,9 @@ class GetDocumentController(ControllerInterface):
     
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            project_id = body['project_id']
-            document_name = body['document_name']
+            query_params = http_request.query_params
+            project_id = query_params['project_id']
+            document_name = query_params['document_name']
 
             document = self.__get_document_case.document(
                 project_id=project_id,
