@@ -4,7 +4,7 @@ from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 
-class FindAllStatus(ControllerInterface):
+class FindAllStatusController(ControllerInterface):
 
     def __init__(self, find_all_status_case:IFindAllStatus) -> None:
         self.__find_all_status_case= find_all_status_case
