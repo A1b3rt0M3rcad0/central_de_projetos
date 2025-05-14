@@ -4,7 +4,7 @@ from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 
-class FindAllProjectsFromBairro(ControllerInterface):
+class FindAllProjectsFromBairroController(ControllerInterface):
 
     def __init__(self, find_all_projects_from_bairro_case:IFindAllProjectsFromBairro, find_project_case:IFindProject) -> None:
         self.__find_all_projects_from_bairro_case = find_all_projects_from_bairro_case
