@@ -10,8 +10,8 @@ class FindEmpresaByExactNameController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            name = body['empresa_name']
+            query_params = http_request.query_params
+            name = query_params['empresa_name']
             result = self.__find_empresa_by_exact_name_case.find(
                 name=name
             )

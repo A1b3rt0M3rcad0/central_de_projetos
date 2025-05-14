@@ -5,7 +5,7 @@ from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 
-class UpdateUserPassword(ControllerInterface):
+class UpdateUserPasswordController(ControllerInterface):
 
     def __init__(self, update_user_password_case:IUpdateUserPassword) -> None:
         self.__update_user_password_case = update_user_password_case

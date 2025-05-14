@@ -11,8 +11,8 @@ class FindRefreshTokenController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            cpf = CPF(body['cpf'])
+            query_params = http_request.query_params
+            cpf = CPF(query_params['cpf'])
             result = self.__find_refresh_token_case.find(
                 user_cpf=cpf
             )

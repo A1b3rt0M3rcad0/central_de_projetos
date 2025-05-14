@@ -11,8 +11,8 @@ class FindUserController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            cpf = CPF(body['user_cpf'])
+            query_params = http_request.query_params
+            cpf = CPF(query_params['user_cpf'])
             user = self.__find_user_case.find(
                 cpf=cpf
             )

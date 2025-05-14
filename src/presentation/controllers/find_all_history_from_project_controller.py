@@ -10,8 +10,8 @@ class FindAllHistoryFromProjectController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            body = http_request.body
-            project_id = body['project_id']
+            query_params = http_request.query_params
+            project_id = query_params['project_id']
             results = self.__find_all_history_from_project.find(project_id=project_id)
             return HttpResponse(
                 status_code=200,
