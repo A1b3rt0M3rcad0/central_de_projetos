@@ -24,4 +24,4 @@ def update_association_from_project_composer() -> Callable[[HttpRequest], HttpRe
                 db_connection_handler=db_connection_handler_factory()
             )
         )
-    )
+    ).handle
