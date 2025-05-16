@@ -11,11 +11,11 @@ from src.main.composers.delete_user_composer import delete_user_composer
 from src.main.composers.update_user_email_composer import update_user_email_composer
 from src.main.composers.update_user_password_composer import update_user_password_composer
 
-from src.main.routes.user.request_format.find_user_format import FindUserFormat
-from src.main.routes.user.request_format.create_user_format import CreateUserFormat
-from src.main.routes.user.request_format.delete_user_format import DeleteUserFormat
-from src.main.routes.user.request_format.update_user_email_format import UpdateUserEmailFormat
-from src.main.routes.user.request_format.update_user_password_format import UpdateUserPasswordFormat
+from src.main.routes.api.user.request_format.find_user_format import FindUserFormat
+from src.main.routes.api.user.request_format.create_user_format import CreateUserFormat
+from src.main.routes.api.user.request_format.delete_user_format import DeleteUserFormat
+from src.main.routes.api.user.request_format.update_user_email_format import UpdateUserEmailFormat
+from src.main.routes.api.user.request_format.update_user_password_format import UpdateUserPasswordFormat
 
 routes = APIRouter(prefix='/users', tags=['users'])
 
