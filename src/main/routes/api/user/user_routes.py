@@ -1,4 +1,4 @@
-#pylint:disable=all
+#pylint:disable=W0718
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter

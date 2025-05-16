@@ -6,7 +6,7 @@ from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from typing import Callable
 
-def find_bairr_by_name_composer() -> Callable[[HttpRequest], HttpResponse]:
+def find_bairro_by_name_composer() -> Callable[[HttpRequest], HttpResponse]:
     return FindBairrobyNameController(
         find_bairro_by_name_case=FindBairroByName(
             bairro_repository=BairroRepository(
