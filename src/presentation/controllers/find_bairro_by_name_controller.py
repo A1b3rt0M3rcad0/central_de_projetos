@@ -10,8 +10,8 @@ class FindBairrobyNameController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            name = query_params['bairro_name']
+            path_params = http_request.path_params
+            name = path_params['bairro_name']
             result = self.__find_bairro_by_name_case.find(name=name)
             return HttpResponse(
                 status_code=200,

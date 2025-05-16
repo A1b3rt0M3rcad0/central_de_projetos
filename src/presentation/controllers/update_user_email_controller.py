@@ -22,7 +22,7 @@ class UpdateuserEmailController(ControllerInterface):
             return HttpResponse(
                 status_code=200,
                 body={
-                    'message': 'user email updated'
+                    'message': 'User Email Updated'
                 }
             )
         except Exception as e:
