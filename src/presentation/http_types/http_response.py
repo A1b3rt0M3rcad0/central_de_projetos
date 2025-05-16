@@ -6,3 +6,10 @@ class HttpResponse:
         self.status_code = status_code
         self.body = body
         self.headers = headers
+    
+    def to_dict(self) -> Dict:
+        return {
+            'status_code': self.status_code,
+            'headers': self.headers,
+            'body': self.body,
+        }

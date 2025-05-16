@@ -19,5 +19,11 @@ class UpdateUserPasswordController(ControllerInterface):
                 cpf = CPF(cpf),
                 password=Password(password)
             )
+            return HttpResponse(
+                status_code=200,
+                body={
+                    'message': "Password Updated"
+                }
+            )
         except Exception as e:
             raise e from e

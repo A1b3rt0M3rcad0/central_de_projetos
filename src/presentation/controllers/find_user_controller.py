@@ -11,8 +11,8 @@ class FindUserController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            cpf = CPF(query_params['user_cpf'])
+            path_params = http_request.path_params
+            cpf = CPF(path_params['user_cpf'])
             user = self.__find_user_case.find(
                 cpf=cpf
             )
@@ -22,8 +22,8 @@ class FindUserController(ControllerInterface):
                     'message': 'User Founded',
                     'content': {
                         'cpf': user.cpf.value,
-                        'email': user.email,
-                        'role': user.role,
+                        'email': user.email.email,
+                        'role': user.role.value,
                         'created_at': user.created_at.strftime(r'%d/%m/%Y')
                     }
                 }

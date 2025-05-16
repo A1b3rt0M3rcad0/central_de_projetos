@@ -13,7 +13,7 @@ class UpdateUserEmail(IUpdateUserEmail):
         try:
             email_exists = self.__user_repository.find_by_email(email=email)
 
-            if not email_exists:
+            if email_exists:
                 raise EmailAlreadyExistsError(message=f'Email "{email.email}" already exists')
 
             update_params = {'email': email.email}
