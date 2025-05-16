@@ -8,6 +8,8 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.errors.repository.user_not_founded import UserNotFounded
+from src.errors.repository.user_not_founded_by_email import UserNotFoundedByEmail
 from src.errors.repository.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
 from typing import Optional, Dict
 
@@ -54,7 +56,7 @@ class UserRepository(IUserRepository):
                         email=Email(result.email),
                         created_at=result.created_at
                     )
-                return None 
+                raise UserNotFounded(message=f'User with cpf "{cpf.value}" not founded')
             except SQLAlchemyError as e:
                 raise RuntimeError(f"Erro ao buscar usuário com CPF {cpf.value}: {e}") from e
 
@@ -73,7 +75,7 @@ class UserRepository(IUserRepository):
                         email=Email(result.email),
                         created_at=result.created_at
                     )
-                return None 
+                raise UserNotFoundedByEmail(message=f'User with email "{email.email}" not founded')
             except SQLAlchemyError as e:
                 raise RuntimeError(f"Erro ao buscar usuário com email {email.email}: {e}") from e
 
