@@ -1,6 +1,6 @@
-from src.errors.http.base.BaseError import BaseError
+from src.errors.http.__http_base_error import HttpBaseError
 
-class InternalServerError(BaseError):
+class InternalServerError(HttpBaseError):
 
     def __init__(self, title:str, message:str) -> None:
         super().__init__(
