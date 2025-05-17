@@ -14,11 +14,17 @@ repos:
             "--load-plugins=pylint.extensions.docparams",
           ]
 
-  - repo: local
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.7.4                          # alinhe com a versão do uv que você usa
     hooks:
-      - id: requirements
-        name: requirements
-        entry: bash -c 'source .venv/bin/activate && pip freeze > requirements.txt && git add requirements.txt'
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
+      # 1. Garante que o uv.lock esteja sempre atualizado
+      - id: uv-lock
+
+      # 2. Exporta todas as dependências para requirements.txt
+      - id: uv-export
+        name: Export all dependencies
+        args:
+          # --frozen garante que falhe se o lockfile não estiver sincronizado
+          - --frozen
+          # saída para requirements.txt
+          - --output-file=requirements.txt
