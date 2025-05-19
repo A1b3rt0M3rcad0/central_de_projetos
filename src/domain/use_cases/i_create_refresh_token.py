@@ -5,3 +5,6 @@ class ICreateRefreshToken(ABC):
 
     @abstractmethod
     def create(self, cpf:CPF) -> None:pass
+
+    @abstractmethod
+    def generate_token(self, cpf:CPF) -> str:pass

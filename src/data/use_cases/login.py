@@ -33,8 +33,8 @@ class Login(ILogin):
                 hours = float(hours)
                 return encrypt.encode(
                     {
-                        'cpf': result.cpf,
-                        'role': result.role,
+                        'cpf': result.cpf.value,
+                        'role': result.role.value,
                         'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
                     }
                 )
