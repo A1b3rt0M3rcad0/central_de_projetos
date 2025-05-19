@@ -8,7 +8,7 @@ from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from typing import Callable
 
-def update_project_start_date() -> Callable[[HttpRequest], HttpResponse]:
+def update_project_start_date_composer() -> Callable[[HttpRequest], HttpResponse]:
     return UpdateProjectStartDateController(
         create_history_project_case=CreateHistoryProject(
             history_project_repository=HistoryProjectRepository(

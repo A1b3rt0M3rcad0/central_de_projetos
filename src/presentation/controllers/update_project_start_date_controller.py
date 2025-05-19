@@ -21,7 +21,7 @@ class UpdateProjectStartDateController(ControllerInterface):
             start_date = body['start_date']
             self.__update_project_start_date_case.update(
                 project_id=project_id,
-                start_date=datetime.strptime(start_date, format=r'%d/%m/%Y')
+                start_date=datetime.fromisoformat(start_date)
             )
             self.__create_history_project_case.create(
                 project_id=project_id,

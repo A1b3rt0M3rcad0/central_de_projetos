@@ -1,9 +1,12 @@
+#pylint:disable=W0611
 from src.data.interface.i_project_repository import IProjectRepository
 from src.domain.use_cases.i_create_project import ICreateProject
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.errors.use_cases.create_project_error import CreateProjectError
 from datetime import datetime
 from typing import Optional
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.project import Project
 
 class CreateProject(ICreateProject):
 

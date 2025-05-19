@@ -21,7 +21,7 @@ class UpdateProjectEndDateController(ControllerInterface):
             end_date = body['end_date']
             self.__update_project_end_date_case.update(
                 project_id=project_id,
-                end_date=datetime.strptime(end_date, format=r'%d/%m/%Y')
+                end_date=datetime.fromisoformat(end_date)
             )
             self.__create_history_project_case.create(
                 project_id=project_id,

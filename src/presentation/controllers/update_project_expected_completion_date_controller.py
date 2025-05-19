@@ -21,7 +21,7 @@ class UpdateProjectExpectedCompletionDateController(ControllerInterface):
             expected_completion_date = body['expected_completion_date']
             self.__update_project_expected_completion_date_case.update(
                 project_id=project_id,
-                expected_completion_date=datetime.strptime(expected_completion_date, format=r'%d/%m/%Y')
+                expected_completion_date=datetime.fromisoformat(expected_completion_date)
             )
             self.__create_history_project_case.create(
                 project_id=project_id,
