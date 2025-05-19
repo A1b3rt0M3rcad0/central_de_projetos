@@ -10,8 +10,8 @@ class FindFiscalByNameController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            name = query_params['name']
+            path_params = http_request.path_params
+            name = path_params['fiscal_name']
             result = self.__find_fiscal_by_name_case.find(
                 name=name
             )
