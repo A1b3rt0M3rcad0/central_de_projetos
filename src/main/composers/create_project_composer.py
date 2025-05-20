@@ -4,7 +4,7 @@ from src.data.use_cases.create_project import CreateProject
 from src.data.use_cases.create_history_project import CreateHistoryProject
 from src.data.use_cases.find_project_by_name import FindProjectByName
 from src.infra.relational.repository.project_repository import ProjectRepository
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from typing import Callable

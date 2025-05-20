@@ -3,7 +3,7 @@ from src.data.use_cases.create_project_bairro import CreateProjectBairro
 from src.data.use_cases.create_history_project import CreateHistoryProject
 from src.data.use_cases.find_bairro_by_id import FindBairrobyId
 from src.infra.relational.repository.project_bairro_repository import ProjectBairroRepository
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.relational.repository.bairro_repository import BairroRepository
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse

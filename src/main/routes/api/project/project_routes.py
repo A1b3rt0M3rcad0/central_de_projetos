@@ -7,7 +7,7 @@ from src.main.adapters.response_adapter import response_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.find_project_composer import find_project_composer
-#from src.main.composers.delte_project_composer import delete_project_composer
+from src.main.composers.delete_project_composer import delete_project_composer
 from src.main.composers.create_project_composer import create_project_composer
 from src.main.composers.update_project_name_composer import update_project_name_composer
 from src.main.composers.update_project_andamento_composer import update_project_andamento_composer
@@ -18,6 +18,7 @@ from src.main.composers.update_project_verba_composer import update_project_verb
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
+from src.main.routes.api.project.request_format.delete_project_format import DeleteProjectFormat
 from src.main.routes.api.project.request_format.update_project_andamento_format import UpdateProjectAndamentoFormat
 from src.main.routes.api.project.request_format.update_end_date_project_format import UpdateEndDateProjectFormat
 from src.main.routes.api.project.request_format.update_expected_completion_date_format import UpdateExpectedCompletionDateFormat
@@ -39,6 +40,14 @@ async def find_project(project_id, request:Request):
 async def create_project(body:CreateProjectFormat, request:Request):
     try:
         http_response = await request_adapter(request, create_project_composer())
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.delete('/')
+async def delete_project(body:DeleteProjectFormat, request:Request):
+    try:
+        http_response = await request_adapter(request, delete_project_composer())
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))

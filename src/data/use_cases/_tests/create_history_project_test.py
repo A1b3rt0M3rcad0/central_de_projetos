@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 
 from src.data.use_cases.create_history_project import CreateHistoryProject
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.errors.use_cases.project_not_found_error import ProjectNotFoundError

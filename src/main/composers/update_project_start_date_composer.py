@@ -1,6 +1,6 @@
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.project_repository import ProjectRepository
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.data.use_cases.create_history_project import CreateHistoryProject
 from src.data.use_cases.update_project_start_date import UpdateProjectStartDate
 from src.presentation.controllers.update_project_start_date_controller import UpdateProjectStartDateController

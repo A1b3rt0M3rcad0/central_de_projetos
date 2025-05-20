@@ -1,4 +1,4 @@
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
 from sqlalchemy import text, TextClause

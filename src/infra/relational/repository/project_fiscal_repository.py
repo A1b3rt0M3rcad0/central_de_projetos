@@ -101,3 +101,15 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
             raise ErrorOnDeleteProjectFiscal(
                 message=f'Error on delete project fiscal association: {e}'
             ) from e
+    
+    def delete_all_from_project(self, project_id:int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(ProjectFiscal).where(
+                    ProjectFiscal.project_id == project_id,
+                ).delete()
+                db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectFiscal(
+                message=f'Error on delete project fiscal association: {e}'
+            ) from e

@@ -98,3 +98,15 @@ class ProjectBairroRepository(IProjectBairroRepository):
             raise ErrorOnDeleteProjectBairro(
                 message=f'Error deleting association (project_id={project_id}, bairro_id={bairro_id}): {e}'
             ) from e
+    
+    def delete_all_from_project(self, project_id:int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(ProjectBairro).filter(
+                    ProjectBairro.project_id == project_id,
+                ).delete()
+                db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectBairro(
+                message=f'Error deleting association (project_id={project_id}): {e}'
+            ) from e

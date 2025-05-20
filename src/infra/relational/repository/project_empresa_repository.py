@@ -102,3 +102,15 @@ class ProjectEmpresaRepository(IProjectEmpresaRepository):
             raise ErrorOnDeleteProjectEmpresa(
                 message=f'Error deleting association (project_id={project_id}, empresa_id={empresa_id}): {e}'
             ) from e
+    
+    def delete_all_from_project(self, project_id: int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                db.session.query(ProjectEmpresa).filter(
+                    ProjectEmpresa.project_id == project_id,
+                ).delete()
+                db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectEmpresa(
+                message=f'Error deleting association (project_id={project_id}): {e}'
+            ) from e

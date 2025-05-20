@@ -80,3 +80,13 @@ class HistoryProjectRepository(IHistoryProjectRepository):
                 db.session.commit()
             except Exception as e:
                 raise e
+    
+    def delete_all_from_project(self, project_id:int) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(HistoryProject).where(
+                    HistoryProject.project_id == project_id
+                ).delete()
+                db.session.commit()
+            except Exception as e:
+                raise e from e

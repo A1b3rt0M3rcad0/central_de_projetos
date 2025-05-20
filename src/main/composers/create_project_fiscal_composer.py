@@ -6,7 +6,7 @@ from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.relational.repository.fiscal_repository import FiscalRepository
 from typing import Callable
 

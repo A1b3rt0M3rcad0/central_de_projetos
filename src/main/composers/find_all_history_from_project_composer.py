@@ -1,5 +1,5 @@
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
-from src.infra.relational.repository.history_project import HistoryProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.data.use_cases.find_all_history_from_project import FindAllHistoryFromProject
 from src.presentation.controllers.find_all_history_from_project_controller import FindAllHistoryFromProjectController
 from src.presentation.http_types.http_request import HttpRequest

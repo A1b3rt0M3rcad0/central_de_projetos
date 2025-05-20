@@ -5,6 +5,7 @@ from src.domain.value_objects.monetary_value import MonetaryValue
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.relational.models.project import Project
 from src.errors.repository.projects_does_not_exists import ProjectsDoesNotExists
+from src.errors.repository.error_on_delete_project import ErrorOnDeleteProject
 from datetime import datetime
 
 class ProjectRepository(IProjectRepository):
@@ -145,4 +146,4 @@ class ProjectRepository(IProjectRepository):
                 db.session.query(Project).where(Project.id == project_id).delete()
                 db.session.commit()
             except Exception as e:
-                raise e
+                raise ErrorOnDeleteProject(message=f'Error on delete project: {project_id}: {e}') from e
