@@ -24,3 +24,6 @@ class IProjectEmpresaRepository(ABC):
     @abstractmethod
     def delete(self, project_id: int, empresa_id: int) -> None:
         """Remove uma associação entre projeto e empresa"""
+    
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass

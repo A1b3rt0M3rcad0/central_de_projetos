@@ -23,3 +23,6 @@ class IProjectTypeRepository(ABC):
     @abstractmethod
     def delete(self, project_id: int, type_id: int) -> None:
         """Remove a associação entre projeto e tipo"""
+    
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass

@@ -23,3 +23,6 @@ class IProjectFiscalRepository(ABC):
     @abstractmethod
     def delete(self, project_id: int, fiscal_id: int) -> None:
         """Remove a associação entre um projeto e um fiscal"""
+    
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass

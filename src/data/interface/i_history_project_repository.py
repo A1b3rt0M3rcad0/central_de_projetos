@@ -18,3 +18,6 @@ class IHistoryProjectRepository(ABC):
 
     @abstractmethod
     def delete(self, history_project_id:int) -> None:pass
+
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass

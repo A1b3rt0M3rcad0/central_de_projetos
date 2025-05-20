@@ -23,3 +23,6 @@ class IProjectBairroRepository(ABC):
     @abstractmethod
     def delete(self, project_id: int, bairro_id: int) -> None:
         """Deleta a associação entre projeto e bairro"""
+    
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass

@@ -22,3 +22,6 @@ class IUserProjectRepository(ABC):
 
     @abstractmethod
     def delete(self, cpf_user:CPF, project_id:int) -> None:pass
+
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass
