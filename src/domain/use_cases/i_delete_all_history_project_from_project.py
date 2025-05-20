@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-class IDeleteTypeFromProject(ABC):
+class IDeleteAllHistoryProjectFromProject(ABC):
 
     @abstractmethod
     def delete(self, project_id:int) -> None:
         '''
-        Delete all project type association from project
+        Delete all history project association from project
         '''
