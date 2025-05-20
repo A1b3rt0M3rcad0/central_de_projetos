@@ -10,9 +10,9 @@ class FindProjectBairroController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            project_id = query_params['project_id']
-            bairro_id = query_params['bairro_id']
+            path_params = http_request.path_params
+            project_id = path_params['project_id']
+            bairro_id = path_params['bairro_id']
             result = self.__find_project_bairro_case.find(
                 project_id=project_id,
                 bairro_id=bairro_id

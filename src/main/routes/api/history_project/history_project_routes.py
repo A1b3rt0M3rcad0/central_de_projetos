@@ -12,7 +12,7 @@ from src.main.composers.find_all_history_from_project_composer import find_all_h
 from src.main.routes.api.history_project.request_format.create_history_project_format import CreateHistoryProjectFormat
 from src.main.routes.api.history_project.request_format.find_all_hisotry_from_project_format import FindAllHistoryFromProjectFormat
 
-routes = APIRouter(prefix='/history_project', tags=['history_project'])
+routes = APIRouter(prefix='/history_project', tags=['history_project', 'project'])
 
 @routes.get('/')
 async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, request:Request):

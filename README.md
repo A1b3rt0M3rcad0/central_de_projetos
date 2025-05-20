@@ -1,4 +1,3 @@
-````markdown
 # 🏛 Central de Projetos – Gabinete de Projetos
 
 ## 📌 Visão Geral
@@ -43,8 +42,6 @@ Facilitar o controle e a transparência dos projetos pelo gabinete, com foco em 
 |   ├── presentaion/ # Implemantação dos controllers
 |   ├── secutiry/    # Securança de dados
 ````
-
----
 
 ## ⚙️ Configurando o Ambiente
 

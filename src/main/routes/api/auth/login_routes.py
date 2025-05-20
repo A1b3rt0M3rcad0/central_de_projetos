@@ -16,6 +16,8 @@ routes = APIRouter(prefix='/auth', tags=['auth', 'login'])
 async def login(body:LoginFormat, request:Request):
     try:
         http_response = await request_adapter(request, login_composer())
-        return response_adapter(http_response)
+        response = response_adapter(http_response)
+        response.set_cookie('acess_token', value=http_response.body.get('token'), httponly=True, secure=True)
+        return response
     except Exception as e:
         return response_adapter(error_handler(e))
