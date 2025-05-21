@@ -12,7 +12,7 @@ class CreateProjectTypeController(ControllerInterface):
         try:
             body = http_request.body
             project_id = body['project_id']
-            type_id = body['type_id']
+            type_id = body['types_id']
             self.__create_project_type_case.create(
                 project_id=project_id,
                 type_id=type_id
