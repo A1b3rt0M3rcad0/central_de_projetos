@@ -4,6 +4,7 @@
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi import UploadFile, File, Form
+from fastapi.responses import FileResponse
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
 from src.main.adapters.file_adapter import file_adapter
