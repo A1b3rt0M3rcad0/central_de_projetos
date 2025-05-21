@@ -80,8 +80,10 @@ uv sync
 
 ## ▶️ Executando a API
 
+com ambiente ativo
+
 ```shell
-uv run uvicorn src.main:app --reload
+uvicorn src.main:app --reload
 ```
 
 Acesse a documentação interativa em:
