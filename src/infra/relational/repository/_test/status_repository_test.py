@@ -125,7 +125,7 @@ def test_update_status(description) -> None:
         # Realizar o update usando o repositório
         updated_description = "Updated description"
         status_repository.update(
-            update_params={"description": updated_description},
+            new_description=updated_description,
             status_id=result.id
         )
 

@@ -10,8 +10,8 @@ class FindProjectByStatusController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            status_id = query_params['status_id']
+            path_params = http_request.path_params
+            status_id = path_params['status_id']
             projects = self.__find_project_by_status_case.find(
                 status_id=status_id
             )

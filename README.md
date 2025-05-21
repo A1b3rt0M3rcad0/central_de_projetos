@@ -80,8 +80,10 @@ uv sync
 
 ## ▶️ Executando a API
 
+com ambiente ativo
+
 ```shell
-uv run uvicorn src.entrypoint:app --reload
+uvicorn main:app --reload
 ```
 
 Acesse a documentação interativa em:
@@ -94,8 +96,10 @@ http://127.0.0.1:8000/docs
 
 ## ✅ Testes
 
+Com ambiente já ativo e as configurações de ambiente ja configuradas
+
 ```shell
-uv run pytest --cov=src
+pytest
 ```
 
 ---

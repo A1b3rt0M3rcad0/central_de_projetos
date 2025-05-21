@@ -11,8 +11,10 @@ class UpdateStatusDescriptionController(ControllerInterface):
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
             body = http_request.body
+            status_id = body['status_id']
             description = body['description']
             self.__update_status_description_case.update(
+                status_id=status_id,
                 description=description
             )
             return HttpResponse(

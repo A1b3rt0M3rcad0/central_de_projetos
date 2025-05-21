@@ -1,3 +1,4 @@
+#pylint:disable=W0611
 from typing import List
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
@@ -11,6 +12,9 @@ from src.errors.repository.project_type_already_exists import ProjectTypeAlready
 from src.errors.repository.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
 from src.errors.repository.error_on_update_type_from_project import ErrorOnUpdateTypeFromProject
 from src.errors.repository.error_on_delete_project_type import ErrorOnDeleteProjectType
+
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.project import Project
 
 class ProjectTypeRepository(IProjectTypeRepository):
     def __init__(self, db_connection_handler: IDBConnectionHandler) -> None:
@@ -110,3 +114,19 @@ class ProjectTypeRepository(IProjectTypeRepository):
             raise ErrorOnDeleteProjectType(
                 message=f'Error deleting ProjectType (project_id: {project_id}): {e}'
             ) from e
+    
+    def select_all_from_project(self, project_id:int) -> List[ProjectTypeEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                relations = db.session.query(ProjectType).where(
+                    ProjectType.project_id == project_id,
+                ).all()
+                return [
+                    ProjectTypeEntity(
+                        project_id=relation.project_id,
+                        type_id=relation.type_id,
+                        created_at=relation.created_at
+                    ) for relation in relations
+                ]
+        except Exception as e:
+            raise e from e
