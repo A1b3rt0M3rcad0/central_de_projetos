@@ -94,7 +94,7 @@ http://127.0.0.1:8000/docs
 
 ## ✅ Testes
 
-Com ambiente já ativo e as confifurações de ambiente ja configuradas
+Com ambiente já ativo e as configurações de ambiente ja configuradas
 
 ```shell
 pytest
