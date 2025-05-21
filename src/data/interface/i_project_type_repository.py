@@ -26,3 +26,6 @@ class IProjectTypeRepository(ABC):
     
     @abstractmethod
     def delete_all_from_project(self, project_id:int) -> None:pass
+
+    @abstractmethod
+    def select_all_from_project(self, project_id:int) -> None:pass

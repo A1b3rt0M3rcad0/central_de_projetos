@@ -83,7 +83,7 @@ uv sync
 com ambiente ativo
 
 ```shell
-uvicorn src.main:app --reload
+uvicorn main:app --reload
 ```
 
 Acesse a documentação interativa em:

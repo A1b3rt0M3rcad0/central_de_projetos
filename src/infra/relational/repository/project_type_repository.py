@@ -110,3 +110,19 @@ class ProjectTypeRepository(IProjectTypeRepository):
             raise ErrorOnDeleteProjectType(
                 message=f'Error deleting ProjectType (project_id: {project_id}): {e}'
             ) from e
+    
+    def select_all_from_project(self, project_id:int) -> List[ProjectTypeEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                relations = db.session.query(ProjectType).where(
+                    ProjectType.project_id == project_id,
+                ).all()
+                return [
+                    ProjectTypeEntity(
+                        project_id=relation.project_id,
+                        type_id=relation.type_id,
+                        created_at=relation.created_at
+                    ) for relation in relations
+                ]
+        except Exception as e:
+            raise e from e
