@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from src.domain.entities.status import StatusEntity
-from typing import List, Dict, Optional
+from typing import List, Optional
 
 class IStatusRepository(ABC):
 
@@ -14,7 +14,7 @@ class IStatusRepository(ABC):
     def find_all(self) -> List[StatusEntity]:pass
 
     @abstractmethod
-    def update(self, update_params:Dict, status_id:Optional[int]=None, description:Optional[str]=None) -> None:pass
+    def update(self, status_id: int, new_description: str) -> None:pass
 
     @abstractmethod
     def delete(self, status_id:Optional[int]=None, description:Optional[str]=None) -> None:pass

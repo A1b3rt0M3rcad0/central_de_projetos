@@ -1,5 +1,5 @@
 from src.data.interface.i_status_repository import IStatusRepository
-from typing import Dict, List
+from typing import List
 from src.domain.entities.status import StatusEntity
 from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
@@ -82,38 +82,28 @@ class StatusRepository(IStatusRepository):
             except Exception as e:
                 raise e
     
-    def update(self, update_params:Dict, status_id:Optional[int]=None, description:Optional[str]=None) -> None:
-        update_params_entry = update_params
-        status_id_entry = status_id
-        description_entry = description
+    def update(self, status_id: int, new_description: str) -> None:
         with self.__db_connection_handler as db:
             try:
-                if status_id_entry and description_entry:
-                    db.session.query(Status).where(
-                        and_(
-                            Status.id == status_id_entry,
-                            Status.description == description_entry
-                        )
-                    ).update(update_params_entry)
-                    db.session.commit()
-                    return
-                if status_id_entry:
-                    db.session.query(Status).where(
-                        Status.id == status_id_entry
-                    ).update(update_params_entry)
-                    db.session.commit()
-                    return
-                if description_entry:
-                    db.session.query(Status).where(
-                        Status.description == description_entry
-                    ).update(update_params_entry)
-                    db.session.commit()
-                    return
-                raise ValueError('status_id and description, entry error')
+                result = db.session.query(Status).filter(
+                    Status.id == status_id
+                ).update(
+                    {Status.description: new_description}
+                )
+
+                if result == 0:
+                    raise ValueError(f'Status com id {status_id} não encontrado.')
+
+                db.session.commit()
+
             except IntegrityError as e:
-                raise StatusDescriptionAlreadyExists(message=f'Status "{description}" Description Already Exists: {e}') from e
+                raise StatusDescriptionAlreadyExists(
+                    message=f'Status "{new_description}" já existe: {e}'
+                ) from e
+
             except Exception as e:
                 raise e
+
 
     def delete(self, status_id: Optional[int] = None, description: Optional[str] = None) -> None:
         status_id_entry = status_id

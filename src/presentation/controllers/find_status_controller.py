@@ -10,8 +10,8 @@ class FindStatusController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            status_id = query_params['status_id']
+            path_params = http_request.path_params
+            status_id = path_params['status_id']
             status = self.__find_status_code.find(status_id=status_id)
             return HttpResponse(
                 status_code=200,

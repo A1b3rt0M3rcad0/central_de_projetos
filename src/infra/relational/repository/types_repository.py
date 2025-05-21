@@ -1,10 +1,13 @@
 from src.domain.entities.types import TypesEntity
 from src.infra.relational.models.types import Types
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
+
 from src.errors.repository.types_not_exists import TypesNotExists
 from src.errors.repository.types_already_exists import TypesAlreadyExists
 from src.data.interface.i_types_repository import ITypesRepository
-
+from src.errors.repository.error_on_delete_status import ErrorOnDeleteStatus
+from sqlalchemy.exc import IntegrityError
+from src.errors.repository.status_has_related_children import StatusHasRelatedChildren
 
 class TypesRepository(ITypesRepository):
 
@@ -57,5 +60,7 @@ class TypesRepository(ITypesRepository):
                     Types.name == name
                 ).delete()
                 db.session.commit()
+        except IntegrityError as e:
+            raise StatusHasRelatedChildren(message='the registry cannot be deleted because it has related children') from e
         except Exception as e:
-            raise e
+            raise ErrorOnDeleteStatus(message=f'Error on delete status: {e}') from e

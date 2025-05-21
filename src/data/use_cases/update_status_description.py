@@ -8,10 +8,11 @@ class UpdateStatusDescription(IUpdateStatusDescription):
     def __init__(self, status_repository:IStatusRepository):
         self.__status_repository=status_repository
     
-    def update(self, description:str) -> None:
+    def update(self, status_id:int, description:str) -> None:
         try:
             self.__status_repository.update(
-                description=description
+                status_id=status_id,
+                new_description=description
             )
         except StatusDescriptionAlreadyExists as e:
             raise StatusDescriptionError(f'Error on update status description:{e.message} -> {e}') from e

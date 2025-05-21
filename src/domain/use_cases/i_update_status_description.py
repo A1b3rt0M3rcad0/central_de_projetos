@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 class IUpdateStatusDescription(ABC):
 
     @abstractmethod
-    def update(self, description:str) -> None:
+    def update(self, status_id:int, description:str) -> None:
         """
         Atualiza a descrição de um status.
 
