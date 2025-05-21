@@ -10,6 +10,7 @@ from src.main.routes.api.project_bairro.project_bairro_routes import routes as p
 from src.main.routes.api.project_empresa.project_empresa_routes import routes as project_empresa_routes
 from src.main.routes.api.project_type.project_type_routes import routes as project_type_routes
 from src.main.routes.api.status.status_routes import routes as status_routes
+from src.main.routes.api.user_project.user_project_routes import routes as user_project_routes
 
 app = FastAPI()
 app.include_router(user_routes)
@@ -23,3 +24,4 @@ app.include_router(project_bairro_routes)
 app.include_router(project_empresa_routes)
 app.include_router(project_type_routes)
 app.include_router(status_routes)
+app.include_router(user_project_routes)
