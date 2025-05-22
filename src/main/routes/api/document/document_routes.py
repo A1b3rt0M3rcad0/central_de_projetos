@@ -1,6 +1,5 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
-#pylint:disable=all
 from io import BytesIO
 from fastapi import APIRouter
 from fastapi import Request
