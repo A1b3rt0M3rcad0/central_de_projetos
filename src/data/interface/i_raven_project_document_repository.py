@@ -14,6 +14,11 @@ class IProjectDocumentRepository(ABC):
     def delete_document(self, project_id: int, document_name: str) -> None:
         """Delete a specific document from a project"""
         raise NotImplementedError
+
+    @abstractmethod
+    def delete_project(self, project_id:int) -> None:
+        '''Deleta todo o projeto de documentos'''
+        raise NotImplementedError
     
     @abstractmethod
     def get_document_names(self, project_id:int) -> List[str]:

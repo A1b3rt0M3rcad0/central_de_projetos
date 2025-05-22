@@ -6,6 +6,8 @@ from src.data.use_cases.delete_bairro_from_project import DeleteBairroFromProjec
 from src.data.use_cases.delete_empresa_from_project import DeleteEmpresaFromProject
 from src.data.use_cases.delete_fiscal_from_project import DeleteFiscalFromProject
 from src.data.use_cases.delete_type_from_project import DeleteTypeFromProject
+from src.data.use_cases.delete_all_documents_from_project import DeleteAllDocumentsFromProject
+
 from src.infra.relational.repository.project_repository import ProjectRepository
 from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.relational.repository.user_project_repository import UserProjectRepository
@@ -13,7 +15,9 @@ from src.infra.relational.repository.project_bairro_repository import ProjectBai
 from src.infra.relational.repository.project_empresa_repository import ProjectEmpresaRepository
 from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
 from src.infra.relational.repository.project_type_repository import ProjectTypeRepository
+from src.infra.raven.repositories.project_document_repository import ProjectDocumentRepository
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
+from src.main.config.database.raven_connection_handler_factory import raven_connection_handler_factory
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from typing import Callable
@@ -42,5 +46,10 @@ def delete_project_composer() -> Callable[[HttpRequest], HttpResponse]:
         ),
         delete_type_from_project_case=DeleteTypeFromProject(
             project_type_repository=ProjectTypeRepository(db_connection_handler=db_handler)
+        ),
+        delete_all_documents_from_project_case=DeleteAllDocumentsFromProject(
+            project_document_repository=ProjectDocumentRepository(
+                db_connection_handler=raven_connection_handler_factory()
+            )
         )
     ).handle
