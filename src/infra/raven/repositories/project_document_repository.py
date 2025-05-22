@@ -36,6 +36,20 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
 
             db.save_changes()
     
+    def delete_project(self, project_id: int) -> None:
+        with self.__db_connection_handler as db:
+            dummy_project_documents = ProjectDocuments()
+            project_document_data = dummy_project_documents.make_to_store(project_id=project_id)
+
+            entity = db.load(project_document_data["key"])
+
+            if entity is None:
+                raise  RuntimeError('Error on delete project does not exists')
+
+            db.delete(entity)
+            db.save_changes()
+
+    
     def get_document_names(self, project_id:int) -> List[str]:
         document_names = []
 

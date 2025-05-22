@@ -8,6 +8,7 @@ from src.data.interface.i_types_repository import ITypesRepository
 from src.errors.repository.error_on_delete_status import ErrorOnDeleteStatus
 from sqlalchemy.exc import IntegrityError
 from src.errors.repository.status_has_related_children import StatusHasRelatedChildren
+from typing import List
 
 class TypesRepository(ITypesRepository):
 
@@ -42,6 +43,22 @@ class TypesRepository(ITypesRepository):
                 )
         except Exception as e:
             raise e
+    
+    def find_all(self) -> List[TypesEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                types = db.session.query(Types).all()
+                types_entities = [
+                    TypesEntity(
+                        types_id=entity.id,
+                        name=entity.name,
+                        created_at=entity.created_at
+                    )
+                    for entity in types
+                ]
+                return types_entities
+        except Exception as e:
+            raise e from e
 
     def update(self, name: str, new_name: str) -> None:
         try:
