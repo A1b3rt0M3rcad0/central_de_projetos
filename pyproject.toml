@@ -17,6 +17,7 @@ dependencies = [
     "pymysql==1.1.1",
     "pytest==8.3.5",
     "python-dotenv==1.1.0",
+    "python-multipart>=0.0.20",
     "ravendb==7.0.0",
     "sqlalchemy==2.0.40",
     "uvicorn==0.34.2",

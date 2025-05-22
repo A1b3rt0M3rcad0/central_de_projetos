@@ -10,11 +10,12 @@ class GetDocument(IGetDocument):
     
     def document(self, project_id:int, document_name:str, _document_class:Document = Document) -> Document:
         try:
-            self.__project_document_repository.get_document(
+            document = self.__project_document_repository.get_document(
                 project_id=project_id,
                 document_name=document_name,
                 _document_class=_document_class
             )
+            return document
         except AttributeError as e:
             raise DocumentNotFoundError(
                 message=f'Document "{document_name}" not found in project "id:{project_id}": {e}'

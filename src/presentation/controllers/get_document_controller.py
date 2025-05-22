@@ -1,4 +1,5 @@
 from src.domain.use_cases.i_get_document import IGetDocument
+from src.domain.value_objects.generic_document import GenericDocument
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -11,13 +12,14 @@ class GetDocumentController(ControllerInterface):
     
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            project_id = query_params['project_id']
-            document_name = query_params['document_name']
+            path_params = http_request.path_params
+            project_id = path_params['project_id']
+            document_name = path_params['document_name']
 
             document = self.__get_document_case.document(
                 project_id=project_id,
-                document_name=document_name
+                document_name=document_name,
+                _document_class=GenericDocument
             )
             
             document_dict = document.to_dict()
