@@ -10,8 +10,8 @@ class FindTypeByExactNameController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            name = query_params['type_name']
+            path_params = http_request.path_params
+            name = path_params['type_name']
             result = self.__find_type_by_exact_name_case.find(
                 name=name
             )

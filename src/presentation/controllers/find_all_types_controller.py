@@ -21,7 +21,7 @@ class FindAllTypesController(ControllerInterface):
                         {
                             'id': types.types_id,
                             'name': types.name,
-                            'created_at': types.created_at
+                            'created_at': types.created_at.strftime(r'%d/%m/%Y')
                         }
                         for types in results
                     ]
