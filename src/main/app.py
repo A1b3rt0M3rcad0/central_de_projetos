@@ -1,4 +1,7 @@
+#pylint:disable=C0413
 from fastapi import FastAPI
+
+# Routes
 from src.main.routes.api.user.user_routes import routes as user_routes
 from src.main.routes.api.bairro.bairro_routes import routes as bairro_routes
 from src.main.routes.api.empresa.empresa_routes import routes as empresa_routes
@@ -15,6 +18,13 @@ from src.main.routes.api.document.document_routes import routes as document_rout
 from src.main.routes.api.types.types_routes import routes as types_routes
 
 app = FastAPI()
+
+# Test Route
+from src.main.routes.middleware.test_routes import routes as test_route
+
+app.include_router(test_route)
+
+# Routes
 app.include_router(user_routes)
 app.include_router(bairro_routes)
 app.include_router(empresa_routes)
