@@ -16,4 +16,4 @@ def delete_document_composer() -> Callable[[HttpRequest], HttpResponse]:
                 )
             )
         )
-    )
+    ).handle

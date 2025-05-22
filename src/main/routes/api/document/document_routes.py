@@ -14,6 +14,9 @@ from src.errors.error_handle import error_handler
 from src.main.composers.save_document_composer import save_document_composer
 from src.main.composers.get_document_composer import get_document_composer
 from src.main.composers.get_document_names_composer import get_document_names_composer
+from src.main.composers.delete_document_composer import delete_document_composer
+
+from src.main.routes.api.document.request_format.delete_document_format import DeleteDocumentFormat
 
 routes = APIRouter(prefix='/document', tags=['document'])
 
@@ -51,6 +54,14 @@ async def get_all_document_names(project_id:int, request:Request):
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, get_document_names_composer())
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.delete('/')
+async def delete_document(body:DeleteDocumentFormat, request:Request):
+    try:
+        http_response = await request_adapter(request, delete_document_composer())
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
