@@ -10,8 +10,8 @@ class GetDocumentNamesController(ControllerInterface):
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request.query_params
-            project_id = query_params['project_id']
+            path_params = http_request.path_params
+            project_id = path_params['project_id']
             names = self.__get_document_names_case.names(
                 project_id=project_id
             )

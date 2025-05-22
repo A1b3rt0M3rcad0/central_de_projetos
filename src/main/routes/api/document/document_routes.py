@@ -5,7 +5,7 @@ from io import BytesIO
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi import UploadFile, File, Form
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
 from src.main.adapters.file_adapter import file_adapter
@@ -13,6 +13,7 @@ from src.errors.error_handle import error_handler
 
 from src.main.composers.save_document_composer import save_document_composer
 from src.main.composers.get_document_composer import get_document_composer
+from src.main.composers.get_document_names_composer import get_document_names_composer
 
 routes = APIRouter(prefix='/document', tags=['document'])
 
@@ -42,5 +43,14 @@ async def get_document(project_id:int, document_name:str, request:Request):
                 )
             }
         )
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/projects/{project_id}/documents')
+async def get_all_document_names(project_id:int, request:Request):
+    try:
+        request.path_params['project_id'] = project_id
+        http_response = await request_adapter(request, get_document_names_composer())
+        return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
