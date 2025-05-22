@@ -2,7 +2,7 @@ from src.domain.value_objects.document import Document
 
 
 class GenericDocument(Document):
-    def __init__(self, document: bytes, content_type: str, name: str, document_name: str):
+    def __init__(self, document: bytes, document_name: str, content_type: str=None, name: str=None):
         self.__document = document
         self.__content_type = content_type
         self.__name = name
