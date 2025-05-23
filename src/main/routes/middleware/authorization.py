@@ -123,7 +123,7 @@ def role_required(allowed_roles: list[str]):
 
         if not any(role in allowed_roles for role in roles):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Permissão negada."
             )
 
