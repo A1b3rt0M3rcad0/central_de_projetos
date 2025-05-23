@@ -18,7 +18,7 @@ class CreateTypeController(ControllerInterface):
             return HttpResponse(
                 status_code=200,
                 body={
-                    'message': 'Status Created'
+                    'message': 'Type Created'
                 }
             )
         except Exception as e:
