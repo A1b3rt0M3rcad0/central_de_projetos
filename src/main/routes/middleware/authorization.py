@@ -1,3 +1,7 @@
+import dotenv
+import os
+from datetime import datetime, timedelta, timezone
+
 from fastapi import Request, HTTPException, status, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
@@ -77,9 +81,12 @@ def get_current_user(
             )
 
         # Gera novo access token
+        dotenv.load_dotenv()
+        hours = float(os.getenv('EXPIRE_TIME_TOKEN'))
         new_access_token = encode_jwt.encode({
             "cpf": payload.get("cpf"),
-            "role": payload.get("role")
+            "role": payload.get("role"),
+            'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
         })
 
         new_payload = decode_jwt.decode(new_access_token)
