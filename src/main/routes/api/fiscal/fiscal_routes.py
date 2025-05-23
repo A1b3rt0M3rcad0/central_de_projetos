@@ -15,37 +15,46 @@ from src.main.routes.api.fiscal.request_format.create_fiscal_format import Creat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
 from src.main.routes.api.fiscal.request_format.update_fiscal_name_format import UpdateFiscalNameFormat
 
+## Auth
+from fastapi import Security
+from src.main.routes.middleware.authorization import role_required
+from src.main.routes.middleware.insert_access_token import insert_access_token
+
 routes = APIRouter(prefix='/fiscal', tags=['fiscal'])
 
 @routes.get('/{fiscal_name}')
-async def find_fiscal_by_name(fiscal_name, request:Request):
+async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['fiscal_name'] = fiscal_name
         http_response = await request_adapter(request, find_fiscal_by_name_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
 
 @routes.post('/')
-async def create_fiscal(body:CreateFiscalFormat, request:Request):
+async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_fiscal_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
 
 @routes.delete('/')
-async def delete_fiscal(body:DeleteFiscalFormat, request:Request):
+async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_fiscal_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
 
 @routes.patch('/')
-async def update_fiscal(body:UpdateFiscalNameFormat, request:Request):
+async def update_fiscal(body:UpdateFiscalNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_fiscal_name_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
