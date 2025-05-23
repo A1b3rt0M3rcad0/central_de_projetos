@@ -7,10 +7,11 @@ class DecodeJwtToken(IDecodeJwtToken):
     def __init__(self, encrypt:IEncrypt) -> None:
         self.__encrypt = encrypt
     
-    def decode(self, token:str) -> Dict:
+    def decode(self, token:str, verify_exp=True) -> Dict:
         try:
             result = self.__encrypt.decode(
-                token=token
+                token=token,
+                verify_exp=verify_exp
             )
             return result
         except Exception as e:
