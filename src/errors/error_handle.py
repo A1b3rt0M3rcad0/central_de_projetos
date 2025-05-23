@@ -20,7 +20,7 @@ def error_handler(error: Exception) -> HttpResponse:
             body={
                 'errors': [{
                     "title": error.title,
-                    "message": error.message
+                    "detail": error.message
                 }]
             }
         )
