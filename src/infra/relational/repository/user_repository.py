@@ -10,7 +10,7 @@ from src.infra.relational.models.user import User
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.errors.repository.user_not_founded import UserNotFounded
 from src.errors.repository.user_not_founded_by_email import UserNotFoundedByEmail
-from src.errors.repository.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
+from src.errors.repository.already_exists_error.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
 from typing import Optional, Dict
 
 class UserRepository(IUserRepository):

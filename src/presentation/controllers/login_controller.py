@@ -6,7 +6,7 @@ from src.domain.use_cases.i_update_refresh_token import IUpdateRefreshToken
 from src.domain.value_objects.password import Password
 from src.domain.value_objects.cpf import CPF
 from src.presentation.interface.controller_interface import ControllerInterface
-from src.errors.repository.refresh_token_already_exists import RefreshTokenAlreadyExists
+from src.errors.repository.already_exists_error.refresh_token_already_exists import RefreshTokenAlreadyExists
 
 class LoginController(ControllerInterface):
 

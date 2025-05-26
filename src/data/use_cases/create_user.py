@@ -4,7 +4,7 @@ from src.domain.value_objects.password import Password
 from src.domain.value_objects.roles import Role
 from src.domain.use_cases.i_create_user import ICreateUser
 from src.data.interface.i_user_repository import IUserRepository
-from src.errors.repository.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
+from src.errors.repository.already_exists_error.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
 from src.errors.use_cases.create_user_error import CreateUserError
 from src.security.hashedpassword_factory import hashedpassword_factory
 from src.security.cryptography.utils.salt import Salt

@@ -6,8 +6,8 @@ from src.infra.relational.models.user_project import UserProject
 from sqlalchemy import and_
 from typing import Optional, List, Dict
 from sqlalchemy.exc import IntegrityError
-from src.errors.repository.registry_already_exists import RegistryAlreadyExists
-from src.errors.repository.user_project_not_exists import UserProjectNotExists
+from src.errors.repository.already_exists_error.registry_already_exists import RegistryAlreadyExists
+from src.errors.repository.already_exists_error.user_project_not_exists import UserProjectNotExists
 
 class UserProjectRepository(IUserProjectRepository):
     

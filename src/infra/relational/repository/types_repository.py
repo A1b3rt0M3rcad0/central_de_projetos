@@ -2,12 +2,12 @@ from src.domain.entities.types import TypesEntity
 from src.infra.relational.models.types import Types
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 
-from src.errors.repository.types_not_exists import TypesNotExists
-from src.errors.repository.types_already_exists import TypesAlreadyExists
+from src.errors.repository.not_exists_error.types_not_exists import TypesNotExists
+from src.errors.repository.already_exists_error.types_already_exists import TypesAlreadyExists
 from src.data.interface.i_types_repository import ITypesRepository
-from src.errors.repository.error_on_delete_status import ErrorOnDeleteStatus
+from src.errors.repository.error_on_delete.error_on_delete_status import ErrorOnDeleteStatus
 from sqlalchemy.exc import IntegrityError
-from src.errors.repository.status_has_related_children import StatusHasRelatedChildren
+from src.errors.repository.has_related_children.status_has_related_children import StatusHasRelatedChildren
 from typing import List
 
 class TypesRepository(ITypesRepository):

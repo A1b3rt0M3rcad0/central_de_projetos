@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from src.infra.relational.repository.project_bairro_repository import ProjectBairroRepository
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.config.connection.t_string_connection import TStringConnection
-from src.errors.repository.project_bairro_already_exists import ProjectBairroAlreadyExists
-from src.errors.repository.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
+from src.errors.repository.not_exists_error.project_bairro_not_exists import ProjectBairroNotExists
+from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
 
 @pytest.fixture(autouse=True)
 def cleanup_tables():
@@ -89,7 +89,7 @@ def test_find_should_fail_for_non_existing():
     db_handler = DBConnectionHandler(TStringConnection())
     repo = ProjectBairroRepository(db_handler)
 
-    with pytest.raises(ProjectsFromBairroDoesNotExists):
+    with pytest.raises(ProjectBairroNotExists):
         repo.find(999, 999)
 
 
@@ -112,7 +112,7 @@ def test_find_all_should_fail_for_empty():
     db_handler = DBConnectionHandler(TStringConnection())
     repo = ProjectBairroRepository(db_handler)
 
-    with pytest.raises(ProjectsFromBairroDoesNotExists):
+    with pytest.raises(ProjectBairroNotExists):
         repo.find_all_from_bairro(123456)
 
 
@@ -154,5 +154,5 @@ def test_delete_project_bairro(setup_project_and_bairro):
 
     repo.delete(project_id, bairro_id)
 
-    with pytest.raises(ProjectsFromBairroDoesNotExists):
+    with pytest.raises(ProjectBairroNotExists):
         repo.find(project_id, bairro_id)

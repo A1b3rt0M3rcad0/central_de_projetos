@@ -1,6 +1,6 @@
-from src.errors.use_cases.base.BaseError import BaseError
+from src.errors.use_cases.__base.base_use_case_error import BaseUseCaseError
 
-class CPFAlreadyExistsError(BaseError):
+class CPFAlreadyExistsError(BaseUseCaseError):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(

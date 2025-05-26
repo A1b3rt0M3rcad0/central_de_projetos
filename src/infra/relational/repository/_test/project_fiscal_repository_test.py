@@ -5,8 +5,8 @@ from src.infra.relational.config.connection.db_connection_handler import DBConne
 from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
 from datetime import datetime, timezone
 from sqlalchemy import TextClause
-from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlreadyExists
-from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
+from src.errors.repository.already_exists_error.project_fiscal_already_exists import ProjectFiscalAlreadyExists
+from src.errors.repository.not_exists_error.projects_from_fiscal_does_not_exists import ProjectFiscalNotExists
 
 
 @pytest.fixture(autouse=True)
@@ -180,7 +180,7 @@ def test_find_all_from_fiscal(insert_project_script, insert_status_script) -> No
     assert results[0].project_id == project.id
 
     # Testar exceção para fiscal sem projetos
-    with pytest.raises(ProjectsFromFiscalDoesNotExists):
+    with pytest.raises(ProjectFiscalNotExists):
         project_fiscal_repository.find_all_from_fiscal(fiscal_id=9999)
 
 def test_find(insert_project_script, insert_status_script) -> None:
@@ -244,7 +244,7 @@ def test_find(insert_project_script, insert_status_script) -> None:
     assert isinstance(result.created_at, datetime)
 
     # Teste de exceção ao buscar associação inexistente
-    with pytest.raises(ProjectsFromFiscalDoesNotExists):
+    with pytest.raises(ProjectFiscalNotExists):
         project_fiscal_repository.find(fiscal_id=9999, project_id=9999)
 
 def test_update_fiscal(insert_project_script, insert_status_script) -> None:
