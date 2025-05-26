@@ -56,6 +56,8 @@ class EmpresaRepository(IEmpresaRepository):
                     Empresa.name == name
                 ).update({'name': new_name})
                 db.session.commit()
+        except EmpresaNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise EmpresaAlreadyExists(message=f'Empresa with name "{name}" already exists') from e
         except Exception as e:
@@ -71,6 +73,8 @@ class EmpresaRepository(IEmpresaRepository):
                     raise EmpresaNotExists(message=f'Empresa with name "{name}" does not exist')
                 db.session.query(Empresa).where(Empresa.name == name).delete()
                 db.session.commit()
+        except EmpresaNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise EmpresaHasRelatedChildren(f'Empresas {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
