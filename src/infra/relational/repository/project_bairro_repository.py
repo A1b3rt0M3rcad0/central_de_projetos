@@ -8,7 +8,7 @@ from sqlalchemy import and_
 ## Errors
 from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
 from src.errors.repository.not_exists_error.project_bairro_not_exists import ProjectBairroNotExists
-from src.errors.repository.error_on_delete.error_on_update_bairro_from_project import ErrorOnUpdateBairroFromProject
+from src.errors.repository.error_on_update.error_on_update_bairro_from_project import ErrorOnUpdateBairroFromProject
 from src.errors.repository.error_on_delete.error_on_delete_project_bairro import ErrorOnDeleteProjectBairro
 from src.errors.repository.error_on_insert.error_on_insert_project_bairro import ErrorOnInsertProjectBairro
 from src.errors.repository.error_on_find.error_on_find_project_bairro import ErrorOnFindProjectBairro

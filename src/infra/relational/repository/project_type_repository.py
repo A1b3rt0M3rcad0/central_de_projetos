@@ -10,7 +10,7 @@ from src.domain.entities.project_type import ProjectTypeEntity
 
 from src.errors.repository.already_exists_error.project_type_already_exists import ProjectTypeAlreadyExists
 from src.errors.repository.not_exists_error.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
-from src.errors.repository.error_on_delete.error_on_update_type_from_project import ErrorOnUpdateTypeFromProject
+from src.errors.repository.error_on_update.error_on_update_type_from_project import ErrorOnUpdateTypeFromProject
 from src.errors.repository.error_on_delete.error_on_delete_project_type import ErrorOnDeleteProjectType
 
 from src.infra.relational.models.types import Types
