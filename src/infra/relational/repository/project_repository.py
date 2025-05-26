@@ -4,8 +4,8 @@ from typing import Optional, List, Dict
 from src.domain.entities.project import ProjectEntity
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from src.errors.repository.projects_does_not_exists import ProjectsDoesNotExists
-from src.errors.repository.error_on_delete_project import ErrorOnDeleteProject
+from src.errors.repository.not_exists_error.projects_does_not_exists import ProjectsDoesNotExists
+from src.errors.repository.error_on_delete.error_on_delete_project import ErrorOnDeleteProject
 from datetime import datetime
 
 from src.infra.relational.models.project import Project

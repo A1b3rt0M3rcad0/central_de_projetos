@@ -2,8 +2,8 @@ from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.value_objects.cpf import CPF
 from src.domain.entities.refresh_token import RefreshTokenEntity
-from src.errors.repository.refresh_token_already_exists import RefreshTokenAlreadyExists
-from src.errors.repository.refresh_token_not_exists import RefreshTokenNotExists
+from src.errors.repository.already_exists_error.refresh_token_already_exists import RefreshTokenAlreadyExists
+from src.errors.repository.not_exists_error.refresh_token_not_exists import RefreshTokenNotExists
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.data.interface.i_refresh_token_repository import IRefreshTokenRepository
 

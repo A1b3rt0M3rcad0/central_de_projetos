@@ -5,7 +5,7 @@ from src.domain.value_objects.cpf import CPF
 from src.errors.use_cases.user_not_found_error import UserNotFoundError
 from src.errors.use_cases.invalid_role_error import InvalidRoleError
 from src.errors.use_cases.association_not_found_error import AssociationNotFoundError
-from src.errors.repository.user_project_not_exists import UserProjectNotExists
+from src.errors.repository.already_exists_error.user_project_not_exists import UserProjectNotExists
 
 
 class UpdateAssociationFromProject(IUpdateAssociationFromProject):

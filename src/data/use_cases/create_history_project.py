@@ -1,6 +1,6 @@
 from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.data.interface.i_history_project_repository import IHistoryProjectRepository
-from src.errors.repository.project_id_not_exists import ProjectIdNotExistsError
+from src.errors.repository.not_exists_error.project_id_not_exists import ProjectIdNotExistsError
 from src.errors.use_cases.project_not_found_error import ProjectNotFoundError
 from typing import Optional
 

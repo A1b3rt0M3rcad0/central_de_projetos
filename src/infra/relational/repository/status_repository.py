@@ -6,7 +6,7 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy import and_
 from typing import Optional
-from src.errors.repository.status_description_already_exists import StatusDescriptionAlreadyExists
+from src.errors.repository.already_exists_error.status_description_already_exists import StatusDescriptionAlreadyExists
 
 class StatusRepository(IStatusRepository):
 

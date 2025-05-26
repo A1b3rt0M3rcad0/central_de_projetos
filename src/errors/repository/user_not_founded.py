@@ -1,6 +1,6 @@
-from src.errors.use_cases.base.BaseError import BaseError
+from src.errors.repository.__base.base_repository_error import BaseRepositoryError
 
-class UserNotFounded(BaseError):
+class UserNotFounded(BaseRepositoryError):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(

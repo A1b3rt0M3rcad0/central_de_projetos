@@ -8,10 +8,10 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.data.interface.i_project_type_repository import IProjectTypeRepository
 from src.domain.entities.project_type import ProjectTypeEntity
 
-from src.errors.repository.project_type_already_exists import ProjectTypeAlreadyExists
-from src.errors.repository.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
-from src.errors.repository.error_on_update_type_from_project import ErrorOnUpdateTypeFromProject
-from src.errors.repository.error_on_delete_project_type import ErrorOnDeleteProjectType
+from src.errors.repository.already_exists_error.project_type_already_exists import ProjectTypeAlreadyExists
+from src.errors.repository.not_exists_error.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
+from src.errors.repository.error_on_delete.error_on_update_type_from_project import ErrorOnUpdateTypeFromProject
+from src.errors.repository.error_on_delete.error_on_delete_project_type import ErrorOnDeleteProjectType
 
 from src.infra.relational.models.types import Types
 from src.infra.relational.models.project import Project

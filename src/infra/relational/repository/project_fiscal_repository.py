@@ -1,12 +1,12 @@
 from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from sqlalchemy.exc import IntegrityError
-from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlreadyExists
+from src.errors.repository.already_exists_error.project_fiscal_already_exists import ProjectFiscalAlreadyExists
 from src.domain.entities.project_fiscal import ProjectFiscalEntity
 from typing import List
-from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
-from src.errors.repository.error_on_update_fiscal_from_project import ErrorOnUpdateFiscalFromProject
-from src.errors.repository.error_on_delete_project_fiscal import ErrorOnDeleteProjectFiscal
+from src.errors.repository.not_exists_error.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
+from src.errors.repository.error_on_delete.error_on_update_fiscal_from_project import ErrorOnUpdateFiscalFromProject
+from src.errors.repository.error_on_delete.error_on_delete_project_fiscal import ErrorOnDeleteProjectFiscal
 from sqlalchemy import and_
 from src.data.interface.i_project_fiscal_repository import IProjectFiscalRepository
 

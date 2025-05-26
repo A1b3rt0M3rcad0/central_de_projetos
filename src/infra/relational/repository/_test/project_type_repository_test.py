@@ -8,7 +8,7 @@ from src.infra.relational.models.status import Status
 from src.infra.relational.models.types import Types
 from sqlalchemy import text
 from sqlalchemy import TextClause
-from src.errors.repository.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
+from src.errors.repository.not_exists_error.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
 
 @pytest.fixture(autouse=True)
 def cleanup_all():

@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from src.infra.relational.repository.project_bairro_repository import ProjectBairroRepository
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.config.connection.t_string_connection import TStringConnection
-from src.errors.repository.project_bairro_already_exists import ProjectBairroAlreadyExists
-from src.errors.repository.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
+from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
+from src.errors.repository.not_exists_error.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
 
 @pytest.fixture(autouse=True)
 def cleanup_tables():

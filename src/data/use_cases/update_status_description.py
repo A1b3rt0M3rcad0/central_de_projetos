@@ -1,7 +1,7 @@
 from src.data.interface.i_status_repository import IStatusRepository
 from src.domain.use_cases.i_update_status_description import IUpdateStatusDescription
 from src.errors.use_cases.status_description_error import StatusDescriptionError
-from src.errors.repository.status_description_already_exists import StatusDescriptionAlreadyExists
+from src.errors.repository.already_exists_error.status_description_already_exists import StatusDescriptionAlreadyExists
 
 class UpdateStatusDescription(IUpdateStatusDescription):
 

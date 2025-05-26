@@ -2,7 +2,7 @@ from src.infra.relational.models.history_project import HistoryProject
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_history_project_repository import IHistoryProjectRepository
 from src.domain.entities.history_project import HistoryProjectEntity
-from src.errors.repository.project_id_not_exists import ProjectIdNotExistsError
+from src.errors.repository.not_exists_error.project_id_not_exists import ProjectIdNotExistsError
 from sqlalchemy.exc import IntegrityError
 from typing import Optional, Dict, List
 

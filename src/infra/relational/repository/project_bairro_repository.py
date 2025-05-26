@@ -2,10 +2,10 @@ from src.infra.relational.models.project_bairro import ProjectBairro
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from sqlalchemy.exc import IntegrityError
 from src.domain.entities.project_bairro import ProjectBairroEntity
-from src.errors.repository.project_bairro_already_exists import ProjectBairroAlreadyExists
-from src.errors.repository.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
-from src.errors.repository.error_on_update_bairro_from_project import ErrorOnUpdateBairroFromProject
-from src.errors.repository.error_on_delete_project_bairro import ErrorOnDeleteProjectBairro
+from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
+from src.errors.repository.not_exists_error.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
+from src.errors.repository.error_on_delete.error_on_update_bairro_from_project import ErrorOnUpdateBairroFromProject
+from src.errors.repository.error_on_delete.error_on_delete_project_bairro import ErrorOnDeleteProjectBairro
 from src.data.interface.i_project_bairro_repository import IProjectBairroRepository
 from typing import List
 from sqlalchemy import and_

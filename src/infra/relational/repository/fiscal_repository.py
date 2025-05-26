@@ -1,9 +1,18 @@
 from src.domain.entities.fiscal import FiscalEntity
 from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from src.errors.repository.fiscal_not_exists import FiscalNotExists
-from src.errors.repository.fiscal_already_exists import FiscalAlreadyExists
 from src.data.interface.i_fiscal_repository import IFiscalRepository
+
+# Errors
+from src.errors.repository.not_exists_error.fiscal_not_exists import FiscalNotExists
+from src.errors.repository.already_exists_error.fiscal_already_exists import FiscalAlreadyExists
+from src.errors.repository.error_on_insert.error_on_insert_fiscal import ErrorOnInsertFiscal
+from src.errors.repository.error_on_find.error_on_find_fiscal import ErrorOnFindFiscal
+from src.errors.repository.error_on_update.error_on_update_fiscal import ErroronUpdateFiscal
+from src.errors.repository.error_on_delete.error_on_delete_fiscal import ErrorOnDeleteFiscal
+from src.errors.repository.has_related_children.fiscal_has_related_children import FiscalHasRelatedChildren
+
+from sqlalchemy.exc import IntegrityError
 
 class FiscalRepository(IFiscalRepository):
 
@@ -13,17 +22,14 @@ class FiscalRepository(IFiscalRepository):
     def insert(self, name:str) -> None:
         try:
             with self.__db_connection_handler as db:
-                fiscal = db.session.query(Fiscal).where(
-                    Fiscal.name == name
-                ).first()
-                if fiscal:
-                    raise FiscalAlreadyExists('The fiscal with this name already exists')
                 db.session.add(
                     Fiscal(name=name)
                 )
                 db.session.commit()
+        except IntegrityError as e:
+            raise FiscalAlreadyExists(message=f'Fiscal {name} already exists: {str(e)}') from e
         except Exception as e:
-            raise e
+            raise ErrorOnInsertFiscal(message=f'Error on insert fiscal {name}: {str(e)}') from e
 
     def find_by_name(self, name:str) -> FiscalEntity:
         try:
@@ -38,8 +44,10 @@ class FiscalRepository(IFiscalRepository):
                     name=fiscal.name,
                     created_at=fiscal.created_at
                 )
+        except FiscalNotExists as e:
+            raise e from e
         except Exception as e:
-            raise e
+            raise ErrorOnFindFiscal(message=f'Error on find fiscal by name {name}: {str(e)}') from e
      
     def find_by_id(self, fiscal_id:int) -> FiscalEntity:
         try:
@@ -54,8 +62,10 @@ class FiscalRepository(IFiscalRepository):
                     name=fiscal.name,
                     created_at=fiscal.created_at
                 )
+        except FiscalNotExists as e:
+            raise e from e
         except Exception as e:
-            raise e
+            raise ErrorOnFindFiscal(message=f'Error on find fiscal by id {fiscal_id}: {str(e)}') from e
     
     def update(self, name:str, new_name:str) -> None:
         try:
@@ -64,8 +74,10 @@ class FiscalRepository(IFiscalRepository):
                     Fiscal.name == name
                 ).update({'name':new_name})
                 db.session.commit()
+        except IntegrityError as e:
+            raise FiscalAlreadyExists(message=f'Fiscal with name {new_name} already exists: {str(e)}') from e
         except Exception as e:
-            raise e
+            raise ErroronUpdateFiscal(message=f'Error on update fiscal {name} -> {new_name}: {str(e)}') from e
     
     def delete(self, name:str) -> None:
         try:
@@ -74,5 +86,7 @@ class FiscalRepository(IFiscalRepository):
                     Fiscal.name == name
                 ).delete()
                 db.session.commit()
+        except IntegrityError as e:
+            raise FiscalHasRelatedChildren(f'Fiscal {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
-            raise e
+            raise ErrorOnDeleteFiscal(message=f'Error on delete fiscal {name}: {str(e)}') from e

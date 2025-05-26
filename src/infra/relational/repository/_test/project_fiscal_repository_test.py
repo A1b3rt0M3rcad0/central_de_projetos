@@ -5,8 +5,8 @@ from src.infra.relational.config.connection.db_connection_handler import DBConne
 from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
 from datetime import datetime, timezone
 from sqlalchemy import TextClause
-from src.errors.repository.project_fiscal_already_exists import ProjectFiscalAlreadyExists
-from src.errors.repository.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
+from src.errors.repository.already_exists_error.project_fiscal_already_exists import ProjectFiscalAlreadyExists
+from src.errors.repository.not_exists_error.projects_from_fiscal_does_not_exists import ProjectsFromFiscalDoesNotExists
 
 
 @pytest.fixture(autouse=True)
