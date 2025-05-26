@@ -80,20 +80,34 @@ class HistoryProjectRepository(IHistoryProjectRepository):
     def update(self, history_project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
             try:
+                history_project = db.session.query(HistoryProject).where(
+                    HistoryProject.id == history_project_id
+                ).first()
+                if not history_project:
+                    raise HistoryProjectNotExists(f'History project not exists {history_project_id}')
                 db.session.query(HistoryProject).where(
                     HistoryProject.id == history_project_id
                 ).update(update_params)
                 db.session.commit()
+            except HistoryProjectNotExists as e:
+                raise e from e
             except Exception as e:
                 raise ErroronUpdateHistoryProject(message=f'Error on update history_project {update_params}: {str(e)}') from e
     
     def delete(self, history_project_id:int) -> None:
         with self.__db_connection_handler as db:
             try:
+                history_project = db.session.query(HistoryProject).where(
+                    HistoryProject.id == history_project_id
+                ).first()
+                if not history_project:
+                    raise HistoryProjectNotExists(f'History project not exists {history_project_id}')
                 db.session.query(HistoryProject).where(
                     HistoryProject.id == history_project_id
                 ).delete()
                 db.session.commit()
+            except HistoryProjectNotExists as e:
+                raise e from e
             except IntegrityError as e:
                 raise HistoryProjecthasRelatedChildren(message=f'History project {history_project_id} has related children: {str(e)}') from e
             except Exception as e:
@@ -102,10 +116,17 @@ class HistoryProjectRepository(IHistoryProjectRepository):
     def delete_all_from_project(self, project_id:int) -> None:
         with self.__db_connection_handler as db:
             try:
+                history_project = db.session.query(HistoryProject).where(
+                    HistoryProject.project_id == project_id
+                ).first()
+                if not history_project:
+                    raise HistoryProjectNotExists(f'History project from project {project_id} not exists')
                 db.session.query(HistoryProject).where(
                     HistoryProject.project_id == project_id
                 ).delete()
                 db.session.commit()
+            except HistoryProjectNotExists as e:
+                raise e from e
             except IntegrityError as e:
                 raise HistoryProjecthasRelatedChildren(message=f'History project from project {project_id} has related children: {str(e)}') from e
             except Exception as e:
