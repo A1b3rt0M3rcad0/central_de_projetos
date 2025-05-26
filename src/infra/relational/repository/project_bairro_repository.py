@@ -8,11 +8,11 @@ from sqlalchemy import and_
 ## Errors
 from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
 from src.errors.repository.not_exists_error.project_bairro_not_exists import ProjectBairroNotExists
-from src.errors.repository.not_exists_error.projects_from_bairro_does_not_exists import ProjectsFromBairroDoesNotExists
 from src.errors.repository.error_on_delete.error_on_update_bairro_from_project import ErrorOnUpdateBairroFromProject
 from src.errors.repository.error_on_delete.error_on_delete_project_bairro import ErrorOnDeleteProjectBairro
 from src.errors.repository.error_on_insert.error_on_insert_project_bairro import ErrorOnInsertProjectBairro
 from src.errors.repository.error_on_find.error_on_find_project_bairro import ErrorOnFindProjectBairro
+from src.errors.repository.has_related_children.project_bairro_has_related_children import ProjectBairroHasRelatedChildren
 from sqlalchemy.exc import IntegrityError
 
 class ProjectBairroRepository(IProjectBairroRepository):
@@ -42,7 +42,7 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     )
                 ).first()
                 if not assoc:
-                    raise ProjectsFromBairroDoesNotExists(
+                    raise ProjectBairroNotExists(
                         message=f'No association found for project_id={project_id} and bairro_id={bairro_id}'
                     )
                 return ProjectBairroEntity(
@@ -50,7 +50,7 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     bairro_id=assoc.bairro_id,
                     created_at=assoc.created_at
                 )
-        except ProjectsFromBairroDoesNotExists as e:
+        except ProjectBairroNotExists as e:
             raise e from e
         except Exception as e:
             raise ErrorOnFindProjectBairro(message=f'Error on find project project_id={project_id}, bairro_id={bairro_id}: {str(e)}') from e
@@ -62,7 +62,7 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     ProjectBairro.bairro_id == bairro_id
                 ).all()
                 if not associations:
-                    raise ProjectsFromBairroDoesNotExists(
+                    raise ProjectBairroNotExists(
                         message=f'No projects found for bairro_id={bairro_id}'
                     )
                 return [
@@ -73,7 +73,7 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     )
                     for assoc in associations
                 ]
-        except ProjectsFromBairroDoesNotExists as e:
+        except ProjectBairroNotExists as e:
             raise e from e
         except Exception as e:
             raise ErrorOnFindProjectBairro(message=f'Error on find project from bairro, bairro_id={bairro_id}: {str(e)}') from e
@@ -121,6 +121,8 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     )
                 ).delete()
                 db.session.commit()
+        except IntegrityError as e:
+            raise ProjectBairroHasRelatedChildren(message=f'Project bairro project_id={project_id}, bairro_id={bairro_id} has related children: {str(e)}') from e
         except ProjectBairroNotExists as e:
             raise e from e
         except Exception as e:
@@ -135,8 +137,8 @@ class ProjectBairroRepository(IProjectBairroRepository):
                     and_(
                         ProjectBairro.project_id == project_id
                     )
-                ).first()
-                if not project_bairro:
+                ).all()
+                if not any(project_bairro):
                     raise ProjectBairroNotExists(message=f'Project bairro with project project_id={project_bairro} not exists')
                 db.session.query(ProjectBairro).filter(
                     ProjectBairro.project_id == project_id,
@@ -144,6 +146,8 @@ class ProjectBairroRepository(IProjectBairroRepository):
                 db.session.commit()
         except ProjectBairroNotExists as e:
             raise e from e
+        except IntegrityError as e:
+            raise ProjectBairroHasRelatedChildren(message=f'Project bairro from project project_id={project_id} has related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteProjectBairro(
                 message=f'Error deleting association (project_id={project_id}): {e}'

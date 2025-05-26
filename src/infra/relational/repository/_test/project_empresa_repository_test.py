@@ -6,7 +6,7 @@ from src.infra.relational.config.connection.t_string_connection import TStringCo
 from datetime import datetime, timezone
 from sqlalchemy import TextClause
 from src.errors.repository.already_exists_error.project_empresa_already_exists import ProjectEmpresaAlreadyExists
-from src.errors.repository.not_exists_error.projects_from_empresa_does_not_exists import ProjectsFromEmpresaDoesNotExists
+from src.errors.repository.not_exists_error.project_empresa_not_exists import ProjectEmpresaNotExists
 
 
 @pytest.fixture(autouse=True)
@@ -170,7 +170,7 @@ def test_find_all_from_empresa(insert_project_script, insert_status_script) -> N
     assert results[0].project_id == project.id
 
     # Testar exceção para empresa sem projetos
-    with pytest.raises(ProjectsFromEmpresaDoesNotExists):
+    with pytest.raises(ProjectEmpresaNotExists):
         project_empresa_repository.find_all_from_empresa(empresa_id=9999)
 
 
@@ -235,5 +235,5 @@ def test_find(insert_project_script, insert_status_script) -> None:
     assert isinstance(result.created_at, datetime)
 
     # Teste de exceção ao buscar associação inexistente
-    with pytest.raises(ProjectsFromEmpresaDoesNotExists):
+    with pytest.raises(ProjectEmpresaNotExists):
         project_empresa_repository.find(empresa_id=9999, project_id=9999)

@@ -118,8 +118,8 @@ class HistoryProjectRepository(IHistoryProjectRepository):
             try:
                 history_project = db.session.query(HistoryProject).where(
                     HistoryProject.project_id == project_id
-                ).first()
-                if not history_project:
+                ).all()
+                if not any(history_project):
                     raise HistoryProjectNotExists(f'History project from project {project_id} not exists')
                 db.session.query(HistoryProject).where(
                     HistoryProject.project_id == project_id
