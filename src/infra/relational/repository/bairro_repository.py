@@ -82,10 +82,12 @@ class BairroRepository(IBairroRepository):
         try:
             with self.__db_connection_handler as db:
                 bairro = db.session.query(Bairro).where(Bairro.name == name).first()
-                if bairro is None:
+                if not bairro:
                     raise BairroNotExists(message=f'Bairro "{name}" does not exist')
                 db.session.delete(bairro)
                 db.session.commit()
+        except BairroNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise BairroHasRelatedChildren(message=f'Bairro {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:

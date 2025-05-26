@@ -109,6 +109,16 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
     def delete(self, project_id:int, fiscal_id:int) -> None:
         try:
             with self.__db_connection_handler as db:
+                project_fiscal = db.session.query(ProjectFiscal).where(
+                    and_(
+                        ProjectFiscal.project_id == project_id,
+                        ProjectFiscal.fiscal_id == fiscal_id
+                    )
+                ).first()
+                if not project_fiscal:
+                    raise ProjectFiscalNotExists(
+                        message=f'Project Fiscal project_id={project_id}, fiscal_id={fiscal_id} not exists'
+                    )
                 db.session.query(ProjectFiscal).where(
                     and_(
                         ProjectFiscal.project_id == project_id,
@@ -116,6 +126,8 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
                     )
                 ).delete()
                 db.session.commit()
+        except ProjectFiscalNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise ProjectFiscalhasRelatedChildren(
                 message=f'Project fiscal project_id={project_id}, fiscal_id={fiscal_id} has related children'
@@ -128,10 +140,21 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
     def delete_all_from_project(self, project_id:int) -> None:
         try:
             with self.__db_connection_handler as db:
+                project_fiscal = db.session.query(ProjectFiscal).where(
+                    and_(
+                        ProjectFiscal.project_id == project_id
+                    )
+                ).all()
+                if not any(project_fiscal):
+                    raise ProjectFiscalNotExists(
+                        message=f'Project Fiscal from project project_id={project_id} not exists'
+                    )
                 db.session.query(ProjectFiscal).where(
                     ProjectFiscal.project_id == project_id,
                 ).delete()
                 db.session.commit()
+        except ProjectFiscalNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise ProjectFiscalhasRelatedChildren(
                 message=f'Project fiscal from project project_id={project_id} has related children'

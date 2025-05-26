@@ -8,7 +8,7 @@ from src.infra.relational.models.status import Status
 from src.infra.relational.models.types import Types
 from sqlalchemy import text
 from sqlalchemy import TextClause
-from src.errors.repository.not_exists_error.projects_from_type_does_not_exists import ProjectsFromTypeDoesNotExists
+from src.errors.repository.not_exists_error.project_type_not_exists import ProjectTypeNotExists
 
 @pytest.fixture(autouse=True)
 def cleanup_all():
@@ -238,5 +238,5 @@ def test_delete_project_type(project_type_repo, insert_project_script, insert_st
 
 
     # Verificando a relação
-    with pytest.raises(ProjectsFromTypeDoesNotExists):
+    with pytest.raises(ProjectTypeNotExists):
         relation = project_type_repo.find(project.id, tipo.id)

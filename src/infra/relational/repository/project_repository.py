@@ -181,8 +181,15 @@ class ProjectRepository(IProjectRepository):
     def delete(self, project_id:int) -> None:
         with self.__db_connection_handler as db:
             try:
+                project = db.session.query(Project).where(Project.id == project_id).first()
+                if not project:
+                    raise ProjectNotExists(
+                        message=f'Project project_id={project_id} not exists'
+                    )
                 db.session.query(Project).where(Project.id == project_id).delete()
                 db.session.commit()
+            except ProjectNotExists as e:
+                raise e from e
             except IntegrityError as e:
                 raise ProjectHasRelatedChildren(
                     message=f'Project project_id={project_id} has related children: {str(e)}'
