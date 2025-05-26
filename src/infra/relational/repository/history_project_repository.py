@@ -9,9 +9,9 @@ from src.errors.repository.not_exists_error.project_not_exists import ProjectNot
 from src.errors.repository.not_exists_error.history_project_not_exists import HistoryProjectNotExists
 from src.errors.repository.error_on_insert.error_on_insert_history_project import ErrorOnInsertHistoryProject
 from src.errors.repository.error_on_find.error_on_find_history_project import ErrorOnFindHistoryProject
-from src.errors.repository.error_on_update.error_on_update_history_project import ErroronUpdateHistoryProject
+from src.errors.repository.error_on_update.error_on_update_history_project import ErrorOnUpdateHistoryProject
 from src.errors.repository.error_on_delete.error_on_delete_history_project import ErrorOnDeleteHistoryProject
-from src.errors.repository.has_related_children.history_project_has_related_children import HistoryProjecthasRelatedChildren
+from src.errors.repository.has_related_children.history_project_has_related_children import HistoryProjectHasRelatedChildren
 from sqlalchemy.exc import IntegrityError
 
 class HistoryProjectRepository(IHistoryProjectRepository):
@@ -92,7 +92,7 @@ class HistoryProjectRepository(IHistoryProjectRepository):
             except HistoryProjectNotExists as e:
                 raise e from e
             except Exception as e:
-                raise ErroronUpdateHistoryProject(message=f'Error on update history_project {update_params}: {str(e)}') from e
+                raise ErrorOnUpdateHistoryProject(message=f'Error on update history_project {update_params}: {str(e)}') from e
     
     def delete(self, history_project_id:int) -> None:
         with self.__db_connection_handler as db:
@@ -109,7 +109,7 @@ class HistoryProjectRepository(IHistoryProjectRepository):
             except HistoryProjectNotExists as e:
                 raise e from e
             except IntegrityError as e:
-                raise HistoryProjecthasRelatedChildren(message=f'History project {history_project_id} has related children: {str(e)}') from e
+                raise HistoryProjectHasRelatedChildren(message=f'History project {history_project_id} has related children: {str(e)}') from e
             except Exception as e:
                 raise ErrorOnDeleteHistoryProject(message=f'Error on delete history project {history_project_id}: {str(e)}') from e
     
@@ -128,6 +128,6 @@ class HistoryProjectRepository(IHistoryProjectRepository):
             except HistoryProjectNotExists as e:
                 raise e from e
             except IntegrityError as e:
-                raise HistoryProjecthasRelatedChildren(message=f'History project from project {project_id} has related children: {str(e)}') from e
+                raise HistoryProjectHasRelatedChildren(message=f'History project from project {project_id} has related children: {str(e)}') from e
             except Exception as e:
                 raise ErrorOnDeleteHistoryProject(message=f'Error on delete all history from project {project_id}: {str(e)}') from e
