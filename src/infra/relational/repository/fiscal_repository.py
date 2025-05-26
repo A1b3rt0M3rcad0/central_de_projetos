@@ -70,10 +70,15 @@ class FiscalRepository(IFiscalRepository):
     def update(self, name:str, new_name:str) -> None:
         try:
             with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
                 db.session.query(Fiscal).where(
                     Fiscal.name == name
                 ).update({'name':new_name})
                 db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise FiscalAlreadyExists(message=f'Fiscal with name {new_name} already exists: {str(e)}') from e
         except Exception as e:
@@ -82,10 +87,15 @@ class FiscalRepository(IFiscalRepository):
     def delete(self, name:str) -> None:
         try:
             with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
                 db.session.query(Fiscal).where(
                     Fiscal.name == name
                 ).delete()
                 db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
         except IntegrityError as e:
             raise FiscalHasRelatedChildren(f'Fiscal {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
