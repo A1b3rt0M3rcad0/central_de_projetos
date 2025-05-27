@@ -6,7 +6,7 @@ from src.domain.value_objects.cpf import CPF
 from src.errors.use_cases.invalid_role_error import InvalidRoleError
 from src.errors.use_cases.user_not_found_error import UserNotFoundError
 from src.errors.use_cases.project_not_found_error import ProjectNotFoundError
-from src.errors.repository.already_exists_error.registry_already_exists import RegistryAlreadyExists
+from src.errors.repository.already_exists_error.user_project_already_exists import UserProjectAlreadyExists
 from src.errors.use_cases.invalid_association_error import InvalidAssociationError
 
 class AssociateVereadorWithAProject(IAssociateVereadorWithAProject):
@@ -29,7 +29,7 @@ class AssociateVereadorWithAProject(IAssociateVereadorWithAProject):
                 cpf_user=cpf_user,
                 project_id=project_id
             )
-        except RegistryAlreadyExists as e:
+        except UserProjectAlreadyExists as e:
             raise InvalidAssociationError(
                 f'This association already exists: {e.message}: {e}'
             ) from e
