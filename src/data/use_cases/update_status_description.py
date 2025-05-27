@@ -1,7 +1,7 @@
 from src.data.interface.i_status_repository import IStatusRepository
 from src.domain.use_cases.i_update_status_description import IUpdateStatusDescription
 from src.errors.use_cases.status_description_error import StatusDescriptionError
-from src.errors.repository.already_exists_error.status_description_already_exists import StatusDescriptionAlreadyExists
+from src.errors.repository.already_exists_error.status_already_exists import StatusAlreadyExists
 
 class UpdateStatusDescription(IUpdateStatusDescription):
 
@@ -14,7 +14,7 @@ class UpdateStatusDescription(IUpdateStatusDescription):
                 status_id=status_id,
                 new_description=description
             )
-        except StatusDescriptionAlreadyExists as e:
+        except StatusAlreadyExists as e:
             raise StatusDescriptionError(f'Error on update status description:{e.message} -> {e}') from e
         except Exception as e:
             raise e from e
