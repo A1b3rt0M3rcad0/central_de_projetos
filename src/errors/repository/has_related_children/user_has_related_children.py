@@ -1,10 +1,10 @@
 from src.errors.repository.__base.base_repository_error import BaseRepositoryError
 
-class RegistryAlreadyExists(BaseRepositoryError):
+class UserHasRelatedChildren(BaseRepositoryError):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(
-            title='RegistryAlreadyExists',
+            title=self.__class__.__name__,
             message=message,
             *args,
             **kwargs

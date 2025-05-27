@@ -3,10 +3,17 @@ from typing import List
 from src.domain.entities.status import StatusEntity
 from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy import and_
 from typing import Optional
-from src.errors.repository.already_exists_error.status_description_already_exists import StatusDescriptionAlreadyExists
+
+# Errors
+from src.errors.repository.already_exists_error.status_already_exists import StatusAlreadyExists
+from src.errors.repository.not_exists_error.status_not_exists import StatusNotExists
+from src.errors.repository.has_related_children.status_has_related_children import StatusHasRelatedChildren
+from src.errors.repository.error_on_delete.error_on_delete_status import ErrorOnDeleteStatus
+from src.errors.repository.error_on_update.error_on_update_status import ErrorOnUpdateStatus
+from src.errors.repository.error_on_find.error_on_find_status import ErrorOnFindStatus
+from sqlalchemy.exc import DataError, IntegrityError
 
 class StatusRepository(IStatusRepository):
 
@@ -63,8 +70,9 @@ class StatusRepository(IStatusRepository):
                     )
                 raise ValueError('status_id and description, entry error')
             except Exception as e:
-                db.session.rollback()
-                raise e
+                raise ErrorOnFindStatus(
+                    message=f'Error on find status status_id={status_id}, description={description}: {str(e)}'
+                ) from e
 
     def find_all(self) -> List[StatusEntity]:
         with self.__db_connection_handler as db:
@@ -80,7 +88,9 @@ class StatusRepository(IStatusRepository):
 
                 return status_entities
             except Exception as e:
-                raise e
+                raise ErrorOnFindStatus(
+                    message=f'Error on find all status: {str(e)}'
+                ) from e
     
     def update(self, status_id: int, new_description: str) -> None:
         with self.__db_connection_handler as db:
@@ -92,17 +102,19 @@ class StatusRepository(IStatusRepository):
                 )
 
                 if result == 0:
-                    raise ValueError(f'Status com id {status_id} não encontrado.')
+                    raise StatusNotExists(message=f'Status com id {status_id} não encontrado.')
 
                 db.session.commit()
 
             except IntegrityError as e:
-                raise StatusDescriptionAlreadyExists(
+                raise StatusAlreadyExists(
                     message=f'Status "{new_description}" já existe: {e}'
                 ) from e
 
             except Exception as e:
-                raise e
+                raise ErrorOnUpdateStatus(
+                    message=f'Erro on update status status_id={status_id}, description={new_description}: {str(e)}'
+                ) from e
 
 
     def delete(self, status_id: Optional[int] = None, description: Optional[str] = None) -> None:
@@ -136,6 +148,11 @@ class StatusRepository(IStatusRepository):
                     return
 
                 raise ValueError('status_id and description, entry error')
+            except IntegrityError as e:
+                raise StatusHasRelatedChildren(
+                    message=f'Error on delete status status_id={status_id} because its has related children: {str(e)}'
+                ) from e
             except Exception as e:
-                db.session.rollback()
-                raise e
+                raise ErrorOnDeleteStatus(
+                    message=f'Error on delete status status_id={status_id}: {str(e)}'
+                ) from e

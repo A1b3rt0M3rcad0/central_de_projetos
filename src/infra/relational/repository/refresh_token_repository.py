@@ -2,10 +2,15 @@ from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.value_objects.cpf import CPF
 from src.domain.entities.refresh_token import RefreshTokenEntity
+from src.data.interface.i_refresh_token_repository import IRefreshTokenRepository
+
+# Errors
 from src.errors.repository.already_exists_error.refresh_token_already_exists import RefreshTokenAlreadyExists
 from src.errors.repository.not_exists_error.refresh_token_not_exists import RefreshTokenNotExists
+from src.errors.repository.error_on_insert.error_on_insert_refresh_token import ErrorOnInsertRefreshToken
+from src.errors.repository.error_on_find.error_on_find_refresh_token import ErrorOnFindRefreshToken
+from src.errors.repository.error_on_update.error_on_update_refresh_token import ErrorOnUpdateRefreshToken
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from src.data.interface.i_refresh_token_repository import IRefreshTokenRepository
 
 class RefreshTokenRepository(IRefreshTokenRepository):
 
@@ -31,7 +36,9 @@ class RefreshTokenRepository(IRefreshTokenRepository):
         except SQLAlchemyError as e:
             raise e
         except Exception as e:
-            raise e
+            raise ErrorOnInsertRefreshToken(
+                message=f'Error on insert refresh token user_cpf={user_cpf}, token={token}: {str(e)}'
+            ) from e
     
     def find(self, user_cpf:CPF) -> RefreshTokenEntity:
         try:
@@ -47,7 +54,9 @@ class RefreshTokenRepository(IRefreshTokenRepository):
                     token=result.token
                 )
         except Exception as e:
-            raise e
+            raise ErrorOnFindRefreshToken(
+                message=f'Error on find refresh token from user_cpf={user_cpf}: {str(e)}'
+            ) from e
     
     def update(self, user_cpf:CPF, new_token:str) -> None:
         try:
@@ -60,4 +69,6 @@ class RefreshTokenRepository(IRefreshTokenRepository):
         except SQLAlchemyError as e:
             raise RefreshTokenNotExists(f'The token from cpf: "{user_cpf_entry}" does not exists: {e}') from e
         except Exception as e:
-            raise e
+            raise ErrorOnUpdateRefreshToken(
+                message=f'Error on update refresh token from user_cpf={user_cpf} to token={new_token}: {str(e)}'
+            ) from e

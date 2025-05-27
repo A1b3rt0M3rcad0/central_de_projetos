@@ -5,9 +5,16 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.infra.relational.models.user_project import UserProject
 from sqlalchemy import and_
 from typing import Optional, List, Dict
-from sqlalchemy.exc import IntegrityError
-from src.errors.repository.already_exists_error.registry_already_exists import RegistryAlreadyExists
+
+# Errors
+from src.errors.repository.already_exists_error.user_project_already_exists import UserProjectAlreadyExists
 from src.errors.repository.already_exists_error.user_project_not_exists import UserProjectNotExists
+from src.errors.repository.error_on_insert.error_on_insert_user_project import ErrorOnInsertUserProject
+from src.errors.repository.error_on_find.error_on_find_user_project import ErrorOnFindUserProject
+from src.errors.repository.error_on_update.error_on_update_user_project import ErrorOnUpdateUserProject
+from src.errors.repository.has_related_children.user_project_has_related_children import UserProjectHasRelatedChildren
+from src.errors.repository.error_on_delete.error_on_delete_user_project import ErrorOnDeleteUserProject
+from sqlalchemy.exc import IntegrityError
 
 class UserProjectRepository(IUserProjectRepository):
     
@@ -25,9 +32,11 @@ class UserProjectRepository(IUserProjectRepository):
                 )
                 db.session.commit()
             except IntegrityError as e:
-                raise RegistryAlreadyExists(message=f'The registry with this keys: cpf: {cpf_user.value} and project_id:{project_id} already exists') from e
+                raise UserProjectAlreadyExists(message=f'The registry with this keys: cpf: {cpf_user.value} and project_id:{project_id} already exists') from e
             except Exception as e:
-                raise e
+                raise ErrorOnInsertUserProject(
+                    message=f'Error on inser user_project user_cpf={cpf_user.value}, project_id={project_id}: {str(e)}'
+                ) from e
 
     def find(self, cpf_user:CPF, project_id:int) -> UserProjectEntity:
         with self.__db_connection_handler as db:
@@ -45,8 +54,12 @@ class UserProjectRepository(IUserProjectRepository):
                     project_id=user_project.project_id,
                     data_atribuicao=user_project.assignment_date
                 )
+            except UserProjectNotExists as e:
+                raise e from e
             except Exception as e:
-                raise e
+                raise ErrorOnFindUserProject(
+                    message=f'Error on find user_project user_cpf={cpf_user.value}, project_id={project_id}: {str(e)}'
+                ) from e
             
     def find_all_from_cpf(self, cpf_user:CPF) -> List[UserProjectEntity]:
         with self.__db_connection_handler as db:
@@ -54,6 +67,10 @@ class UserProjectRepository(IUserProjectRepository):
                 user_projects = db.session.query(UserProject).where(
                     UserProject.user_cpf == cpf_user.value,
                 ).all()
+                if not any(user_projects):
+                    raise UserProjectNotExists(
+                        message=f'user_project from cpf={cpf_user.value} not exists'
+                    )
                 relations = [
                     UserProjectEntity(
                         cpf=relation.user_cpf,
@@ -62,13 +79,21 @@ class UserProjectRepository(IUserProjectRepository):
                     ) for relation in user_projects
                 ]
                 return relations
+            except UserProjectNotExists as e:
+                raise e from e
             except Exception as e:
-                raise e
+                raise ErrorOnFindUserProject(
+                    message=f'Error on find all user_project from cpf user_cpf={cpf_user.value}: {str(e)}'
+                ) from e
     
     def find_all(self) -> List[Optional[UserProjectEntity]]:
         with self.__db_connection_handler as db:
             try:
                 user_projects = db.session.query(UserProject).all()
+                if not any(user_projects):
+                    raise UserProjectNotExists(
+                        message='user_projects not exists'
+                    )
                 relations = [
                     UserProjectEntity(
                         cpf=relation.user_cpf,
@@ -77,19 +102,35 @@ class UserProjectRepository(IUserProjectRepository):
                     ) for relation in user_projects
                 ]
                 return relations
+            except UserProjectNotExists as e:
+                raise e from e
             except Exception as e:
-                raise e
+                raise ErrorOnFindUserProject(
+                    message=f'Error on find all user_projects: {str(e)}'
+                ) from e
     
     def update(self, cpf_user:CPF, project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
             try:
+                user_project = db.session.query(UserProject).where(and_(
+                    UserProject.user_cpf == cpf_user.value,
+                    UserProject.project_id == project_id
+                )).all()
+                if not any(user_project):
+                    raise UserProjectNotExists(
+                        message=f'User_project cpf_user={cpf_user.value}, project_id={project_id} not exists'
+                    )
                 db.session.query(UserProject).where(and_(
                     UserProject.user_cpf == cpf_user.value,
                     UserProject.project_id == project_id
                 )).update(update_params)
                 db.session.commit()
+            except UserProjectNotExists as e:
+                raise e from e
             except Exception as e:
-                raise e
+                raise ErrorOnUpdateUserProject(
+                    message=f'Error on update user project cpf_user={cpf_user.value}, project_id={project_id} params={update_params}: {str(e)}'
+                ) from e
     
     def delete(self, cpf_user:CPF, project_id:int) -> None:
         with self.__db_connection_handler as db:
@@ -99,8 +140,14 @@ class UserProjectRepository(IUserProjectRepository):
                     UserProject.project_id == project_id
                 )).delete()
                 db.session.commit()
+            except IntegrityError as e:
+                raise UserProjectHasRelatedChildren(
+                    message=f'Error on delete user_project cpf_user={cpf_user}, project_id={project_id} because has related children: {str(e)}'
+                ) from e
             except Exception as e:
-                raise e
+                raise ErrorOnDeleteUserProject(
+                    message=f'Error on delete user_project cpf_user={cpf_user}, project_id={project_id}: {str(e)}'
+                ) from e
     
     def delete_all_from_project(self, project_id:int) -> None:
         with self.__db_connection_handler as db:
@@ -109,5 +156,11 @@ class UserProjectRepository(IUserProjectRepository):
                     UserProject.project_id == project_id
                 ).delete()
                 db.session.commit()
+            except IntegrityError as e:
+                raise UserProjectHasRelatedChildren(
+                    message=f'Error on delete user_project from project project_id={project_id} because has related children: {str(e)}'
+                ) from e
             except Exception as e:
-                raise e
+                raise ErrorOnDeleteUserProject(
+                    message=f'Error on delete user_project from project project_id={project_id}: {str(e)}'
+                ) from e

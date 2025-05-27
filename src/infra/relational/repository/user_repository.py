@@ -7,11 +7,17 @@ from src.domain.value_objects.roles import Role
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from src.errors.repository.user_not_founded import UserNotFounded
-from src.errors.repository.user_not_founded_by_email import UserNotFoundedByEmail
-from src.errors.repository.already_exists_error.cpf_or_email_already_exists import CPFOrEmailAlreadyExists
 from typing import Optional, Dict
+
+# Errors
+from src.errors.repository.not_exists_error.user_not_exists import UserNotExists
+from src.errors.repository.already_exists_error.user_already_exists import UserAlreadyExists
+from src.errors.repository.error_on_insert.error_on_insert_user import ErrorOnInsertUser
+from src.errors.repository.error_on_find.error_on_find_user import ErrorOnFindUser
+from src.errors.repository.error_on_update.error_on_update_user import ErrorOnUpdateUser
+from src.errors.repository.error_on_delete.error_on_delete_user import ErrorOnDeleteUser
+from src.errors.repository.has_related_children.user_has_related_children import UserHasRelatedChildren
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 class UserRepository(IUserRepository):
 
@@ -33,12 +39,10 @@ class UserRepository(IUserRepository):
                 )
                 db.session.commit()
             except IntegrityError as e:
-                db.session.rollback()
-                raise CPFOrEmailAlreadyExists(message=f"Usuário com CPF ou e-mail já existente: {e}") from e
+                raise UserAlreadyExists(message=f"Usuário com CPF ou e-mail já existente: {e}") from e
 
-            except SQLAlchemyError as e:
-                db.session.rollback()
-                raise RuntimeError(f"Erro ao inserir usuário no banco de dados: {e}") from e
+            except Exception as e:
+                raise ErrorOnInsertUser(f"Erro ao inserir usuário no banco de dados: {str(e)}") from e
 
 
     def find(self, cpf:CPF) -> Optional[UserEntity]:
@@ -56,9 +60,11 @@ class UserRepository(IUserRepository):
                         email=Email(result.email),
                         created_at=result.created_at
                     )
-                raise UserNotFounded(message=f'User with cpf "{cpf.value}" not founded')
-            except SQLAlchemyError as e:
-                raise RuntimeError(f"Erro ao buscar usuário com CPF {cpf.value}: {e}") from e
+                raise UserNotExists(message=f'User with cpf "{cpf.value}" not founded')
+            except UserNotExists as e:
+                raise e from e
+            except Exception as e:
+                raise ErrorOnFindUser(f"Erro ao buscar usuário com CPF {cpf.value}: {e}") from e
 
     def find_by_email(self, email:Email) -> Optional[UserEntity]:
         email_entry = email.email
@@ -75,19 +81,28 @@ class UserRepository(IUserRepository):
                         email=Email(result.email),
                         created_at=result.created_at
                     )
-                raise UserNotFoundedByEmail(message=f'User with email "{email.email}" not founded')
-            except SQLAlchemyError as e:
-                raise RuntimeError(f"Erro ao buscar usuário com email {email.email}: {e}") from e
+                raise UserNotExists(message=f'User with email "{email.email}" not existes')
+            except UserNotExists as e:
+                raise e from e
+            except Exception as e:
+                raise ErrorOnFindUser(f"Erro ao buscar usuário com email {email.email}: {str(e)}") from e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value
         with self.__db_connection_handler as db:
             try:
+                user = db.session.query(User).where(User.cpf == cpf_entry).first()
+                if not user:
+                    raise UserNotExists(
+                        message=f'user with cpf={cpf.value} not exists'
+                    )
                 db.session.query(User).where(User.cpf == cpf_entry).update(update_params)
                 db.session.commit()
+            except UserNotExists as e:
+                raise e from e
             except SQLAlchemyError as e:
                 db.session.rollback()
-                raise RuntimeError(f"Erro ao atualizar usuário com CPF {cpf.value}: {e}") from e
+                raise ErrorOnUpdateUser(f"Erro ao atualizar usuário com CPF {cpf.value}: {e}") from e
 
     
     def delete(self, cpf:CPF) -> None:
@@ -95,9 +110,19 @@ class UserRepository(IUserRepository):
         with self.__db_connection_handler as db:
             try:
                 user = db.session.query(User).filter(User.cpf == cpf_entry).first()
+                if not user:
+                    raise UserNotExists(
+                        message=f'User with cpf={cpf.value} not exists'
+                    )
                 if user:
                     db.session.delete(user)
                     db.session.commit()
+            except UserNotExists as e:
+                raise e from e
+            except IntegrityError as e:
+                raise UserHasRelatedChildren(
+                    message=f'Error on delete user cpf={cpf.value} because has related children'
+                ) from e
             except SQLAlchemyError as e:
                 db.session.rollback()
-                raise RuntimeError(f"Erro ao deletar usuário com CPF {cpf.value}: {e}") from e
+                raise ErrorOnDeleteUser(f"Erro ao deletar usuário com CPF {cpf.value}: {e}") from e

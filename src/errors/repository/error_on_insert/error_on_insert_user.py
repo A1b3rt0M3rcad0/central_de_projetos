@@ -1,10 +1,10 @@
 from src.errors.repository.__base.base_repository_error import BaseRepositoryError
 
-class StatusDescriptionAlreadyExists(BaseRepositoryError):
+class ErrorOnInsertUser(BaseRepositoryError):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(
-            title='StatusDescriptionAlreadyExists',
+            title=self.__class__.__name__,
             message=message,
             *args,
             **kwargs
