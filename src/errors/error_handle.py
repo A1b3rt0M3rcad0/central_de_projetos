@@ -6,7 +6,7 @@ from src.errors.use_cases.__base.base_use_case_error import BaseUseCaseError
 from src.errors.repository.already_exists_error.__base_already_exists_error import BaseAlreadyExistsError
 from src.errors.repository.has_related_children.__base_has_related_children import BaseHasRelatedChildren
 
-# 400 errors
+# 404 errors
 from src.errors.repository.not_exists_error.__base_not_exists_error import BaseNotExistsError
 
 # 500 errors
@@ -40,7 +40,7 @@ def error_handler(error: Exception) -> HttpResponse:
     ERROR_STATUS_MAPPING = {
         BaseAlreadyExistsError: 409,
         BaseHasRelatedChildren: 409,
-        BaseNotExistsError: 400,
+        BaseNotExistsError: 404,
         BaseUseCaseError: 500,
         BaseErrorOnInsert: 500,
         BaseErrorOnFind: 500,
