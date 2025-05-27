@@ -1,6 +1,6 @@
-from src.errors.repository.__base.base_repository_error import BaseRepositoryError
+from src.errors.repository.has_related_children.__base_has_related_children import BaseHasRelatedChildren
 
-class BairroHasRelatedChildren(BaseRepositoryError):
+class BairroHasRelatedChildren(BaseHasRelatedChildren):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(

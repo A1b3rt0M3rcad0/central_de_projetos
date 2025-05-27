@@ -1,6 +1,6 @@
-from src.errors.repository.__base.base_repository_error import BaseRepositoryError
+from src.errors.repository.error_on_insert.__base_error_on_insert import BaseErrorOnInsert
 
-class ErrorOnInsertFiscal(BaseRepositoryError):
+class ErrorOnInsertFiscal(BaseErrorOnInsert):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(
