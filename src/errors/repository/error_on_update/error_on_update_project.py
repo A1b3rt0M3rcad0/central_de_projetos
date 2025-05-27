@@ -1,6 +1,6 @@
-from src.errors.repository.__base.base_repository_error import BaseRepositoryError
+from src.errors.repository.error_on_update.__base_error_on_update import BaseErrorOnUpdate
 
-class ErrorOnUpdateProject(BaseRepositoryError):
+class ErrorOnUpdateProject(BaseErrorOnUpdate):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(

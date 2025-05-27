@@ -1,6 +1,6 @@
-from src.errors.repository.__base.base_repository_error import BaseRepositoryError
+from src.errors.repository.already_exists_error.__base_already_exists_error import BaseAlreadyExistsError
 
-class ProjectBairroAlreadyExists(BaseRepositoryError):
+class ProjectBairroAlreadyExists(BaseAlreadyExistsError):
 
     def __init__(self, message:str, *args, **kwargs) -> None:
         super().__init__(
