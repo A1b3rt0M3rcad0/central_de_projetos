@@ -2,7 +2,7 @@
 #pylint:disable=W0613
 from fastapi import APIRouter
 from fastapi import Request
-from src.presentation.templates.config import templates
+from src.main.templates.config import templates
 
 routes = APIRouter(prefix='/web', tags=['auth', 'login'])
 
