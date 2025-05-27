@@ -1,5 +1,6 @@
 #pylint:disable=C0413
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 # Routes
 from src.main.routes.api.user.user_routes import routes as user_routes
@@ -24,8 +25,10 @@ app = FastAPI()
 
 # Test Route
 from src.main.routes.middleware.test_routes import routes as test_route
-
 app.include_router(test_route)
+
+# Static Files
+app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
 
 # Routes
 app.include_router(user_routes)
