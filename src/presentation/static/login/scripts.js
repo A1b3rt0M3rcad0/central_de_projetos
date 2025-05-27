@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const cpf = document.getElementById("cpf").value;
+        const cpf = document.getElementById("cpf").value.trim();
         const password = document.getElementById("password").value;
 
         try {
-            const response = await fetch("/auth/login", {
+            const loginResponse = await fetch("/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -16,18 +16,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ cpf, password })
             });
 
-            const data = await response.json();
+            const loginData = await loginResponse.json();
 
-            if (response.status === 200 && data.access_token) {
-                window.location.href = "/dashboard"; // Colocar aqui a rota home de acesso principal
+            if (loginResponse.ok && loginData.token) {
+                const token = getCookie("access_token");
+                if (!token) {
+                    showError(`Token não encontrado no cookie. ${token}`);
+                    return;
+                }
+
+                const secureResponse = await fetch("/test/secure", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (secureResponse.ok) {
+                    const secureData = await secureResponse.json();
+                    alert(`✅ Sucesso! Dados: ${JSON.stringify(secureData)}`);
+                } else {
+                    showError("🚫 Erro ao acessar rota protegida.");
+                }
+
             } else {
-                showError("CPF ou senha inválidos.");
+                showError("🚫 CPF ou senha inválidos.");
             }
         } catch (error) {
-            showError("Erro na conexão com o servidor.");
+            showError("🚫 Erro na conexão com o servidor.");
             console.error(error);
         }
     });
+
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        if (match) {
+            return match[2].replace(/^"|"$/g, '');
+        }
+        return null;
+    }
 
     function showError(message) {
         let errorDiv = document.getElementById("error-message");
