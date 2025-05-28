@@ -25,7 +25,9 @@ app = FastAPI()
 
 # Test Route
 from src.main.routes.middleware.test_routes import routes as test_route
+from src.main.routes.web.__test.test_main_route import routes as test_base_route
 app.include_router(test_route)
+app.include_router(test_base_route)
 
 # Static Files
 app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
