@@ -116,10 +116,11 @@ async def update_project_verba(body:UpdateVerbaFormat, request:Request, user=Sec
         return response_adapter(error_handler(e))
 
 @routes.get('/project_detail/{project_id}')
-async def project_detail(project_id, request:Request):
+async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
+        request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_all_from_project_composer())
-        # http_response = await insert_access_token(http_response, request.state.new_access_token)
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
         return response_adapter(error_handler(e))
