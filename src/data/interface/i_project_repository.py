@@ -22,6 +22,9 @@ class IProjectRepository(ABC):
     def find_by_name(self, name:str) -> ProjectEntity:pass
 
     @abstractmethod
+    def find_all_from_project(self, project_id:int) -> ProjectEntity:pass
+
+    @abstractmethod
     def update(self, project_id:int, update_params:Dict) -> None:pass
 
     @abstractmethod
