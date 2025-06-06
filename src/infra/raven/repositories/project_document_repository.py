@@ -4,6 +4,7 @@ from src.infra.raven.documents.project_documents import ProjectDocuments
 from src.infra.raven.models.document import DocumentModel
 from src.data.interface.i_raven_project_document_repository import IProjectDocumentRepository
 from typing import List
+import mimetypes
 
 class ProjectDocumentRepository(IProjectDocumentRepository):
 
@@ -66,7 +67,17 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
             attachments = metadata.get('@attachments', [])
 
             for attachment in attachments:
-                document_names.append(attachment['Name'])
+                name = attachment['Name']
+                content_type = attachment.get('ContentType', '')
+
+                ext = mimetypes.guess_extension(content_type) if content_type else None
+
+                if ext:
+                    full_name = f"{name}{ext}"
+                else:
+                    full_name = name
+                
+                document_names.append(full_name)
 
         return document_names
 

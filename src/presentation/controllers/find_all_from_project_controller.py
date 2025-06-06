@@ -1,19 +1,22 @@
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.domain.use_cases.i_find_all_from_project import IFindAllFromProject
+from src.domain.use_cases.I_get_document_names import IGetDocumentNames
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.domain.entities.project import ProjectEntity
 
 class FindAllFromProjectController(ControllerInterface):
 
-    def __init__(self, find_all_from_project_case:IFindAllFromProject) -> None:
+    def __init__(self, find_all_from_project_case:IFindAllFromProject, get_document_names_case:IGetDocumentNames) -> None:
         self.__find_all_from_project_case = find_all_from_project_case
+        self.__get_document_names_case = get_document_names_case
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
             path_params = http_request.path_params
             project_id = path_params["project_id"]
             result:ProjectEntity = self.__find_all_from_project_case.find(project_id=project_id)
+            documents = self.__get_document_names_case.names(project_id=project_id)
             return HttpResponse(
                 status_code=200,
                 body={
@@ -59,7 +62,8 @@ class FindAllFromProjectController(ControllerInterface):
                         "expected_completion_date": result.expected_completion_date.strftime(r'%d/%m/%Y') if result.expected_completion_date else result.expected_completion_date,
                         "end_date": result.end_date.strftime(r'%d/%m/%Y') if result.end_date else result.end_date,
                         "start_date": result.start_date.strftime(r'%d/%m/%Y') if result.start_date else result.start_date,
-                        "verba_disponivel": result.verba_disponivel
+                        "verba_disponivel": result.verba_disponivel,
+                        "documents": documents
                     }
                 }
             )
