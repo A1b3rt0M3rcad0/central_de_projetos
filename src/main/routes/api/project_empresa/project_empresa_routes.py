@@ -26,7 +26,7 @@ async def find_project_empresa(empresa_id:int, project_id:int, request:Request, 
     try:
         request.path_params['empresa_id'] = empresa_id
         request.path_params['project_id'] = project_id
-        http_response = request_adapter(request, find_project_empresa_composer())
+        http_response = await request_adapter(request, find_project_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
@@ -45,7 +45,7 @@ async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=S
 @routes.post('/')
 async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
-        http_response = request_adapter(request, create_project_empresa_composer())
+        http_response = await request_adapter(request, create_project_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
@@ -54,7 +54,7 @@ async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Reques
 @routes.delete('/')
 async def delete_project_empresa(body:DeleteProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
-        http_response = request_adapter(request, delete_project_empresa_composer())
+        http_response = await request_adapter(request, delete_project_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
