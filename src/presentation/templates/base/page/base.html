@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritório de Projetos | {{ title }}</title>
+    <link rel="icon" href="/static/base/logo_gov.ico" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Cabeçalho -->
+    {% include "base/components/header.html" %}
+
+    <div class="flex flex-1">
+        <!-- Barra Lateral -->
+        {% include "base/components/sidebar.html" %}
+
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 p-6">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Rodapé -->
+    {% include "base/components/footer.html" %}
+</body>
+</html>

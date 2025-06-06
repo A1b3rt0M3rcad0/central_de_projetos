@@ -7,6 +7,7 @@ from src.main.adapters.response_adapter import response_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.find_project_composer import find_project_composer
+from src.main.composers.find_all_projects_composer import find_all_projects_composer
 from src.main.composers.delete_project_composer import delete_project_composer
 from src.main.composers.create_project_composer import create_project_composer
 from src.main.composers.update_project_name_composer import update_project_name_composer
@@ -15,6 +16,7 @@ from src.main.composers.update_project_end_date_composer import update_project_e
 from src.main.composers.update_project_expected_completion_date_composer import update_projet_expected_completion_date_composer
 from src.main.composers.update_project_start_date_composer import update_project_start_date_composer
 from src.main.composers.update_project_verba_composer import update_project_verba_composer
+from src.main.composers.find_all_from_project_composer import find_all_from_project_composer
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
@@ -37,6 +39,15 @@ async def find_project(project_id, request:Request, user=Security(role_required(
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_project_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/projects/all')
+async def find_all_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, find_all_projects_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
@@ -109,6 +120,16 @@ async def update_start_date(body:UpdateStartDateFormat, request:Request, user=Se
 async def update_project_verba(body:UpdateVerbaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_verba_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/project_detail/{project_id}')
+async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        request.path_params['project_id'] = project_id
+        http_response = await request_adapter(request, find_all_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

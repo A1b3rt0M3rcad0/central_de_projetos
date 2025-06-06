@@ -1,5 +1,6 @@
 #pylint:disable=C0413
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 # Routes
 from src.main.routes.api.user.user_routes import routes as user_routes
@@ -17,12 +18,19 @@ from src.main.routes.api.user_project.user_project_routes import routes as user_
 from src.main.routes.api.document.document_routes import routes as document_routes
 from src.main.routes.api.types.types_routes import routes as types_routes
 
+# Web
+from src.main.routes.web.login.routes_login import routes as login_web
+
 app = FastAPI()
 
 # Test Route
 from src.main.routes.middleware.test_routes import routes as test_route
-
+from src.main.routes.web.__test.test_main_route import routes as test_base_route
 app.include_router(test_route)
+app.include_router(test_base_route)
+
+# Static Files
+app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
 
 # Routes
 app.include_router(user_routes)
@@ -39,3 +47,21 @@ app.include_router(status_routes)
 app.include_router(user_project_routes)
 app.include_router(document_routes)
 app.include_router(types_routes)
+
+# Web
+app.include_router(login_web)
+
+## Local Development URL
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
