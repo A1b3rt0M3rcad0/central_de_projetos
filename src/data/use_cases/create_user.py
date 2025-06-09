@@ -8,13 +8,14 @@ from src.errors.repository.already_exists_error.user_already_exists import UserA
 from src.errors.use_cases.create_user_error import CreateUserError
 from src.security.hashedpassword_factory import hashedpassword_factory
 from src.security.cryptography.utils.salt import Salt
+from typing import Optional
 
 class CreateUser(ICreateUser):
 
     def __init__(self, user_repository:IUserRepository) -> None:
         self.__user_repository = user_repository
 
-    def create(self, cpf:CPF, email:Email, role:Role, password:Password) -> None:
+    def create(self, cpf:CPF, email:Email, role:Role, password:Password, name:Optional[str]=None) -> None:
         hashedpassword = hashedpassword_factory(password)
         salt = Salt(hashedpassword.salt)
         try:
@@ -23,7 +24,8 @@ class CreateUser(ICreateUser):
                 email=email,
                 role=role,
                 password=hashedpassword,
-                salt=salt
+                salt=salt,
+                name=name
             )
         except UserAlreadyExists as e:
             raise CreateUserError(
