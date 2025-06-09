@@ -2,12 +2,13 @@ from src.domain.value_objects.email import Email
 from src.domain.value_objects.cpf import CPF
 from src.domain.value_objects.password import Password
 from src.domain.value_objects.roles import Role
+from typing import Optional
 from abc import ABC, abstractmethod
 
 class ICreateUser(ABC):
 
     @abstractmethod
-    def create(self, cpf:CPF, email:Email, role:Role, password:Password) -> None:
+    def create(self, cpf:CPF, email:Email, role:Role, password:Password, name:Optional[str]=None) -> None:
         """
         Cria um novo usuário no sistema.
 
