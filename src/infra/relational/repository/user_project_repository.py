@@ -1,8 +1,11 @@
 from src.data.interface.i_user_project_repository import IUserProjectRepository
 from src.domain.value_objects.cpf import CPF
+from src.domain.value_objects.email import Email
 from src.domain.entities.user_project import UserProjectEntity
+from src.domain.entities.user import UserEntity
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.user import User
 from sqlalchemy import and_
 from typing import Optional, List, Dict
 
@@ -85,6 +88,32 @@ class UserProjectRepository(IUserProjectRepository):
                 raise ErrorOnFindUserProject(
                     message=f'Error on find all user_project from cpf user_cpf={cpf_user.value}: {str(e)}'
                 ) from e
+    
+    def find_user_by_project_id(self, project_id:int) -> UserEntity | None:
+        with self.__db_connection_handler as db:
+            try:
+                user_project:UserProject = db.session.query(UserProject).where(UserProject.project_id == project_id).first()
+
+                if user_project is None:
+                    return None
+
+                user:User = db.session.query(User).where(User.cpf == user_project.user_cpf).first()
+
+                if user is not None:
+                    return UserEntity(
+                        cpf=CPF(user.cpf),
+                        created_at=user.created_at,
+                        email=Email(user.email),
+                        name=user.name,
+                        password=user.password,
+                        role=user.role,
+                        salt=user.salt,
+                    )
+                return None
+            except Exception as e: 
+                raise ErrorOnFindUserProject(
+                message=f"Error on find User By Project Id: {e}"
+            ) from e
     
     def find_all(self) -> List[Optional[UserProjectEntity]]:
         with self.__db_connection_handler as db:
