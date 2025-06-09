@@ -1,4 +1,4 @@
-#pylint:disable=W0611
+#pylint:disable=W0611,R0912
 from src.data.interface.i_project_repository import IProjectRepository
 from typing import Optional, List, Dict
 from src.domain.value_objects.monetary_value import MonetaryValue
@@ -278,6 +278,96 @@ class ProjectRepository(IProjectRepository):
             except Exception as e:
                 raise ErrorOnFindProject(
                     message=f'Error on find project by id={project_id}: {e}'
+                ) from e
+    
+    def find_all_projects_with_basic_details(self) -> List[ProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                projects = db.session.query(Project).all()
+                if not projects:
+                    raise ProjectNotExists(message='Projects do not exist')
+
+                project_entities = []
+                for project in projects:
+                    status_entity = None
+                    empresa_entity = None
+                    fiscal_entity = None
+                    bairro_entity = None
+                    types_entity = None
+
+                    status: Status = db.session.query(Status).where(Status.id == project.status_id).first()
+                    if status:
+                        status_entity = StatusEntity(
+                            status_id=status.id,
+                            description=status.description,
+                            created_at=status.created_at
+                        )
+
+                    project_empresa = db.session.query(ProjectEmpresa).where(ProjectEmpresa.project_id == project.id).first()
+                    if project_empresa:
+                        empresa = db.session.query(Empresa).where(Empresa.id == project_empresa.empresa_id).first()
+                        if empresa:
+                            empresa_entity = EmpresaEntity(
+                                empresa_id=empresa.id,
+                                name=empresa.name,
+                                created_at=empresa.created_at
+                            )
+
+                    project_fiscal = db.session.query(ProjectFiscal).where(ProjectFiscal.project_id == project.id).first()
+                    if project_fiscal:
+                        fiscal = db.session.query(Fiscal).where(Fiscal.id == project_fiscal.fiscal_id).first()
+                        if fiscal:
+                            fiscal_entity = FiscalEntity(
+                                fiscal_id=fiscal.id,
+                                name=fiscal.name,
+                                created_at=fiscal.created_at
+                            )
+
+                    project_bairro = db.session.query(ProjectBairro).where(ProjectBairro.project_id == project.id).first()
+                    if project_bairro:
+                        bairro = db.session.query(Bairro).where(Bairro.id == project_bairro.bairro_id).first()
+                        if bairro:
+                            bairro_entity = BairroEntity(
+                                bairro_id=bairro.id,
+                                name=bairro.name,
+                                created_at=bairro.created_at
+                            )
+
+                    project_type = db.session.query(ProjectType).where(ProjectType.project_id == project.id).first()
+                    if project_type:
+                        types = db.session.query(Types).where(Types.id == project_type.type_id).first()
+                        if types:
+                            types_entity = TypesEntity(
+                                types_id=types.id,
+                                name=types.name,
+                                created_at=types.created_at
+                            )
+
+                    project_entity = ProjectEntity(
+                        project_id=project.id,
+                        andamento_do_projeto=project.andamento_do_projeto,
+                        start_date=project.start_date,
+                        expected_completion_date=project.expected_completion_date,
+                        end_date=project.end_date,
+                        name=project.name,
+                        verba_disponivel=project.verba_disponivel,
+                        status_id=project.status_id,
+                        status=status_entity,
+                        empresa=empresa_entity,
+                        fiscal=fiscal_entity,
+                        bairro=bairro_entity,
+                        types=types_entity
+                    )
+
+                    project_entities.append(project_entity)
+
+                return project_entities
+
+            except ProjectNotExists as e:
+                raise e from e
+            except Exception as e:
+                raise ErrorOnFindProject(
+                    message=f'Error on find all projects with basic details: {e}'
                 ) from e
         
     def update(self, project_id:int, update_params:Dict) -> None:
