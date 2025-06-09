@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from src.domain.value_objects.cpf import CPF
 from src.domain.entities.user_project import UserProjectEntity
+from src.domain.entities.user import UserEntity
 from typing import List, Dict, Optional
 
 class IUserProjectRepository(ABC):
@@ -16,6 +17,9 @@ class IUserProjectRepository(ABC):
 
     @abstractmethod
     def find_all(self) -> List[Optional[UserProjectEntity]]:pass
+
+    @abstractmethod
+    def find_user_by_project_id(self, project_id:int) -> UserEntity:pass
 
     @abstractmethod
     def update(self, cpf_user:CPF, project_id:int, update_params:Dict) -> None:pass

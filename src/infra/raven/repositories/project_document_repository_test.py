@@ -61,7 +61,7 @@ def test_get_document_names() -> None:
     assert all(isinstance(name, str) for name in document_names), \
         f"Alguns nomes dos anexos não são strings."
 
-    assert 'test_pdf_get' in document_names, \
+    assert 'test_pdf_get.pdf' in document_names, \
         f"O nome do anexo 'test_pdf_get' não foi encontrado nos nomes dos anexos."
 
 def test_get_document() -> None:

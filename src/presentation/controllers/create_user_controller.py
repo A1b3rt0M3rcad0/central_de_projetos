@@ -19,11 +19,13 @@ class CreateUserController(ControllerInterface):
             email = Email(body['email'])
             role = Role(body['role'])
             password = Password(body['password'])
+            name = body['name'] if body['name'] else None
             self.__create_user_case.create(
                 cpf=cpf,
                 email=email,
                 role=role,
-                password=password
+                password=password,
+                name=name
             )
             return HttpResponse(
                 status_code=200,

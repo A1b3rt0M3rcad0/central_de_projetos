@@ -24,18 +24,19 @@ class UserRepository(IUserRepository):
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
     
-    def insert(self, cpf:CPF, password:HashedPassword, salt:ISalt, role:Role, email:Email) -> None:
+    def insert(self, cpf:CPF, password:HashedPassword, salt:ISalt, role:Role, email:Email, name:Optional[str]=None) -> None:
 
         cpf_entry = cpf.value
         password_entry = password.hashed_password
         salt_entry = salt.salt
         role_entry = role.value
         email_entry = email.email
+        name_entry = name
 
         with self.__db_connection_handler as db:
             try:
                 db.session.add(
-                    User(cpf=cpf_entry, password=password_entry, salt=salt_entry, role=role_entry, email=email_entry)
+                    User(cpf=cpf_entry, password=password_entry, salt=salt_entry, role=role_entry, email=email_entry, name=name_entry)
                 )
                 db.session.commit()
             except IntegrityError as e:
