@@ -9,6 +9,7 @@ class User(BaseModel):
     
     __tablename__ = 'user'
 
+    name = Column(String(100), nullable=True)
     cpf = Column(String(15), primary_key=True)
     password = Column(LargeBinary(70), nullable=False)
     salt = Column(LargeBinary(100), nullable=False)
