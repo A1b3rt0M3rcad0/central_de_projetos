@@ -1,4 +1,5 @@
 from src.domain.value_objects.cpf import CPF
+from src.errors.value_object.cpf_format_error import CPFFormatError
 import pytest
 from typing import List
 
@@ -33,7 +34,7 @@ def test_valid_cpfs(valid_cpfs):
 def test_invalid_cpfs(invalid_cpfs):
 
     for email in invalid_cpfs:
-        with pytest.raises(ValueError):
+        with pytest.raises(CPFFormatError):
             CPF(email)
 
 def test_cpf_value(valid_cpfs):

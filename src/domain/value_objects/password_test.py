@@ -1,5 +1,6 @@
 import pytest
 from src.domain.value_objects.password import Password
+from src.errors.value_object.password_format_error import PasswordFormatError
 
 def test_str_password() -> None:
     str_password = '123@Alberto'
@@ -12,21 +13,21 @@ def test_equal_password() -> None:
     assert password == password2
 
 def test_valid_password_length() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(PasswordFormatError):
         Password('1@Ab124')
 
 def test_valid_password_contains_uppercase() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(PasswordFormatError):
         Password('1@ab1237')
 
 def test_valid_password_contains_lowercase() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(PasswordFormatError):
         Password('1@AB1237')
 
 def test_valid_password_contains_digit() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(PasswordFormatError):
         Password('@Abcdefg')
 
 def test_valid_password_contains_empty_space() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(PasswordFormatError):
         Password('123@Alberto ')
