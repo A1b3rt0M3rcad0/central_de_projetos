@@ -2,6 +2,7 @@ from src.domain.entities.empresa import EmpresaEntity
 from src.infra.relational.models.empresa import Empresa
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_empresa_repository import IEmpresaRepository
+from typing import List
 
 # Errors
 from src.errors.repository.already_exists_error.empresa_already_exists import EmpresaAlreadyExists
@@ -45,6 +46,22 @@ class EmpresaRepository(IEmpresaRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindEmpresa(message=f'Error on find empresa with name {name}: {str(e)}') from e
+
+    def find_all(self) -> List[EmpresaEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                empresas = db.session.query(Empresa).all()
+                if not any(empresas):
+                    raise EmpresaNotExists(message='Empresas does not exists')
+                return [EmpresaEntity(
+                    empresa_id=empresa.id,
+                    name=empresa.name,
+                    created_at=empresa.created_at
+                ) for empresa in empresas]
+        except EmpresaNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindEmpresa(message=f'Error on find empresas: {str(e)}') from e
 
     def update(self, name: str, new_name: str) -> None:
         try:
