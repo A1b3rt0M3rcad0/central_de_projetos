@@ -9,6 +9,9 @@ from src.errors.repository.has_related_children.__base_has_related_children impo
 # 404 errors
 from src.errors.repository.not_exists_error.__base_not_exists_error import BaseNotExistsError
 
+# 403 errors
+from src.errors.value_object.cpf_format_error import CPFFormatError
+
 # 500 errors
 from src.errors.repository.error_on_delete.__base_error_on_delete import BaseErrorOnDelete
 from src.errors.repository.error_on_find.__base_error_on_find import BaseErrorOnFind
@@ -45,7 +48,8 @@ def error_handler(error: Exception) -> HttpResponse:
         BaseErrorOnInsert: 500,
         BaseErrorOnFind: 500,
         BaseErrorOnUpdate: 500,
-        BaseErrorOnDelete: 500
+        BaseErrorOnDelete: 500,
+        CPFFormatError: 403
     }
 
     for exc_type, status_code in ERROR_STATUS_MAPPING.items():
