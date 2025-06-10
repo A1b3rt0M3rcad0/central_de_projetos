@@ -59,7 +59,8 @@ class UserRepository(IUserRepository):
                         salt=result.salt, # bytes
                         role=Role(result.role),
                         email=Email(result.email),
-                        created_at=result.created_at
+                        created_at=result.created_at,
+                        name = result.name
                     )
                 raise UserNotExists(message=f'User with cpf "{cpf.value}" not founded')
             except UserNotExists as e:
