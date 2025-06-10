@@ -11,6 +11,7 @@ from src.errors.repository.not_exists_error.__base_not_exists_error import BaseN
 
 # 403 errors
 from src.errors.value_object.cpf_format_error import CPFFormatError
+from src.errors.value_object.password_format_error import PasswordFormatError
 
 # 500 errors
 from src.errors.repository.error_on_delete.__base_error_on_delete import BaseErrorOnDelete
@@ -49,7 +50,8 @@ def error_handler(error: Exception) -> HttpResponse:
         BaseErrorOnFind: 500,
         BaseErrorOnUpdate: 500,
         BaseErrorOnDelete: 500,
-        CPFFormatError: 403
+        CPFFormatError: 403,
+        PasswordFormatError: 403
     }
 
     for exc_type, status_code in ERROR_STATUS_MAPPING.items():
