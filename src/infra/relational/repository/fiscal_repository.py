@@ -11,8 +11,9 @@ from src.errors.repository.error_on_find.error_on_find_fiscal import ErrorOnFind
 from src.errors.repository.error_on_update.error_on_update_fiscal import ErroronUpdateFiscal
 from src.errors.repository.error_on_delete.error_on_delete_fiscal import ErrorOnDeleteFiscal
 from src.errors.repository.has_related_children.fiscal_has_related_children import FiscalHasRelatedChildren
-
 from sqlalchemy.exc import IntegrityError
+
+from typing import List
 
 class FiscalRepository(IFiscalRepository):
 
@@ -67,6 +68,26 @@ class FiscalRepository(IFiscalRepository):
         except Exception as e:
             raise ErrorOnFindFiscal(message=f'Error on find fiscal by id {fiscal_id}: {str(e)}') from e
     
+    def find_all(self) -> List[FiscalEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                fiscais:List[Fiscal] = db.session.query(Fiscal).all()
+                if not any(fiscais):
+                    raise FiscalNotExists(message='Not exists fiscal')
+                result = [
+                    FiscalEntity(
+                        fiscal_id=fiscal.id,
+                        name=fiscal.name,
+                        created_at=fiscal.created_at
+                    )
+                     for fiscal in fiscais
+                ]
+                return result
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindFiscal(message='Error on find all fiscal') from e
+
     def update(self, name:str, new_name:str) -> None:
         try:
             with self.__db_connection_handler as db:

@@ -1,3 +1,5 @@
+from src.errors.value_object.password_format_error import PasswordFormatError
+
 class Password:
 
     def __init__(self, password:str):
@@ -23,23 +25,23 @@ class Password:
     
     def __valid_password_length(self) -> None:
         if len(self.__password) < 8:
-            raise ValueError('Password length must be at least 8 characters')
+            raise PasswordFormatError(message='Password length must be at least 8 characters')
 
     def __valid_password_contains_uppercase(self) -> None:
         if not any(char.isupper() for char in self.__password):
-            raise ValueError('Password must contain at least one uppercase letter')
+            raise PasswordFormatError(message='Password must contain at least one uppercase letter')
     
     def __valid_password_contains_lowercase(self) -> None:
         if not any(char.islower() for char in self.__password):
-            raise ValueError('Password must contain at least one lowercase letter')
+            raise PasswordFormatError(message='Password must contain at least one lowercase letter')
     
     def __valid_password_contains_digit(self) -> None:
         if not any(char.isdigit() for char in self.__password):
-            raise ValueError('Password must contain at least one digit')
+            raise PasswordFormatError(message='Password must contain at least one digit')
     
     def __valid_password_contains_empty_space(self) -> None:
         if ' ' in self.__password:
-            raise ValueError('Password must not contain empty spaces')
+            raise PasswordFormatError(message='Password must not contain empty spaces')
 
     def __validate(self) -> None:
         self.__valid_password_length()

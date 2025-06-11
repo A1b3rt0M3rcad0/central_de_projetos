@@ -13,6 +13,8 @@ from src.errors.repository.error_on_update.error_on_update_bairro import ErrorOn
 from src.errors.repository.has_related_children.bairro_has_related_children import BairroHasRelatedChildren
 from sqlalchemy.exc import IntegrityError
 
+from typing import List
+
 class BairroRepository(IBairroRepository):
 
     def __init__(self, db_connection_handler: IDBConnectionHandler) -> None:
@@ -63,6 +65,22 @@ class BairroRepository(IBairroRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindBairro(message=f'Error on find bairro by id {bairro_id}: {str(e)}') from e
+    
+    def find_all(self) -> List[BairroEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                bairros:List[Bairro] = db.session.query(Bairro).all()
+                if not any(bairros):
+                    raise BairroNotExists(message='Not exists bairros')
+                return [BairroEntity(
+                    bairro_id=bairro.id,
+                    name=bairro.name,
+                    created_at=bairro.created_at
+                ) for bairro in bairros]
+        except BairroNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindBairro(message=f'Error on find bairros: {str(e)}') from e
 
     def update(self, name: str, new_name: str) -> None:
         try:

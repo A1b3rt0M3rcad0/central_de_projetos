@@ -10,6 +10,7 @@ from src.main.composers.find_fiscal_by_name_composer import find_fiscal_by_name_
 from src.main.composers.create_fiscal_composer import create_fiscal_composer
 from src.main.composers.delete_fiscal_composer import delete_fiscal_composer
 from src.main.composers.update_fiscal_name_composer import update_fiscal_name_composer
+from src.main.composers.find_all_fiscal_composer import find_all_fiscal_composer
 
 from src.main.routes.api.fiscal.request_format.create_fiscal_format import CreateFiscalFormat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
@@ -27,6 +28,15 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
     try:
         request.path_params['fiscal_name'] = fiscal_name
         http_response = await request_adapter(request, find_fiscal_by_name_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/fiscal/all')
+async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, find_all_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
