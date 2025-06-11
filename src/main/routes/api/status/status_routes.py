@@ -61,7 +61,7 @@ async def update_status_description(body:UpdateStatusDescriptionFormat, request:
     except Exception as e:
         return response_adapter(error_handler(e))
     
-@routes.get('/all/')
+@routes.get('/status/all/')
 async def find_all_status(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_status_composer())
