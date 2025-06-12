@@ -32,7 +32,7 @@ def main():
 
         repo = UserRepository(
             db_connection_handler=db_connection_handler_factory()
-        )  # instancia seu repo real
+        )
         rt_repo = RefreshTokenRepository(
             db_connection_handler=db_connection_handler_factory()
         )
