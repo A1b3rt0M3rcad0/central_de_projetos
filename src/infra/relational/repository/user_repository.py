@@ -19,6 +19,8 @@ from src.errors.repository.error_on_delete.error_on_delete_user import ErrorOnDe
 from src.errors.repository.has_related_children.user_has_related_children import UserHasRelatedChildren
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+from typing import List
+
 class UserRepository(IUserRepository):
 
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
@@ -81,13 +83,37 @@ class UserRepository(IUserRepository):
                         salt=result.salt, # bytes
                         role=Role(result.role),
                         email=Email(result.email),
-                        created_at=result.created_at
+                        created_at=result.created_at,
+                        name=result.name
                     )
                 raise UserNotExists(message=f'User with email "{email.email}" not existes')
             except UserNotExists as e:
                 raise e from e
             except Exception as e:
                 raise ErrorOnFindUser(f"Erro ao buscar usuário com email {email.email}: {str(e)}") from e
+    
+    def find_all(self) -> List[UserEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                result = db.session.query(User).all()
+                if not any(result):
+                    raise UserNotExists(message='Users not exists')
+                return [
+                    UserEntity(
+                        cpf=CPF(user.cpf),
+                        password=user.password, # bytes
+                        salt=user.salt, # bytes
+                        role=Role(user.role),
+                        email=Email(user.email),
+                        created_at=user.created_at,
+                        name=user.name
+                    )
+                    for user in result
+                ]
+        except UserNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindUser(message="Error on find users") from e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value

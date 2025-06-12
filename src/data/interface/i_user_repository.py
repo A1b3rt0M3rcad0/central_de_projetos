@@ -5,7 +5,7 @@ from src.security.cryptography.interface.i_salt import ISalt
 from src.domain.value_objects.roles import Role
 from src.domain.value_objects.email import Email
 from src.domain.entities.user import UserEntity
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 class IUserRepository(ABC):
 
@@ -17,6 +17,9 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def find_by_email(self, email:Email) -> Optional[UserEntity]:pass
+
+    @abstractmethod
+    def find_all(self) -> List[UserEntity]:pass
 
     @abstractmethod
     def update(self, cpf:CPF, update_params:Dict) -> None:pass
