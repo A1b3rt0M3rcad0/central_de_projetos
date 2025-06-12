@@ -23,6 +23,7 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         'refresh_token',
+        sa.Column('id', sa.Integer(), primary_key=True),
         sa.Column('user_cpf', sa.String(15), sa.ForeignKey('user.cpf'), unique=True),
         sa.Column('token', sa.String(255), nullable=False)
     )

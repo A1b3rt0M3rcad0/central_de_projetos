@@ -10,6 +10,7 @@ from src.errors.repository.not_exists_error.refresh_token_not_exists import Refr
 from src.errors.repository.error_on_insert.error_on_insert_refresh_token import ErrorOnInsertRefreshToken
 from src.errors.repository.error_on_find.error_on_find_refresh_token import ErrorOnFindRefreshToken
 from src.errors.repository.error_on_update.error_on_update_refresh_token import ErrorOnUpdateRefreshToken
+from src.errors.repository.error_on_delete.error_on_delete_refresh_token import ErrorOnDeleteRefreshToken
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 class RefreshTokenRepository(IRefreshTokenRepository):
@@ -71,4 +72,16 @@ class RefreshTokenRepository(IRefreshTokenRepository):
         except Exception as e:
             raise ErrorOnUpdateRefreshToken(
                 message=f'Error on update refresh token from user_cpf={user_cpf} to token={new_token}: {str(e)}'
+            ) from e
+    
+    def delete(self, user_cpf:CPF) -> None:
+        try:
+            user_cpf_entry = user_cpf.value
+            with self.__db_connection_handler as db:
+                db.session.query(RefreshToken).where(
+                    RefreshToken.user_cpf == user_cpf_entry
+                ).delete()
+        except Exception as e:
+            raise ErrorOnDeleteRefreshToken(
+                message=f'Error on delete refresh token from user_cpf={user_cpf}: {str(e)}'
             ) from e

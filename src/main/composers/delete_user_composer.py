@@ -1,6 +1,8 @@
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.user_repository import UserRepository
+from src.infra.relational.repository.refresh_token_repository import RefreshTokenRepository
 from src.data.use_cases.delete_user import DeleteUser
+from src.data.use_cases.delete_refresh_token import DeleteRefreshToken
 from src.presentation.controllers.delete_user_controller import DeleteUserController
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -10,6 +12,11 @@ def delete_user_composer() -> Callable[[HttpRequest], HttpResponse]:
     return DeleteUserController(
         delete_user_case=DeleteUser(
             user_repository=UserRepository(
+                db_connection_handler=db_connection_handler_factory()
+            )
+        ),
+        delete_refresh_token_case=DeleteRefreshToken(
+            refresh_token_repository=RefreshTokenRepository(
                 db_connection_handler=db_connection_handler_factory()
             )
         )

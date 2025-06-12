@@ -12,3 +12,6 @@ class IRefreshTokenRepository(ABC):
 
     @abstractmethod
     def update(self, user_cpf:CPF, new_token:str) -> None:pass
+
+    @abstractmethod
+    def delete(self, user_cpf:CPF) -> None:pass
