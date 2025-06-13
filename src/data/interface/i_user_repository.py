@@ -22,6 +22,9 @@ class IUserRepository(ABC):
     def find_all(self) -> List[UserEntity]:pass
 
     @abstractmethod
+    def find_all_by_role(self, role:Role) -> List[UserEntity]:pass
+
+    @abstractmethod
     def update(self, cpf:CPF, update_params:Dict) -> None:pass
 
     @abstractmethod

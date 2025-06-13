@@ -12,6 +12,7 @@ from src.main.composers.update_user_email_composer import update_user_email_comp
 from src.main.composers.update_user_password_composer import update_user_password_composer
 from src.main.composers.who_am_i_composer import who_am_i_composer
 from src.main.composers.find_all_user_composer import find_all_user_composer
+from src.main.composers.find_all_user_by_role_composer import find_all_user_by_role_composer
 
 from src.main.routes.api.user.request_format.create_user_format import CreateUserFormat
 from src.main.routes.api.user.request_format.delete_user_format import DeleteUserFormat
@@ -38,6 +39,16 @@ async def get_user(user_cpf: str, request: Request, user=Security(role_required(
 async def get_all_users(request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_user_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get("/users/all/{role}")
+async def get_all_users_by_role(role:str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        request.path_params["role"] = role
+        http_response = await request_adapter(request, find_all_user_by_role_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

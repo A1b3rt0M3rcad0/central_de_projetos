@@ -114,6 +114,29 @@ class UserRepository(IUserRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindUser(message="Error on find users") from e
+    
+    def find_all_by_role(self, role:Role) -> List[UserEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                result = db.session.query(User).where(User.role == role.value).all()
+                if not any(result):
+                    raise UserNotExists(message='Users not exists')
+                return [
+                    UserEntity(
+                        cpf=CPF(user.cpf),
+                        password=user.password, # bytes
+                        salt=user.salt, # bytes
+                        role=Role(user.role),
+                        email=Email(user.email),
+                        created_at=user.created_at,
+                        name=user.name
+                    )
+                    for user in result
+                ]
+        except UserNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindUser(message="Error on find users") from e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value
