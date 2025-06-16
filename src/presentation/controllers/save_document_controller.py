@@ -29,7 +29,7 @@ class SaveDocumentController(ControllerInterface):
 
             return HttpResponse(
                 status_code=200,
-                body={"message": "Document uploaded successfully"}
+                body={"message": "Document uploaded successfully", "name": body["document_name"]}
             )
 
         except Exception as e:
