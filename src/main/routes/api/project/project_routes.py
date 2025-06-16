@@ -18,6 +18,7 @@ from src.main.composers.update_project_start_date_composer import update_project
 from src.main.composers.update_project_verba_composer import update_project_verba_composer
 from src.main.composers.find_all_from_project_composer import find_all_from_project_composer
 from src.main.composers.find_all_projects_with_basic_details_composer import find_all_projects_with_basic_details_composer
+from src.main.composers.update_status_from_project_composer import update_status_from_project_composer
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
@@ -27,6 +28,7 @@ from src.main.routes.api.project.request_format.update_end_date_project_format i
 from src.main.routes.api.project.request_format.update_expected_completion_date_format import UpdateExpectedCompletionDateFormat
 from src.main.routes.api.project.request_format.update_start_date_format import UpdateStartDateFormat
 from src.main.routes.api.project.request_format.update_verba_format import UpdateVerbaFormat
+from src.main.routes.api.project.request_format.update_status_format import UpdateStartStatusFormat
 
 ## Auth
 from fastapi import Security
@@ -130,6 +132,15 @@ async def update_start_date(body:UpdateStartDateFormat, request:Request, user=Se
 async def update_project_verba(body:UpdateVerbaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_verba_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.patch('/status')
+async def update_project_status(body:UpdateStartStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    try:
+        http_response = await request_adapter(request, update_status_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
