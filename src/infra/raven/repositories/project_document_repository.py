@@ -51,7 +51,7 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
             db.save_changes()
 
     
-    def get_document_names(self, project_id:int) -> List[str]:
+    def get_document_names(self, project_id: int) -> List[str]:
         document_names = []
 
         with self.__db_connection_handler as db:
@@ -72,11 +72,11 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
 
                 ext = mimetypes.guess_extension(content_type) if content_type else None
 
-                if ext:
+                if ext and not name.lower().endswith(ext.lower()):
                     full_name = f"{name}{ext}"
                 else:
                     full_name = name
-                
+
                 document_names.append(full_name)
 
         return document_names

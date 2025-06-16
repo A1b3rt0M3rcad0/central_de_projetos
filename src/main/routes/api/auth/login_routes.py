@@ -10,9 +10,13 @@ from src.main.composers.login_composer import login_composer
 
 from src.main.routes.api.auth.request_format.login_format import LoginFormat
 
+#Limiter
+from src.main.routes.middleware.rate_limit import limiter
+
 routes = APIRouter(prefix='/auth', tags=['auth', 'login'])
 
 @routes.post('/login')
+@limiter.limit("5/minute")
 async def login(body:LoginFormat, request:Request):
     try:
         http_response = await request_adapter(request, login_composer())

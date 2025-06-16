@@ -65,3 +65,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+## Limiter
+from src.main.routes.middleware.rate_limit import setup_rate_limiter
+setup_rate_limiter(app=app)
