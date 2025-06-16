@@ -5,6 +5,7 @@ from src.infra.raven.models.document import DocumentModel
 from src.data.interface.i_raven_project_document_repository import IProjectDocumentRepository
 from typing import List
 import mimetypes
+import re
 
 class ProjectDocumentRepository(IProjectDocumentRepository):
 
@@ -55,7 +56,6 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
         document_names = []
 
         with self.__db_connection_handler as db:
-
             dummy_project_documents = ProjectDocuments()
             project_document_data = dummy_project_documents.make_to_store(project_id=project_id)
             entity = db.load(project_document_data["key"])
@@ -72,7 +72,10 @@ class ProjectDocumentRepository(IProjectDocumentRepository):
 
                 ext = mimetypes.guess_extension(content_type) if content_type else None
 
-                if ext and not name.lower().endswith(ext.lower()):
+                # Verifica se o nome já possui uma extensão (ex: .jpg, .jpeg, .pdf etc.)
+                already_has_ext = re.search(r"\.\w{2,5}$", name.lower()) is not None
+
+                if ext and not already_has_ext and ext != ".bin":
                     full_name = f"{name}{ext}"
                 else:
                     full_name = name
