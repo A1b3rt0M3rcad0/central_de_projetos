@@ -1,15 +1,17 @@
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.domain.use_cases.i_find_all_from_project import IFindAllFromProject
+from src.domain.use_cases.i_find_user_by_project_id import IFindUserByProjectId
 from src.domain.use_cases.I_get_document_names import IGetDocumentNames
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.domain.entities.project import ProjectEntity
 
 class FindAllFromProjectController(ControllerInterface):
 
-    def __init__(self, find_all_from_project_case:IFindAllFromProject, get_document_names_case:IGetDocumentNames) -> None:
+    def __init__(self, find_all_from_project_case:IFindAllFromProject, get_document_names_case:IGetDocumentNames, find_user_by_project_id:IFindUserByProjectId) -> None:
         self.__find_all_from_project_case = find_all_from_project_case
         self.__get_document_names_case = get_document_names_case
+        self.__find_user_by_project_id_case = find_user_by_project_id
     
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
@@ -17,6 +19,7 @@ class FindAllFromProjectController(ControllerInterface):
             project_id = path_params["project_id"]
             result:ProjectEntity = self.__find_all_from_project_case.find(project_id=project_id)
             documents = self.__get_document_names_case.names(project_id=project_id)
+            user = self.__find_user_by_project_id_case.find(project_id=project_id)
             return HttpResponse(
                 status_code=200,
                 body={
@@ -63,7 +66,8 @@ class FindAllFromProjectController(ControllerInterface):
                         "end_date": result.end_date.strftime(r'%d/%m/%Y') if result.end_date else result.end_date,
                         "start_date": result.start_date.strftime(r'%d/%m/%Y') if result.start_date else result.start_date,
                         "verba_disponivel": result.verba_disponivel,
-                        "documents": documents
+                        "documents": documents,
+                        "user": {"cpf": user.cpf.value, "name": user.name} if user else user
                     }
                 }
             )
