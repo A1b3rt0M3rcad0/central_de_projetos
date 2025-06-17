@@ -17,6 +17,7 @@ from src.main.routes.api.status.status_routes import routes as status_routes
 from src.main.routes.api.user_project.user_project_routes import routes as user_project_routes
 from src.main.routes.api.document.document_routes import routes as document_routes
 from src.main.routes.api.types.types_routes import routes as types_routes
+from src.main.routes.api.project_fiscal.project_fiscal_routes import routes as project_fiscal_routes
 
 # Web
 from src.main.routes.web.login.routes_login import routes as login_web
@@ -47,6 +48,7 @@ app.include_router(status_routes)
 app.include_router(user_project_routes)
 app.include_router(document_routes)
 app.include_router(types_routes)
+app.include_router(project_fiscal_routes)
 
 # Web
 app.include_router(login_web)
@@ -65,3 +67,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+## Limiter
+from src.main.routes.middleware.rate_limit import setup_rate_limiter
+setup_rate_limiter(app=app)

@@ -24,7 +24,12 @@ class FindAllProjectsWithBasicDetailsController(ControllerInterface):
                     "fiscal": project.fiscal.name if project.fiscal else None,
                     "status": project.status.description if project.status else None,
                     "andamento_do_projeto": project.andamento_do_projeto,
-                    "user": user.name if user else user
+                    "user": user.name if user else user,
+                    "expected_completion_date": project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
+                    "start_date": project.start_date.strftime(r'%d/%m/%Y')  if project.start_date else None,
+                    "end_date": project.end_date.strftime(r'%d/%m/%Y')  if project.end_date else None,
+                    "verba_disponivel": project.verba_disponivel,
+                    "types": project.types.name if project.types else project.types
                 }
                 response.append(project)
             return HttpResponse(
