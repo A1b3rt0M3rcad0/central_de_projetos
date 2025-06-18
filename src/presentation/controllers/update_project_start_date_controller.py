@@ -25,7 +25,7 @@ class UpdateProjectStartDateController(ControllerInterface):
             )
             self.__create_history_project_case.create(
                 project_id=project_id,
-                data_name='Start Date',
+                data_name='Data de inicio',
                 description=f'Data de inicio do projeto atualizada para {start_date}'
             )
             return HttpResponse(
