@@ -25,8 +25,8 @@ class UpdateProjectVerbaController(ControllerInterface):
             )
             self.__create_history_project_case.create(
                 project_id=project_id,
-                data_name='Verba Disponivel',
-                description=f'Verba Disponivel atualizada para {verba_disponivel}'
+                data_name='Orçamento',
+                description=f'Orçamento atualizado para {verba_disponivel}'
             )
             return HttpResponse(
                 status_code=200,

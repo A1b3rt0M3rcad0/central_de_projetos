@@ -27,7 +27,7 @@ class UpdateBairroFromProjectController(ControllerInterface):
             self.__create_history_project_case.create(
                 project_id=project_id,
                 data_name='Bairro',
-                description=f'Bairro do projecto trocado de {bairro_id} para {new_bairro_id}'
+                description=f'Bairro do projecto atualizado de {bairro_id} para {new_bairro_id}'
             )
             return HttpResponse(
                 status_code=200,

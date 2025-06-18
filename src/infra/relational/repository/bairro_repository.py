@@ -106,7 +106,7 @@ class BairroRepository(IBairroRepository):
                 db.session.commit()
         except BairroNotExists as e:
             raise e from e
-        except IntegrityError as e:
+        except (IntegrityError, AssertionError) as e:
             raise BairroHasRelatedChildren(message=f'Bairro {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteBairro(message=f'Error on delete bairro {name}: {str(e)}') from e

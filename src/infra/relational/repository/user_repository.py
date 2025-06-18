@@ -170,7 +170,7 @@ class UserRepository(IUserRepository):
                     db.session.commit()
             except UserNotExists as e:
                 raise e from e
-            except IntegrityError as e:
+            except (IntegrityError, AssertionError) as e:
                 raise UserHasRelatedChildren(
                     message=f'Error on delete user cpf={cpf.value} because has related children'
                 ) from e
