@@ -2,6 +2,7 @@
 from src.infra.relational.models.project_bairro import ProjectBairro
 from src.infra.relational.models.bairro import Bairro
 from src.infra.relational.models.project import Project
+from src.infra.relational.models.status import Status
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.entities.bairro import BairroEntity
 from src.data.interface.i_project_bairro_repository import IProjectBairroRepository
@@ -12,6 +13,7 @@ from sqlalchemy import and_
 from src.domain.entities.project_bairro import ProjectBairroEntity
 from src.domain.entities.project_bairro_summary import ProjectBairroSummary
 from src.domain.entities.project_bairro_verba_summary import ProjectBairroVerbaSummary
+from src.domain.entities.project_bairro_status_summary import ProjectBairroStatusSummary
 
 ## Errors
 from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
@@ -103,6 +105,49 @@ class ProjectBairroRepository(IProjectBairroRepository):
         except Exception as e:
             raise ErrorOnFindProjectBairro(
                 message=f'Error on get bairros verba from project: {str(e)}'
+            ) from e
+
+    def get_project_status_count_by_bairro(self) -> ProjectBairroStatusSummary:
+        try:
+            with self.__db_connection_handler as db:
+                statuses: List[Status] = db.session.query(Status).all()
+                projects: List[Project] = db.session.query(Project).all()
+                bairros: List[Bairro] = db.session.query(Bairro).all()
+                associations: List[ProjectBairro] = db.session.query(ProjectBairro).all()
+
+                # Mapeia os projetos por ID para acesso rápido
+                project_dict = {p.id: p for p in projects}
+                status_dict = {s.id: s.description for s in statuses}
+
+                # Inicializa: bairro_id -> bairro_name -> {status_name -> count}
+                result: Dict[int, Dict[str, Dict[str, int]]] = {
+                    bairro.id: {bairro.name: {s.description: 0 for s in statuses}} for bairro in bairros
+                }
+
+                for assoc in associations:
+                    project = project_dict.get(assoc.project_id)
+                    if not project:
+                        continue
+
+                    bairro_info = result.get(assoc.bairro_id)
+                    if bairro_info:
+                        bairro_name = next(iter(bairro_info))
+                        status_name = status_dict.get(project.status_id, "Desconhecido")
+                        if status_name not in bairro_info[bairro_name]:
+                            bairro_info[bairro_name][status_name] = 0
+                        bairro_info[bairro_name][status_name] += 1
+
+                return {
+                    "bairros": [
+                        BairroEntity(bairro_id=b.id, name=b.name, created_at=b.created_at)
+                        for b in bairros
+                    ],
+                    "project_status_by_bairro": result
+                }
+
+        except Exception as e:
+            raise ErrorOnFindProjectBairro(
+                message=f'Error on get project status by bairro: {str(e)}'
             ) from e
 
 
