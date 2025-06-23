@@ -11,6 +11,7 @@ from src.main.composers.create_project_bairro_composer import create_project_bai
 from src.main.composers.delete_project_bairro_composer import delete_project_bairro_composer
 from src.main.composers.find_all_projects_from_bairro_composer import find_all_projects_from_bairro_composer
 from src.main.composers.get_project_counts_by_bairro_composer import get_project_counts_by_bairro_composer
+from src.main.composers.get_project_verba_by_bairro_composer import get_project_verba_by_bairro
 
 from src.main.routes.api.project_bairro.request_format.create_project_bairro_format import CreateProjectBairroFormat
 from src.main.routes.api.project_bairro.request_format.delete_project_bairro_format import DeleteProjectBairroFormat
@@ -37,6 +38,15 @@ async def find_project_bairro(bairro_id:int, project_id:int, request:Request, us
 async def get_project_counts_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_project_counts_by_bairro_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/project/verba/')
+async def get_project_verba_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, get_project_verba_by_bairro())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

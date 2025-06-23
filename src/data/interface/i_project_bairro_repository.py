@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from src.domain.entities.project_bairro import ProjectBairroEntity
 from src.domain.entities.project_bairro_summary import ProjectBairroSummary
+from src.domain.entities.project_bairro_verba_summary import ProjectBairroVerbaSummary
 
 class IProjectBairroRepository(ABC):
 
@@ -19,6 +20,9 @@ class IProjectBairroRepository(ABC):
 
     @abstractmethod
     def get_project_counts_by_bairro(self) -> ProjectBairroSummary:pass
+
+    @abstractmethod
+    def get_project_verba_by_bairro(self) -> ProjectBairroVerbaSummary:pass
 
     @abstractmethod
     def update_bairro(self, project_id: int, bairro_id: int, new_bairro_id: int) -> None:

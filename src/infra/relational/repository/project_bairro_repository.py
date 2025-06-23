@@ -1,6 +1,7 @@
 #pylint:disable=R1721
 from src.infra.relational.models.project_bairro import ProjectBairro
 from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.project import Project
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.domain.entities.bairro import BairroEntity
 from src.data.interface.i_project_bairro_repository import IProjectBairroRepository
@@ -10,6 +11,7 @@ from sqlalchemy import and_
 ## Entities
 from src.domain.entities.project_bairro import ProjectBairroEntity
 from src.domain.entities.project_bairro_summary import ProjectBairroSummary
+from src.domain.entities.project_bairro_verba_summary import ProjectBairroVerbaSummary
 
 ## Errors
 from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
@@ -66,6 +68,43 @@ class ProjectBairroRepository(IProjectBairroRepository):
             raise ErrorOnFindProjectBairro(
                 message=f'Error on get bairros from project: {str(e)}'
             ) from e
+    
+    def get_project_verba_by_bairro(self) -> ProjectBairroVerbaSummary:
+        try:
+            with self.__db_connection_handler as db:
+                projects: List[Project] = db.session.query(Project).all()
+                bairros: List[Bairro] = db.session.query(Bairro).all()
+                associations: List[ProjectBairro] = db.session.query(ProjectBairro).all()
+
+                # Inicializa o dicionário: bairro_id -> {bairro_name: verba acumulada}
+                project_bairro_verba: Dict[int, Dict[str, float]] = {
+                    bairro.id: {bairro.name: 0} for bairro in bairros
+                }
+
+                # Cria um dicionário auxiliar para lookup rápido de projetos
+                project_dict = {p.id: p for p in projects}
+
+                for assoc in associations:
+                    project = project_dict.get(assoc.project_id)
+                    if project:
+                        bairro_info = project_bairro_verba.get(assoc.bairro_id)
+                        if bairro_info:
+                            bairro_name = next(iter(bairro_info))
+                            bairro_info[bairro_name] += project.verba_disponivel
+
+                return {
+                    'bairros': [
+                        BairroEntity(bairro_id=b.id, name=b.name, created_at=b.created_at)
+                        for b in bairros
+                    ],
+                    'project_verba_by_bairro': project_bairro_verba
+                }
+
+        except Exception as e:
+            raise ErrorOnFindProjectBairro(
+                message=f'Error on get bairros verba from project: {str(e)}'
+            ) from e
+
 
     def find(self, project_id: int, bairro_id: int) -> ProjectBairroEntity:
         try:
