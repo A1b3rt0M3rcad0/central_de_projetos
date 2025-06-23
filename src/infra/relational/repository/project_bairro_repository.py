@@ -1,9 +1,15 @@
+#pylint:disable=R1721
 from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.bairro import Bairro
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from src.domain.entities.project_bairro import ProjectBairroEntity
+from src.domain.entities.bairro import BairroEntity
 from src.data.interface.i_project_bairro_repository import IProjectBairroRepository
-from typing import List
+from typing import List, Dict
 from sqlalchemy import and_
+
+## Entities
+from src.domain.entities.project_bairro import ProjectBairroEntity
+from src.domain.entities.project_bairro_summary import ProjectBairroSummary
 
 ## Errors
 from src.errors.repository.already_exists_error.project_bairro_already_exists import ProjectBairroAlreadyExists
@@ -31,6 +37,35 @@ class ProjectBairroRepository(IProjectBairroRepository):
             ) from e
         except Exception as e:
             raise ErrorOnInsertProjectBairro(message=f'Error on insert project bairro (project_id {project_id}, bairro_id {bairro_id}): {str(e)}') from e
+
+    def get_project_counts_by_bairro(self) -> ProjectBairroSummary:
+        try:
+            with self.__db_connection_handler as db:
+                bairros = db.session.query(Bairro).all()
+                associations = db.session.query(ProjectBairro).all()
+
+                bairro_id_to_name = {b.id: b.name for b in bairros}
+
+                project_bairro_dict: Dict[str, int] = {}
+                for assoc in associations:
+                    name = bairro_id_to_name.get(assoc.bairro_id)
+                    if name:
+                        project_bairro_dict[name] = project_bairro_dict.get(name, 0) + 1
+
+                bairros_entities = [
+                    BairroEntity(bairro_id=b.id, name=b.name, created_at=b.created_at)
+                    for b in bairros
+                ]
+
+                return {
+                    "bairros": bairros_entities,
+                    "projectBairro": project_bairro_dict
+                }
+
+        except Exception as e:
+            raise ErrorOnFindProjectBairro(
+                message=f'Error on get bairros from project: {str(e)}'
+            ) from e
 
     def find(self, project_id: int, bairro_id: int) -> ProjectBairroEntity:
         try:
