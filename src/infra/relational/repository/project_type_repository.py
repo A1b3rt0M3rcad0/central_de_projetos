@@ -2,13 +2,19 @@
 from typing import List
 from sqlalchemy import and_
 
-from src.infra.relational.models.project_type import ProjectType
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_project_type_repository import IProjectTypeRepository
+
+# Entities
 from src.domain.entities.project_type import ProjectTypeEntity
+from src.domain.entities.types import TypesEntity
+from src.domain.entities.project_types_count_by_bairro import ProjectTypesCountByBairro
 
 from src.infra.relational.models.types import Types
 from src.infra.relational.models.project import Project
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.project_bairro import ProjectBairro
 
 # Errors
 from src.errors.repository.already_exists_error.project_type_already_exists import ProjectTypeAlreadyExists
@@ -86,6 +92,66 @@ class ProjectTypeRepository(IProjectTypeRepository):
         except Exception as e:
             raise ErrorOnFindProjectType(
                 message=f'Error on find project_type with type_id={type_id}: {str(e)}'
+            ) from e
+    
+    def get_project_types_count_by_bairro(self) -> ProjectTypesCountByBairro:
+        try:
+            with self.__db_connection_handler as db:
+                projects: List[Project] = db.session.query(Project).all()
+                project_types: List[ProjectType] = db.session.query(ProjectType).all()
+                types: List[Types] = db.session.query(Types).all()
+                bairros: List[Bairro] = db.session.query(Bairro).all()
+                project_bairros: List[ProjectBairro] = db.session.query(ProjectBairro).all()
+
+                types_look_up = {t.id: t for t in types}
+                bairro_lookup = {b.id: b.name for b in bairros}
+
+                # Mapeamento: project_id -> bairro_id (único bairro por projeto assumido)
+                project_to_bairro = {pb.project_id: pb.bairro_id for pb in project_bairros}
+
+                # Agrupar project_types por project_id
+                project_type_lookup = {}
+                for pt in project_types:
+                    if pt.project_id not in project_type_lookup:
+                        project_type_lookup[pt.project_id] = []
+                    project_type_lookup[pt.project_id].append(pt)
+
+                # Construir a estrutura desejada
+                types_count_by_bairro = {}
+                for project in projects:
+                    bairro_id = project_to_bairro.get(project.id)
+                    if bairro_id is None:
+                        # Ignorar projetos sem bairro associado
+                        continue
+
+                    bairro_name = bairro_lookup.get(bairro_id, "Desconhecido")
+
+                    if bairro_id not in types_count_by_bairro:
+                        types_count_by_bairro[bairro_id] = {bairro_name: {}}
+
+                    for pt in project_type_lookup.get(project.id, []):
+                        type_id = pt.type_id
+                        type_name = types_look_up[type_id].name
+
+                        if type_name not in types_count_by_bairro[bairro_id][bairro_name]:
+                            types_count_by_bairro[bairro_id][bairro_name][type_name] = 0
+
+                        types_count_by_bairro[bairro_id][bairro_name][type_name] += 1
+
+                return {
+                    "types": [
+                        TypesEntity(
+                            types_id=type_model.id,
+                            name=type_model.name,
+                            created_at=type_model.created_at
+                        )
+                        for type_model in types
+                    ],
+                    "types_count_by_bairro": types_count_by_bairro
+                }
+        except Exception as e:
+            raise ErrorOnFindProjectType(
+                message=f'Error on {self.get_project_types_count_by_bairro.__name__}: {str(e)}'
             ) from e
 
     def update_type(self, project_id: int, type_id: int, new_type_id: int) -> None:

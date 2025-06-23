@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from src.domain.entities.project_type import ProjectTypeEntity
+from src.domain.entities.project_types_count_by_bairro import ProjectTypesCountByBairro
 
 class IProjectTypeRepository(ABC):
 
@@ -15,6 +16,9 @@ class IProjectTypeRepository(ABC):
     @abstractmethod
     def find_all_from_type(self, type_id: int) -> List[ProjectTypeEntity]:
         """Busca todos os projetos associados a um tipo"""
+    
+    @abstractmethod
+    def get_project_types_count_by_bairro(self) -> ProjectTypesCountByBairro:pass
 
     @abstractmethod
     def update_type(self, project_id: int, type_id: int, new_type_id: int) -> None:

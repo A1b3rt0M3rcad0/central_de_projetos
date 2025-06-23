@@ -9,6 +9,7 @@ from src.errors.error_handle import error_handler
 from src.main.composers.create_project_type_composer import create_project_type_composer
 from src.main.composers.find_type_from_project_composer import find_type_from_project_composer
 from src.main.composers.delete_project_type_composer import delete_project_type_composer
+from src.main.composers.get_project_types_count_by_bairro_composer import get_project_types_count_by_bairro_composer
 
 from src.main.routes.api.project_type.request_format.create_project_type_format import CreateProjectTypeFormat
 from src.main.routes.api.project_type.request_format.delete_project_type_format import DeleteProjectTypeFormat
@@ -25,6 +26,15 @@ async def find_type_from_project(project_id:int, request:Request, user=Security(
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_type_from_project_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/project/types/count')
+async def get_project_types_count_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, get_project_types_count_by_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
