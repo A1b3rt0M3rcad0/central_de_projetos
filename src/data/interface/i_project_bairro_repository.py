@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List
 from src.domain.entities.project_bairro import ProjectBairroEntity
+from src.domain.entities.project_bairro_summary import ProjectBairroSummary
+from src.domain.entities.project_bairro_verba_summary import ProjectBairroVerbaSummary
+from src.domain.entities.project_bairro_status_summary import ProjectBairroStatusSummary
 
 class IProjectBairroRepository(ABC):
 
@@ -15,6 +18,15 @@ class IProjectBairroRepository(ABC):
     @abstractmethod
     def find_all_from_bairro(self, bairro_id: int) -> List[ProjectBairroEntity]:
         """Busca todos os projetos associados a um bairro"""
+
+    @abstractmethod
+    def get_project_counts_by_bairro(self) -> ProjectBairroSummary:pass
+
+    @abstractmethod
+    def get_project_verba_by_bairro(self) -> ProjectBairroVerbaSummary:pass
+
+    @abstractmethod
+    def get_project_status_count_by_bairro(self) -> ProjectBairroStatusSummary:pass
 
     @abstractmethod
     def update_bairro(self, project_id: int, bairro_id: int, new_bairro_id: int) -> None:
