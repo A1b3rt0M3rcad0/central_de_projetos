@@ -13,7 +13,7 @@ from src.errors.repository.error_on_delete.error_on_delete_fiscal import ErrorOn
 from src.errors.repository.has_related_children.fiscal_has_related_children import FiscalHasRelatedChildren
 from sqlalchemy.exc import IntegrityError
 
-from typing import List
+from typing import List, Dict
 
 class FiscalRepository(IFiscalRepository):
 
@@ -87,6 +87,16 @@ class FiscalRepository(IFiscalRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindFiscal(message='Error on find all fiscal') from e
+    
+    def count_fiscals(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                fiscals:List[Fiscal] = db.session.query(Fiscal).all()
+                return {
+                   'fiscals': len(fiscals)
+                }
+        except Exception as e:
+            raise ErrorOnFindFiscal(message='Error on count all fiscal') from e
 
     def update(self, name:str, new_name:str) -> None:
         try:
