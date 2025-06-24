@@ -20,6 +20,7 @@ from src.main.composers.find_all_from_project_composer import find_all_from_proj
 from src.main.composers.find_all_projects_with_basic_details_composer import find_all_projects_with_basic_details_composer
 from src.main.composers.update_status_from_project_composer import update_status_from_project_composer
 from src.main.composers.find_all_associations_possibility_from_project_composer import find_all_associations_possibility_from_project_composer
+from src.main.composers.count_projects_composer import count_projects_composer
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
@@ -43,6 +44,15 @@ async def find_project(project_id, request:Request, user=Security(role_required(
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_project_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/count/all')
+async def count_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, count_projects_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:
