@@ -62,6 +62,16 @@ class EmpresaRepository(IEmpresaRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindEmpresa(message=f'Error on find empresas: {str(e)}') from e
+
+    def count_empresas(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                empresas = db.session.query(Empresa).all()
+                return {
+                    'empresas': len(empresas)
+                }
+        except Exception as e:
+            raise ErrorOnFindEmpresa(message=f'Error on count empresas: {str(e)}') from e
     
     def get_count_projects_by_empresas(self) -> Dict[str, int]:
         try:

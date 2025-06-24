@@ -13,6 +13,9 @@ class IEmpresaRepository(ABC):
     def find_all(self) -> List[EmpresaEntity]:pass
 
     @abstractmethod
+    def count_empresas(self) -> Dict[str, int]:pass
+
+    @abstractmethod
     def get_count_projects_by_empresas(self) -> Dict[str, int]:pass
 
     @abstractmethod
