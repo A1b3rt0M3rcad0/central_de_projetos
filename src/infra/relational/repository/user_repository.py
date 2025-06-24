@@ -137,6 +137,17 @@ class UserRepository(IUserRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindUser(message="Error on find users") from e
+    
+    def get_count_projects_by_user(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                users:List[User] = db.session.query(User).where(User.role == 'VEREADOR').all()
+                return {
+                    user.name: len(user.user_project)
+                    for user in users
+                }
+        except Exception as e:
+            raise ErrorOnFindUser(message="Error on get count projects by users") from e
 
     def update(self, cpf:CPF, update_params:Dict) -> None:
         cpf_entry = cpf.value

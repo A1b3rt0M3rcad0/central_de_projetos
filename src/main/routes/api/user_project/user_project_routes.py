@@ -10,6 +10,7 @@ from src.main.composers.update_association_from_project_composer import update_a
 from src.main.composers.delete_association_composer import delete_association_composer
 from src.main.composers.find_all_association_from_projects_composer import find_all_association_from_projects_composer
 from src.main.composers.associate_vereador_with_a_project_composer import associate_vereador_with_a_project_composer
+from src.main.composers.get_count_projects_by_user_composer import get_count_projets_by_user_composer
 
 from src.main.routes.api.user_project.request_format.associate_vereador_with_a_project_format import AssociateVereadorWithAProjectFormat
 from src.main.routes.api.user_project.request_format.delete_association_format import DeleteAssociationFormat
@@ -26,6 +27,15 @@ routes = APIRouter(prefix='/user_project', tags=['user', 'project', 'user_projec
 async def find_all_association_from_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_association_from_projects_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/project/count/all')
+async def get_count_projets_by_user(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, get_count_projets_by_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

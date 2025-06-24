@@ -1,6 +1,6 @@
 from src.domain.entities.fiscal import FiscalEntity
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 
 class IFiscalRepository(ABC):
 
@@ -15,6 +15,9 @@ class IFiscalRepository(ABC):
 
     @abstractmethod
     def find_all(self) -> List[FiscalEntity]:pass
+
+    @abstractmethod
+    def count_fiscals(self) -> Dict[str, int]:pass
 
     @abstractmethod
     def update(self, name:str, new_name:str) -> None:pass

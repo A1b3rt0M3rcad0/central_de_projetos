@@ -13,7 +13,7 @@ from src.errors.repository.error_on_update.error_on_update_bairro import ErrorOn
 from src.errors.repository.has_related_children.bairro_has_related_children import BairroHasRelatedChildren
 from sqlalchemy.exc import IntegrityError
 
-from typing import List
+from typing import List, Dict
 
 class BairroRepository(IBairroRepository):
 
@@ -81,6 +81,16 @@ class BairroRepository(IBairroRepository):
             raise e from e
         except Exception as e:
             raise ErrorOnFindBairro(message=f'Error on find bairros: {str(e)}') from e
+    
+    def count_bairros(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                bairros:List[Bairro] = db.session.query(Bairro).all()
+                return {
+                    'bairros': len(bairros)
+                }
+        except Exception as e:
+            raise ErrorOnFindBairro(message=f'Error on count bairros: {str(e)}') from e
 
     def update(self, name: str, new_name: str) -> None:
         try:

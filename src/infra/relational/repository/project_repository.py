@@ -130,6 +130,18 @@ class ProjectRepository(IProjectRepository):
                     message=f'Error on find all projects: {str(e)}'
                 ) from e
     
+    def count_projects(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                projects:List[Project] = db.session.query(Project).all()
+                return {
+                    "projects": len(projects)
+                }
+        except Exception as e:
+            raise ErrorOnFindProject(
+                    message=f'Error on count projects: {str(e)}'
+                ) from e
+    
     def find_by_status(self, status_id:int) -> List[ProjectEntity]:
         with self.__db_connection_handler as db:
             try:

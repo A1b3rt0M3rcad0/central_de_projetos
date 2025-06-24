@@ -25,6 +25,9 @@ class IUserRepository(ABC):
     def find_all_by_role(self, role:Role) -> List[UserEntity]:pass
 
     @abstractmethod
+    def get_count_projects_by_user(self) -> Dict[str, int]:pass
+
+    @abstractmethod
     def update(self, cpf:CPF, update_params:Dict) -> None:pass
 
     @abstractmethod

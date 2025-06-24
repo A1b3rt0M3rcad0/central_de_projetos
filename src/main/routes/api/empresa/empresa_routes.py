@@ -11,6 +11,7 @@ from src.main.composers.find_all_empresas_composer import find_empresas_composer
 from src.main.composers.create_empresa_composer import create_empresa_composer
 from src.main.composers.delete_empresa_composer import delete_empresa_composer
 from src.main.composers.update_empresa_composer import update_empresas_composer
+from src.main.composers.count_empresas_composer import count_empresas_composer
 
 from src.main.routes.api.empresa.request_format.create_empresa_format import CreateEmpresaFormat
 from src.main.routes.api.empresa.request_format.delete_empresa_format import DeleteEmpresaFormat
@@ -36,6 +37,15 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
 async def find_all_empresa(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_empresas_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/empresa/count/all')
+async def count_empresas(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, count_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

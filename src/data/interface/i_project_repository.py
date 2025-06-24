@@ -16,6 +16,9 @@ class IProjectRepository(ABC):
     def find_all(self) -> List[ProjectEntity]:pass
 
     @abstractmethod
+    def count_projects(self) -> Dict[str, int]:pass
+
+    @abstractmethod
     def find_by_status(self, status_id:int) -> List[Optional[ProjectEntity]]:pass
 
     @abstractmethod
