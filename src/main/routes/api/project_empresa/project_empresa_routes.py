@@ -10,6 +10,7 @@ from src.main.composers.create_project_empresa_composer import create_project_em
 from src.main.composers.delete_project_empresa_composer import delete_project_empresa_composer
 from src.main.composers.find_project_empresa_composer import find_project_empresa_composer
 from src.main.composers.find_all_projects_from_empresa_composer import find_all_projects_from_empresa_composer
+from src.main.composers.get_count_projects_by_empresas_composer import get_count_projects_by_empresas_composer
 
 from src.main.routes.api.project_empresa.request_format.create_project_empresa_format import CreateProjectEmpresaFormat
 from src.main.routes.api.project_empresa.request_format.delete_project_empresa_format import DeleteProjectEmpresaFormat
@@ -36,7 +37,16 @@ async def find_project_empresa(empresa_id:int, project_id:int, request:Request, 
 async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['empresa_id'] = empresa_id
-        http_response = request_adapter(request, find_all_projects_from_empresa_composer())
+        http_response = await request_adapter(request, find_all_projects_from_empresa_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get('/project/count/all')
+async def get_count_projects_by_empresas(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, get_count_projects_by_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

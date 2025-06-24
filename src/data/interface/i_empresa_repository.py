@@ -1,7 +1,6 @@
-# src/data/interface/i_empresa_repository.py
 from abc import ABC, abstractmethod
 from src.domain.entities.empresa import EmpresaEntity
-from typing import List
+from typing import List, Dict
 
 class IEmpresaRepository(ABC):
     @abstractmethod
@@ -12,6 +11,9 @@ class IEmpresaRepository(ABC):
 
     @abstractmethod
     def find_all(self) -> List[EmpresaEntity]:pass
+
+    @abstractmethod
+    def get_count_projects_by_empresas(self) -> Dict[str, int]:pass
 
     @abstractmethod
     def update(self, name: str, new_name: str) -> None: pass
