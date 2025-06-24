@@ -9,6 +9,7 @@ from src.errors.error_handle import error_handler
 ## Composers
 from src.main.composers.create_project_fiscal_composer import create_project_fiscal_composer
 from src.main.composers.delete_project_fiscal_composer import delete_project_fiscal_composer
+from src.main.composers.get_count_projects_by_fiscal_composer import get_count_projects_by_fiscal_composer
 
 ## request Formats
 from src.main.routes.api.project_fiscal.request_format.create_project_fiscal import CreateProjectFiscalFormat
@@ -25,6 +26,15 @@ routes = APIRouter(prefix='/project_fiscal', tags=['project', 'fiscal', 'project
 async def create_project_fiscal(body:CreateProjectFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_project_fiscal_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        return response_adapter(http_response)
+    except Exception as e:
+        return response_adapter(error_handler(e))
+
+@routes.get("/project/count")
+async def get_count_projects_by_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    try:
+        http_response = await request_adapter(request, get_count_projects_by_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         return response_adapter(http_response)
     except Exception as e:

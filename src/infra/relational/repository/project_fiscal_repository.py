@@ -1,9 +1,14 @@
-from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from src.domain.entities.project_fiscal import ProjectFiscalEntity
 from typing import List
 from sqlalchemy import and_
 from src.data.interface.i_project_fiscal_repository import IProjectFiscalRepository
+
+# Models
+from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.fiscal import Fiscal
+
+# Entities
+from src.domain.entities.project_fiscal import ProjectFiscalEntity
 
 # Errors
 from src.errors.repository.already_exists_error.project_fiscal_already_exists import ProjectFiscalAlreadyExists
@@ -14,6 +19,9 @@ from src.errors.repository.error_on_insert.error_on_insert_project_fiscal import
 from src.errors.repository.error_on_find.error_on_find_project_fiscal import ErrorOnFindProjectFiscal
 from src.errors.repository.has_related_children.project_fiscal_has_related_children import ProjectFiscalhasRelatedChildren
 from sqlalchemy.exc import IntegrityError
+
+# Typing
+from typing import Dict
 
 class ProjectFiscalRepository(IProjectFiscalRepository):
 
@@ -83,6 +91,19 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
                 message=f'Error on find project_fiscal project_id={project_id}, fiscal_id={fiscal_id}: {str(e)}'
             ) from e
     
+    def get_count_projects_by_fiscal(self) -> Dict[str, int]:
+        try:
+            with self.__db_connection_handler as db:
+                fiscals: list[Fiscal] = db.session.query(Fiscal).all()
+                return {
+                    fiscal.name: len(fiscal.project_fiscal)
+                    for fiscal in fiscals
+                }
+        except Exception as e:
+            raise ErrorOnFindProjectFiscal(
+                message=f'Error on find project count from fiscals: {e}'
+            ) from e
+
     def update_fiscal(self, project_id:int, fiscal_id:int, new_fiscal_id:int) -> None:
         try:
             with self.__db_connection_handler as db:

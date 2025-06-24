@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 from src.domain.entities.project_fiscal import ProjectFiscalEntity
 
 class IProjectFiscalRepository(ABC):
@@ -15,6 +15,9 @@ class IProjectFiscalRepository(ABC):
     @abstractmethod
     def find(self, fiscal_id: int, project_id: int) -> ProjectFiscalEntity:
         """Busca uma associação específica entre projeto e fiscal"""
+    
+    @abstractmethod
+    def get_count_projects_by_fiscal(self) -> Dict[str, int]:pass
 
     @abstractmethod
     def update_fiscal(self, project_id: int, fiscal_id: int, new_fiscal_id: int) -> None:
