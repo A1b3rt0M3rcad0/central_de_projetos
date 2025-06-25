@@ -6,7 +6,7 @@ class MonetaryValue:
         self.__validate(value)
         if value is None:
             value = 0
-        self.__value = Decimal(value)
+        self.__value = Decimal(str(value)) if isinstance(value, float) else Decimal(value)
 
     @property
     def value(self) -> Decimal:
@@ -34,7 +34,7 @@ class MonetaryValue:
 
     def __mul__(self, other) -> "MonetaryValue":
         if isinstance(other, (float, int, Decimal)):
-            return MonetaryValue(self.__value * Decimal(other))
+            return MonetaryValue(self.__value * Decimal(str(other)) if isinstance(other, float) else Decimal(other))
         raise TypeError(
             f"{self.__class__.__name__} only accepts multiplication operations with float, int and Decimal and you are trying to pass a {type(other)}"
         )
@@ -46,7 +46,7 @@ class MonetaryValue:
             )
         if other == 0:
             raise ZeroDivisionError('Division by zero is not allowed')
-        return MonetaryValue(self.__value / Decimal(other))
+        return MonetaryValue(self.__value / (Decimal(str(other)) if isinstance(other, float) else Decimal(other)))
 
     def __rtruediv__(self, other) -> None:
         raise ValueError(
