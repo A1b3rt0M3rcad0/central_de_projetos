@@ -318,3 +318,50 @@ def test_delete(monetary_value,
         project = db.session.execute(select_project_script, {'status_id': status.id}).first()
 
         assert project is None
+
+def test_get_projects_with_pagination(
+    monetary_value,
+    andamento_do_projeto,
+    datetime_fixture,
+    insert_status_script,
+    select_status_script,
+    insert_project_script
+) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_repository = ProjectRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Paginated Status',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(select_status_script).first()
+
+        # Inserir 12 projetos
+        for i in range(12):
+            db.session.execute(insert_project_script, {
+                'status_id': status.id,
+                'verba_disponivel': monetary_value.value + i,
+                'andamento_do_projeto': f'{andamento_do_projeto}_{i}',
+                'start_date': datetime_fixture,
+                'expected_completion_date': datetime_fixture,
+                'end_date': datetime_fixture
+            })
+        db.session.commit()
+
+    # Página 2 com tamanho 5 deve retornar projetos de 6 a 10
+    result = project_repository.get_projects_with_pagination(page=2, page_size=5)
+
+    assert result["page"] == 2
+    assert result["page_size"] == 5
+    assert result["total_items"] == 12
+    assert result["total_pages"] == 3
+    assert isinstance(result["projects"], list)
+    assert len(result["projects"]) == 5
+
+    for project in result["projects"]:
+        assert isinstance(project.verba_disponivel, MonetaryValue)
+        assert isinstance(project.status_id, int)
+        assert project.andamento_do_projeto.startswith(andamento_do_projeto)
