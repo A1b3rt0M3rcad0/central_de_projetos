@@ -408,7 +408,9 @@ class ProjectRepository(IProjectRepository):
                     "projects": project_entities
                 }
             except Exception as e:
-                raise e from e
+                raise ErrorOnFindProject(
+                    message=f'Error on get projects from page: {page}: {str(e)}'
+                ) from e
 
     def update(self, project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
