@@ -7,7 +7,7 @@ class UserProject(BaseModel):
 
     __tablename__ = 'user_project'
 
-    user_cpf:Mapped[str] = mapped_column(String, ForeignKey('user.cpf'), nullable=False, primary_key=True)
+    user_cpf:Mapped[str] = mapped_column(String(15), ForeignKey('user.cpf'), nullable=False, primary_key=True)
     project_id:Mapped[int] = mapped_column(Integer, ForeignKey('project.id'), nullable=False, primary_key=True)
     assignment_date:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), nullable=False)
 

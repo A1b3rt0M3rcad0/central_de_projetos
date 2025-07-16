@@ -1,5 +1,5 @@
 #pylint:disable=all
-from ..config.base.base_model import BaseModel
+from src.infra.relational.config.base.base_model import BaseModel
 from .bairro import Bairro
 from .empresa import Empresa
 from .fiscal import Fiscal

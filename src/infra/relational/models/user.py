@@ -10,8 +10,8 @@ class User(BaseModel):
 
     cpf:Mapped[str] = mapped_column(String(15), primary_key=True)
     name:Mapped[str] = mapped_column(String(100), nullable=True)
-    password:Mapped[bytes] = mapped_column(LargeBinary(70), nullable=False)
-    salt:Mapped[bytes] = mapped_column(LargeBinary(100), nullable=False)
+    password:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=False)
+    salt:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=False)
     role:Mapped[str] = mapped_column(String(50), nullable=False)
     email:Mapped[str] = mapped_column(String(50), nullable=False)
     created_at:Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now(timezone.utc))
