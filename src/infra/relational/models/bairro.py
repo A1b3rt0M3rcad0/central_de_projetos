@@ -1,15 +1,16 @@
-from sqlalchemy import String, DateTime, Column, Integer
+from sqlalchemy import String, DateTime, Integer
 from src.infra.relational.config.base.base_model import BaseModel
 from datetime import datetime, timezone
-from src.infra.relational.models.project_bairro import ProjectBairro
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column
+from typing import List
 
 class Bairro(BaseModel):
 
     __tablename__ = "bairro"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), unique=True)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    id:Mapped[int] = mapped_column(Integer, primary_key=True)
+    name:Mapped[str] = mapped_column(String(100), unique=True)
+    created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), nullable=False)
 
-    project_bairro = relationship(ProjectBairro, backref=backref('bairro'))
+    project_bairros:Mapped[List["ProjectBairro"]] = relationship("ProjectBairro", back_populates="bairro", lazy="selectin")
