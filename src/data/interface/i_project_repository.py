@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from src.domain.value_objects.monetary_value import MonetaryValue
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from src.domain.entities.project import ProjectEntity
 
 class IProjectRepository(ABC):
@@ -32,6 +32,9 @@ class IProjectRepository(ABC):
 
     @abstractmethod
     def update(self, project_id:int, update_params:Dict) -> None:pass
+
+    @abstractmethod
+    def get_projects_with_pagination(self, page:int, page_size:int) -> Dict[str, Union[int, ProjectEntity]]:pass
 
     @abstractmethod
     def delete(self, project_id:int) -> None:pass

@@ -1,27 +1,26 @@
-from sqlalchemy import String, Column, DateTime, Integer, ForeignKey, Float
+from typing import List
+from sqlalchemy import String, DateTime, ForeignKey, Float, Integer
+from datetime import datetime
 from src.infra.relational.config.base.base_model import BaseModel
-from sqlalchemy.orm import backref, relationship
-from src.infra.relational.models.history_project import HistoryProject
-from src.infra.relational.models.project_fiscal import ProjectFiscal
-from src.infra.relational.models.project_bairro import ProjectBairro
-from src.infra.relational.models.project_empresa import ProjectEmpresa
-from src.infra.relational.models.project_type import ProjectType
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 class Project(BaseModel):
 
     __tablename__ = 'project'
 
-    id = Column(Integer, primary_key=True)
-    status_id = Column(ForeignKey('status.id'), nullable=False)
-    name = Column(String(255), unique=True, nullable=True)
-    verba_disponivel = Column(Float, nullable=True)
-    andamento_do_projeto = Column(String(255), nullable=True)
-    start_date = Column(DateTime, nullable=True)
-    expected_completion_date = Column(DateTime, nullable=True)
-    end_date = Column(DateTime, nullable=True)
+    id:Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    status_id:Mapped[int] = mapped_column(Integer, ForeignKey('status.id'), nullable=False)
+    name:Mapped[str] = mapped_column(String(255), unique=True, nullable=True)
+    verba_disponivel:Mapped[float] = mapped_column(Float, nullable=True)
+    andamento_do_projeto:Mapped[str] = mapped_column(String(255), nullable=True)
+    start_date:Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    expected_completion_date:Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    end_date:Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
-    history_project = relationship(HistoryProject, backref=backref('project'))
-    project_fiscal = relationship(ProjectFiscal, backref=backref('project'))
-    project_bairro = relationship(ProjectBairro, backref=backref('project'))
-    project_empresa = relationship(ProjectEmpresa, backref=backref('project'))
-    project_types = relationship(ProjectType, backref=backref('project'))
+    history_projects:Mapped[List["HistoryProject"]] = relationship("HistoryProject", back_populates="project", lazy="selectin")
+    project_fiscals:Mapped[List["ProjectFiscal"]] = relationship("ProjectFiscal", back_populates="project", lazy="selectin")
+    project_bairros:Mapped[List["ProjectBairro"]] = relationship("ProjectBairro", back_populates="project", lazy="selectin")
+    project_empresas:Mapped[List["ProjectEmpresa"]] = relationship("ProjectEmpresa", back_populates="project", lazy="selectin")
+    project_types:Mapped[List["ProjectType"]] = relationship("ProjectType", back_populates="project", lazy="selectin")
+    user_projects:Mapped[List["UserProject"]] = relationship("UserProject", back_populates="project", lazy="selectin")
+    status:Mapped["Status"] = relationship("Status", back_populates="projects", lazy="joined")

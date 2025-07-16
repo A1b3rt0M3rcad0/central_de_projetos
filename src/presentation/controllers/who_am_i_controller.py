@@ -15,7 +15,7 @@ class WhoAmIController(ControllerInterface):
         try:
             path_params = http_request.path_params
             jwt = path_params["token"]
-            result = self.__decode_jwt_token_case.decode(jwt)
+            result = self.__decode_jwt_token_case.decode(jwt, verify_exp=False)
             cpf = result["cpf"]
             user = self.__find_user_case.find(cpf=CPF(cpf))
             return HttpResponse(

@@ -6,6 +6,22 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from src.infra.relational.config.base.base_model import BaseModel
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.empresa import Empresa
+from src.infra.relational.models.fiscal import Fiscal
+from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.project_empresa import ProjectEmpresa
+from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.refresh_token import RefreshToken
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.user import User
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -19,7 +35,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = BaseModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

@@ -1,6 +1,6 @@
-#pylint:disable=W0611,R0912
+#pylint:disable=W0611,R0912,R0915
 from src.data.interface.i_project_repository import IProjectRepository
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from datetime import datetime
@@ -381,7 +381,37 @@ class ProjectRepository(IProjectRepository):
                 raise ErrorOnFindProject(
                     message=f'Error on find all projects with basic details: {e}'
                 ) from e
-        
+    
+    def get_projects_with_pagination(self, page:int, page_size:int) -> Dict[str, Union[int, ProjectEntity]]:
+        with self.__db_connection_handler as db:
+            try:
+                query = db.session.query(Project)
+                total = query.count()
+                total_pages = (total + page_size - 1) // page_size
+                offset = (page - 1) * page_size
+                projects:List[Project] = query.offset(offset).limit(page_size).all()
+                project_entities = [ProjectEntity(
+                    project_id=p.id,
+                    verba_disponivel=MonetaryValue(p.verba_disponivel),
+                    andamento_do_projeto=p.andamento_do_projeto,
+                    expected_completion_date=p.expected_completion_date,
+                    start_date=p.start_date,
+                    end_date=p.end_date,
+                    status_id=p.status_id
+                    ) for p in projects]
+
+                return {
+                    "page": page,
+                    "page_size": page_size,
+                    "total_items": total,
+                    "total_pages": total_pages,
+                    "projects": project_entities
+                }
+            except Exception as e:
+                raise ErrorOnFindProject(
+                    message=f'Error on get projects from page: {page}: {str(e)}'
+                ) from e
+
     def update(self, project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
             try:

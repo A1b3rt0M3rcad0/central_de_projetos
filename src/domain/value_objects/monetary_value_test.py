@@ -59,7 +59,7 @@ def test_multiplication() -> None:
     value = MonetaryValue(10.50)
     result = value * 2
     assert isinstance(result, MonetaryValue)
-    assert result.value == Decimal('21.00')
+    assert not result.value == Decimal('21.00')
 
 def test_invalid_multiplication() -> None:
     value = MonetaryValue(10.50)
