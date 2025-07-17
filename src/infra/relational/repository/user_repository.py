@@ -143,7 +143,7 @@ class UserRepository(IUserRepository):
             with self.__db_connection_handler as db:
                 users:List[User] = db.session.query(User).where(User.role == 'VEREADOR').all()
                 return {
-                    user.name: len(user.user_project)
+                    user.name: len(user.user_projects)
                     for user in users
                 }
         except Exception as e:
