@@ -78,7 +78,7 @@ class EmpresaRepository(IEmpresaRepository):
             with self.__db_connection_handler as db:
                 empresas:List[Empresa] = db.session.query(Empresa).all()
                 return {
-                    empresa.name: len(empresa.project_empresa)
+                    empresa.name: len(empresa.project_empresas)
                     for empresa in empresas
                 }
         except Exception as e:

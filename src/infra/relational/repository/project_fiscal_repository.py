@@ -96,7 +96,7 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
             with self.__db_connection_handler as db:
                 fiscals: list[Fiscal] = db.session.query(Fiscal).all()
                 return {
-                    fiscal.name: len(fiscal.project_fiscal)
+                    fiscal.name: len(fiscal.project_fiscals)
                     for fiscal in fiscals
                 }
         except Exception as e:
