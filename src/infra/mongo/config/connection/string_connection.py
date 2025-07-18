@@ -1,6 +1,6 @@
 import os
 import dotenv
-from src.infra.relational.config.interface.i_string_connection import IStringConnection
+from src.infra.mongo.config.connection.interface.i_string_connection import IStringConnection
 
 class StringConnection(IStringConnection):
     def __init__(self):
