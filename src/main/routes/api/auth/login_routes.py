@@ -13,6 +13,9 @@ from src.main.routes.api.auth.request_format.login_format import LoginFormat
 #Limiter
 from src.main.routes.middleware.rate_limit import limiter
 
+# Logger
+from src.logs.log_http import log_http
+
 routes = APIRouter(prefix='/auth', tags=['auth', 'login'])
 
 @routes.post('/login')
@@ -22,6 +25,17 @@ async def login(body:LoginFormat, request:Request):
         http_response = await request_adapter(request, login_composer())
         response = response_adapter(http_response)
         # response.set_cookie('access_token', value=http_response.body.get('token'), httponly=False, secure=False)
+        log_http(
+            logger_name='/auth',
+            level="INFO",
+            http_response=http_response
+        )
         return response
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            logger_name='/auth',
+            level="ERROR",
+            http_response=error_result
+        )
+        return response_adapter(error_result)
