@@ -45,7 +45,7 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
@@ -67,7 +67,7 @@ async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN",
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
@@ -89,7 +89,7 @@ async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
@@ -111,7 +111,7 @@ async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
@@ -133,7 +133,7 @@ async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
@@ -155,7 +155,7 @@ async def update_fiscal(body:UpdateFiscalNameFormat, request:Request, user=Secur
     except Exception as e:
         error_result = error_handler(e)
         log_http(
-            level='INFO',
+            level='ERROR',
             logger_name=PREFIX,
             http_response=http_response,
             request=request
