@@ -22,7 +22,12 @@ from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
 from src.main.routes.middleware.insert_access_token import insert_access_token
 
-routes = APIRouter(prefix='/status', tags=['status'])
+# Logs
+from src.logs.log_http import log_http
+
+PREFIX = '/status'
+TAGS = ['status']
+routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{status_id}')
 async def find_status(status_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
@@ -30,45 +35,110 @@ async def find_status(status_id:int, request:Request, user=Security(role_require
         request.path_params['status_id'] = status_id
         http_response = await request_adapter(request, find_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.post('/')
 async def create_status(body:CreateStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.delete('/')
 async def delete_status(body:DeleteStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.patch('/')
 async def update_status_description(body:UpdateStatusDescriptionFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_status_description_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
     
 @routes.get('/status/all/')
 async def find_all_status(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.get('/projects/{status_id}')
 async def find_project_by_status(status_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
@@ -76,6 +146,19 @@ async def find_project_by_status(status_id:int, request:Request, user=Security(r
         request.path_params['status_id'] = status_id
         http_response = await request_adapter(request, find_project_by_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
