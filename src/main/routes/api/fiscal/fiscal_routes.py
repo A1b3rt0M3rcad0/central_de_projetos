@@ -47,7 +47,7 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -69,7 +69,7 @@ async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN",
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -91,7 +91,7 @@ async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -113,7 +113,7 @@ async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -135,7 +135,7 @@ async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -157,7 +157,7 @@ async def update_fiscal(body:UpdateFiscalNameFormat, request:Request, user=Secur
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)

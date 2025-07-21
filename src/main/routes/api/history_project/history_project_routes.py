@@ -41,7 +41,7 @@ async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, re
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -63,7 +63,7 @@ async def create_history_project(body:CreateHistoryProjectFormat, request:Reques
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)

@@ -46,7 +46,7 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -68,7 +68,7 @@ async def find_all_empresa(request:Request, user=Security(role_required(["VEREAD
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -90,7 +90,7 @@ async def count_empresas(request:Request, user=Security(role_required(["VEREADOR
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -112,7 +112,7 @@ async def create_empresa(body:CreateEmpresaFormat, request:Request, user=Securit
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -134,7 +134,7 @@ async def delete_empresa(body:DeleteEmpresaFormat, request:Request, user=Securit
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
@@ -156,7 +156,7 @@ async def update_empresa(body:UpdateEmpresasFormat, request:Request, user=Securi
         log_http(
             level='ERROR',
             logger_name=PREFIX,
-            http_response=http_response,
+            http_response=error_result,
             request=request
         )
         return response_adapter(error_result)
