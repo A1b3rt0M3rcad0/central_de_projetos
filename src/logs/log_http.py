@@ -14,6 +14,6 @@ def log_http(logger_name:str, level: str, http_response:HttpResponse, request:Re
         lineno=frame.f_lineno,
         level=level,
         pathname=frame.f_code.co_filename,
-        message=message if message else f"request:\nmethod: {request.method}, response:\nstatus: {http_response.status_code}, body: {sanitize(http_response.body)}",
+        message=message if message else f"request:\nmethod: {request.method}\nresponse:\nstatus: {http_response.status_code}, body: {sanitize(http_response.body)}",
         created=datetime.now(timezone.utc)
     )
