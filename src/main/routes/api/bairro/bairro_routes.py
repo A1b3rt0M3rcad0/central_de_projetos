@@ -13,9 +13,16 @@ from src.main.composers.update_bairro_name_composer import update_bairro_name_co
 from src.main.composers.find_all_bairro_composer import find_all_bairro_composer
 from src.main.composers.count_bairros_composer import count_bairros_composer
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+
 from src.main.routes.api.bairro.request_format.create_bairro_format import CreateBairroFormat
 from src.main.routes.api.bairro.request_format.delete_bairro_format import DeleteBairroFormat
 from src.main.routes.api.bairro.request_format.update_bairro_name_format import UpdateBairroNameFormat
+
+from src.main.routes.api.bairro.bairro_response.find_bairro_by_name_response import FindBairroByNameResponse
+from src.main.routes.api.bairro.bairro_response.count_bairros_response import CountBairrosResponse
+from src.main.routes.api.bairro.bairro_response.find_all_bairro_response import FindAllBairroResponse
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
 
 ## Auth
 from fastapi import Security
@@ -29,7 +36,7 @@ PREFIX = '/bairro'
 TAGS = ['bairros']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{bairro_name}')
+@routes.get('/{bairro_name}', response_model=FindBairroByNameResponse, responses=generate_error_responses())
 async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_bairro_by_name_composer())
@@ -52,7 +59,7 @@ async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(ro
         )
         return response_adapter(error_result)
 
-@routes.get('/count/all')
+@routes.get('/count/all', response_model=CountBairrosResponse, responses=generate_error_responses())
 async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, count_bairros_composer())
@@ -75,7 +82,7 @@ async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "
         )
         return response_adapter(error_result)
 
-@routes.get('/bairro/all')
+@routes.get('/bairro/all', response_model=FindAllBairroResponse, responses=generate_error_responses())
 async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_bairro_composer())
@@ -98,7 +105,7 @@ async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN",
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_bairro(body:CreateBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_bairro_composer())
@@ -120,7 +127,7 @@ async def create_bairro(body:CreateBairroFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_bairro(body:DeleteBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_bairro_composer())
@@ -142,7 +149,7 @@ async def delete_bairro(body:DeleteBairroFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.patch('/name')
+@routes.patch('/name', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_bairro_name(body:UpdateBairroNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_bairro_name_composer())
