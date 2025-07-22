@@ -3,6 +3,9 @@ def sanitize(info:dict) -> dict:
         'token', 
         'access_token', 
         'refresh_token'
+        'password',
+        'cpf',
+        'email'
         ]
     new_dict = {}
     for key, value in info.items():

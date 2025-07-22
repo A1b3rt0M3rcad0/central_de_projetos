@@ -22,61 +22,144 @@ from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
 from src.main.routes.middleware.insert_access_token import insert_access_token
 
-routes = APIRouter(prefix='/bairro', tags=['bairros'])
+## Logs
+from src.logs.log_http import log_http
+
+PREFIX = '/bairro'
+TAGS = ['bairros']
+routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{bairro_name}')
 async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_bairro_by_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            http_response=http_response,
+            level='INFO',
+            logger_name=PREFIX,
+            request=request
+        )
         return response_adapter(http_response)
 
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.get('/count/all')
 async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, count_bairros_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            logger_name=PREFIX,
+            level='INFO',
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
 
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get('/bairro/all')
 async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            request=request,
+            logger_name=PREFIX,
+            http_response=http_response
+        )
         return response_adapter(http_response)
 
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.post('/')
 async def create_bairro(body:CreateBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.delete('/')
 async def delete_bairro(body:DeleteBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.patch('/name')
 async def update_bairro_name(body:UpdateBairroNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_bairro_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response) 
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)

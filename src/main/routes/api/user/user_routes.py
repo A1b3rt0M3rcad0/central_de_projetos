@@ -24,25 +24,56 @@ from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
 from src.main.routes.middleware.insert_access_token import insert_access_token
 
-routes = APIRouter(prefix='/users', tags=['users'])
+# Logs
+from src.logs.log_http import log_http
+
+PREFIX = '/users'
+TAGS = ['users']
+routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get("/{user_cpf}")
 async def get_user(user_cpf: str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get("/users/all")
 async def get_all_users(request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get("/users/all/{role}")
 async def get_all_users_by_role(role:str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
@@ -50,51 +81,129 @@ async def get_all_users_by_role(role:str, request: Request, user=Security(role_r
         request.path_params["role"] = role
         http_response = await request_adapter(request, find_all_user_by_role_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get("/who_am_i/{token}")
 async def who_am_i(token: str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, who_am_i_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.post("/")
 async def create_user(body:CreateUserFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.delete("/")
 async def delete_user(body:DeleteUserFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.patch("/password")
 async def update_password(body:UpdateUserPasswordFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_user_password_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.patch("/email")
 async def update_email(body:UpdateUserEmailFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_user_email_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)

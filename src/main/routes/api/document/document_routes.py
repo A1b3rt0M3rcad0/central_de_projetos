@@ -24,25 +24,49 @@ from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
 from src.main.routes.middleware.insert_access_token import insert_access_token
 
-routes = APIRouter(prefix='/document', tags=['document'])
+# Logs
+from src.logs.log_http import log_http
+
+
+PREFIX = '/document'
+TAGS = ['document']
+routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.post('/save')
 async def save_document(request:Request, project_id:str=Form(...), file:UploadFile=File(...), user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await file_adapter(file, save_document_composer(), project_id=project_id)
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get('/{project_id}/{document_name}')
 async def get_document(project_id:int, document_name:str, request:Request, user=Security(role_required(["ADMIN", "ASSESOR", "VEREADOR"]))):
     try:
         request.path_params['project_id'] = project_id
         request.path_params['document_name'] = document_name
-
         http_response = await request_adapter(request, get_document_composer())
-
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX,
+            message=f'Download Document from Project: (Project: {project_id}, Document_Name: {document_name})'
+        )
         return StreamingResponse(
             BytesIO(http_response.body),
             media_type=http_response.headers.get('Content-Type', 'application/octet-stream'),
@@ -54,7 +78,14 @@ async def get_document(project_id:int, document_name:str, request:Request, user=
             }
         )
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.get('/projects/{project_id}/documents')
 async def get_all_document_names(project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
@@ -62,23 +93,63 @@ async def get_all_document_names(project_id:int, request:Request, user=Security(
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, get_document_names_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.delete('/')
 async def delete_document(body:DeleteDocumentFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_document_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
 
 @routes.delete('/all')
 async def delete_all_documents_from_project(body:DeleAllDocumentsFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_all_documents_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX
+        )
         return response_adapter(http_response)
     except Exception as e:
-        return response_adapter(error_handler(e))
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
