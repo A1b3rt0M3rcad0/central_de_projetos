@@ -11,6 +11,9 @@ from src.main.composers.find_all_history_from_project_composer import find_all_h
 
 from src.main.routes.api.history_project.request_format.create_history_project_format import CreateHistoryProjectFormat
 from src.main.routes.api.history_project.request_format.find_all_hisotry_from_project_format import FindAllHistoryFromProjectFormat
+from src.main.routes.api.history_project.history_project_response.find_all_history_from_project_response import FindAllHistoryFromProjectReponse
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.__error.error_response import generate_error_responses
 
 ## Auth
 from fastapi import Security
@@ -24,7 +27,7 @@ PREFIX = '/history_project'
 TAGS = ['history_project', 'project']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/')
+@routes.get('/', response_model=FindAllHistoryFromProjectReponse, responses=generate_error_responses())
 async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_history_from_project_composer())
@@ -46,7 +49,7 @@ async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, re
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_history_project(body:CreateHistoryProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_history_project_composer())

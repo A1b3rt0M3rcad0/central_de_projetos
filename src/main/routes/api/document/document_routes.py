@@ -18,6 +18,10 @@ from src.main.composers.delete_all_documents_from_project_composer import delete
 
 from src.main.routes.api.document.request_format.delete_document_format import DeleteDocumentFormat
 from src.main.routes.api.document.request_format.delete_all_documents_format import DeleAllDocumentsFormat
+from src.main.routes.api.document.document_response.save_document_response import SaveDocumentResponse
+from src.main.routes.api.document.document_response.get_all_document_names_response import GetAllDocumentNamesResponse
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.__error.error_response import generate_error_responses
 
 ## Auth
 from fastapi import Security
@@ -32,7 +36,7 @@ PREFIX = '/document'
 TAGS = ['document']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.post('/save')
+@routes.post('/save', response_model=SaveDocumentResponse, responses=generate_error_responses())
 async def save_document(request:Request, project_id:str=Form(...), file:UploadFile=File(...), user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await file_adapter(file, save_document_composer(), project_id=project_id)
@@ -54,7 +58,7 @@ async def save_document(request:Request, project_id:str=Form(...), file:UploadFi
         )
         return response_adapter(error_result)
 
-@routes.get('/{project_id}/{document_name}')
+@routes.get('/{project_id}/{document_name}', responses=generate_error_responses())
 async def get_document(project_id:int, document_name:str, request:Request, user=Security(role_required(["ADMIN", "ASSESOR", "VEREADOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -87,7 +91,7 @@ async def get_document(project_id:int, document_name:str, request:Request, user=
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/{project_id}/documents')
+@routes.get('/projects/{project_id}/documents', response_model=GetAllDocumentNamesResponse, responses=generate_error_responses())
 async def get_all_document_names(project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -110,7 +114,7 @@ async def get_all_document_names(project_id:int, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_document(body:DeleteDocumentFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_document_composer())
@@ -132,7 +136,7 @@ async def delete_document(body:DeleteDocumentFormat, request:Request, user=Secur
         )
         return response_adapter(error_result)
 
-@routes.delete('/all')
+@routes.delete('/all', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_all_documents_from_project(body:DeleAllDocumentsFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_all_documents_from_project_composer())

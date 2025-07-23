@@ -33,6 +33,16 @@ from src.main.routes.api.project.request_format.update_start_date_format import 
 from src.main.routes.api.project.request_format.update_verba_format import UpdateVerbaFormat
 from src.main.routes.api.project.request_format.update_status_format import UpdateStartStatusFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.project.project_response.find_project_response import FindProjectResponse
+from src.main.routes.api.project.project_response.count_project_response import CountProjectResponse
+from src.main.routes.api.project.project_response.find_all_projects_response import FindAllProjectsResponse
+from src.main.routes.api.project.project_response.find_associations_projects_response import FindAssociationProjectsResponse
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.project.project_response.find_all_projects_with_basic_details_response import FindAllProjectWithBasicDetailsResponse
+from src.main.routes.api.project.project_response.project_detail_response import ProjectDetailResponse
+from src.main.routes.api.project.project_response.get_projects_with_pagination_response import GetProjectsWithPaginationReponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -45,7 +55,7 @@ PREFIX =  '/project'
 TAGS = ['project']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{project_id}')
+@routes.get('/{project_id}', response_model=FindProjectResponse, responses=generate_error_responses())
 async def find_project(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -68,7 +78,7 @@ async def find_project(project_id, request:Request, user=Security(role_required(
         )
         return response_adapter(error_result)
 
-@routes.get('/count/all')
+@routes.get('/count/all', response_model=CountProjectResponse, responses=generate_error_responses())
 async def count_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, count_projects_composer())
@@ -90,7 +100,7 @@ async def count_projects(request:Request, user=Security(role_required(["ADMIN", 
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/all')
+@routes.get('/projects/all', response_model=FindAllProjectsResponse, responses=generate_error_responses(), deprecated=True)
 async def find_all_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_projects_composer())
@@ -112,7 +122,7 @@ async def find_all_projects(request:Request, user=Security(role_required(["ADMIN
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/associations/all')
+@routes.get('/projects/associations/all', response_model=FindAssociationProjectsResponse, responses=generate_error_responses())
 async def find_associations_projects(request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, find_all_associations_possibility_from_project_composer())
@@ -134,7 +144,7 @@ async def find_associations_projects(request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/all/details')
+@routes.get('/projects/all/details', response_model=FindAllProjectWithBasicDetailsResponse, responses=generate_error_responses())
 async def find_all_projects_details(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_projects_with_basic_details_composer())
@@ -156,7 +166,7 @@ async def find_all_projects_details(request:Request, user=Security(role_required
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project(body:CreateProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_project_composer())
@@ -178,7 +188,7 @@ async def create_project(body:CreateProjectFormat, request:Request, user=Securit
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project(body:DeleteProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_project_composer())
@@ -200,7 +210,7 @@ async def delete_project(body:DeleteProjectFormat, request:Request, user=Securit
         )
         return response_adapter(error_result)
 
-@routes.patch('/name')
+@routes.patch('/name', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_project_name(body:UpdateProjectNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_name_composer())
@@ -222,7 +232,7 @@ async def update_project_name(body:UpdateProjectNameFormat, request:Request, use
         )
         return response_adapter(error_result)
 
-@routes.patch('/andamento_do_projeto')
+@routes.patch('/andamento_do_projeto', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_project_andamento(body:UpdateProjectAndamentoFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_andamento_composer())
@@ -244,7 +254,7 @@ async def update_project_andamento(body:UpdateProjectAndamentoFormat, request:Re
         )
         return response_adapter(error_result)
 
-@routes.patch('/end_date')
+@routes.patch('/end_date', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_end_date(body:UpdateEndDateProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_end_date_composer())
@@ -266,7 +276,7 @@ async def update_end_date(body:UpdateEndDateProjectFormat, request:Request, user
         )
         return response_adapter(error_result)
 
-@routes.patch('/projet_expected_completion_date')
+@routes.patch('/projet_expected_completion_date', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_expected_completion_date(body:UpdateExpectedCompletionDateFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_projet_expected_completion_date_composer())
@@ -288,7 +298,7 @@ async def update_expected_completion_date(body:UpdateExpectedCompletionDateForma
         )
         return response_adapter(error_result)
 
-@routes.patch('/start_date')
+@routes.patch('/start_date', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_start_date(body:UpdateStartDateFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_start_date_composer())
@@ -310,7 +320,7 @@ async def update_start_date(body:UpdateStartDateFormat, request:Request, user=Se
         )
         return response_adapter(error_result)
 
-@routes.patch('/verba')
+@routes.patch('/verba', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_project_verba(body:UpdateVerbaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_project_verba_composer())
@@ -332,7 +342,7 @@ async def update_project_verba(body:UpdateVerbaFormat, request:Request, user=Sec
         )
         return response_adapter(error_result)
 
-@routes.patch('/status')
+@routes.patch('/status', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_project_status(body:UpdateStartStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_status_from_project_composer())
@@ -354,7 +364,7 @@ async def update_project_status(body:UpdateStartStatusFormat, request:Request, u
         )
         return response_adapter(error_result)
 
-@routes.get('/project_detail/{project_id}')
+@routes.get('/project_detail/{project_id}', response_model=ProjectDetailResponse, responses=generate_error_responses())
 async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -377,7 +387,7 @@ async def project_detail(project_id, request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/pagination/{page_size}/{page}')
+@routes.get('/projects/pagination/{page_size}/{page}', response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
 async def get_projects_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_projects_with_pagination_composer())

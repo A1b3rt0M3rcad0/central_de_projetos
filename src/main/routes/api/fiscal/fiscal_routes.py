@@ -16,6 +16,11 @@ from src.main.composers.count_fiscals_composer import count_fiscals_composer
 from src.main.routes.api.fiscal.request_format.create_fiscal_format import CreateFiscalFormat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
 from src.main.routes.api.fiscal.request_format.update_fiscal_name_format import UpdateFiscalNameFormat
+from src.main.routes.api.fiscal.fiscal_response.find_fiscal_by_name_response import FindFiscalByNameResponse
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.fiscal.fiscal_response.find_all_fiscal_response import FindAllFiscalReponse
+from src.main.routes.api.fiscal.fiscal_response.count_fiscal_response import CountFiscalReponse
+from src.main.routes.api.__error.error_response import generate_error_responses
 
 ## Auth
 from fastapi import Security
@@ -29,7 +34,7 @@ PREFIX = '/fiscal'
 TAGS = ['fiscal']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{fiscal_name}')
+@routes.get('/{fiscal_name}', response_model=FindFiscalByNameResponse, responses=generate_error_responses())
 async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['fiscal_name'] = fiscal_name
@@ -52,7 +57,7 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
         )
         return response_adapter(error_result)
 
-@routes.get('/fiscal/all')
+@routes.get('/fiscal/all', response_model=FindAllFiscalReponse, responses=generate_error_responses())
 async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_fiscal_composer())
@@ -74,7 +79,7 @@ async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN",
         )
         return response_adapter(error_result)
 
-@routes.get('/fiscal/count/all')
+@routes.get('/fiscal/count/all', response_model=CountFiscalReponse, responses=generate_error_responses())
 async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, count_fiscals_composer())
@@ -96,7 +101,7 @@ async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_fiscal_composer())
@@ -118,7 +123,7 @@ async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_fiscal_composer())
@@ -140,7 +145,7 @@ async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.patch('/')
+@routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_fiscal(body:UpdateFiscalNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_fiscal_name_composer())
