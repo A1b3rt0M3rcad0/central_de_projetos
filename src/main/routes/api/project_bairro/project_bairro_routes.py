@@ -17,6 +17,14 @@ from src.main.composers.get_project_status_count_by_bairro_composer import get_p
 from src.main.routes.api.project_bairro.request_format.create_project_bairro_format import CreateProjectBairroFormat
 from src.main.routes.api.project_bairro.request_format.delete_project_bairro_format import DeleteProjectBairroFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.project_bairro.project_bairro_response.find_project_bairro_response import FindProjectBairroResponse
+from src.main.routes.api.project_bairro.project_bairro_response.get_project_counts_by_bairro_response import GetProjectCountByBairroResponse
+from src.main.routes.api.project_bairro.project_bairro_response.get_project_verba_by_bairro_response import GetProjectVerbaByBairroResponse
+from src.main.routes.api.project_bairro.project_bairro_response.get_project_status_count_by_bairro_response import GetProjectStatusCountByBairroResponse
+from src.main.routes.api.project_bairro.project_bairro_response.find_all_projects_from_bairro_response import FindAllProjectsFromBairroResponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -29,7 +37,7 @@ PREFIX = '/project_bairro'
 TAGS = ['project', 'bairro']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{bairro_id}/{project_id}')
+@routes.get('/{bairro_id}/{project_id}', response_model=FindProjectBairroResponse, responses=generate_error_responses())
 async def find_project_bairro(bairro_id:int, project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -53,7 +61,7 @@ async def find_project_bairro(bairro_id:int, project_id:int, request:Request, us
         )
         return response_adapter(error_result)
 
-@routes.get('/project/count/')
+@routes.get('/project/count/', response_model=GetProjectCountByBairroResponse, responses=generate_error_responses())
 async def get_project_counts_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_project_counts_by_bairro_composer())
@@ -75,7 +83,7 @@ async def get_project_counts_by_bairro(request:Request, user=Security(role_requi
         )
         return response_adapter(error_result)
 
-@routes.get('/project/verba/')
+@routes.get('/project/verba/', response_model=GetProjectVerbaByBairroResponse, responses=generate_error_responses())
 async def get_project_verba_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_project_verba_by_bairro())
@@ -97,7 +105,7 @@ async def get_project_verba_by_bairro_r(request:Request, user=Security(role_requ
         )
         return response_adapter(error_result)
 
-@routes.get('/project/status/')
+@routes.get('/project/status/', response_model=GetProjectStatusCountByBairroResponse, responses=generate_error_responses())
 async def get_project_status_count_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_project_status_count_by_bairro_composer())
@@ -119,7 +127,7 @@ async def get_project_status_count_by_bairro_r(request:Request, user=Security(ro
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_bairro(body:CreateProjectBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_project_bairro_composer())
@@ -141,7 +149,7 @@ async def create_project_bairro(body:CreateProjectBairroFormat, request:Request,
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_bairro(body:DeleteProjectBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_project_bairro_composer())
@@ -163,7 +171,7 @@ async def delete_project_bairro(body:DeleteProjectBairroFormat, request:Request,
         )
         return response_adapter(error_result)
 
-@routes.get('/{bairro_id}')
+@routes.get('/{bairro_id}', response_model=FindAllProjectsFromBairroResponse, responses=generate_error_responses())
 async def find_all_projects_from_bairro(bairro_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['bairro_id'] = bairro_id
