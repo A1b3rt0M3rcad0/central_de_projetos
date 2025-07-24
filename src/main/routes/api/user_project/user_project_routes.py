@@ -16,6 +16,11 @@ from src.main.routes.api.user_project.request_format.associate_vereador_with_a_p
 from src.main.routes.api.user_project.request_format.delete_association_format import DeleteAssociationFormat
 from src.main.routes.api.user_project.request_format.update_association_from_project_format import UpdateAssociationFromProjectFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.user_project.user_project_response.find_all_association_from_projects_response import FindAllAssocitationFromProjectsResponse
+from src.main.routes.api.user_project.user_project_response.get_count_projects_by_user_response import GetCountProjectsByUserResponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -28,7 +33,7 @@ PREFIX = '/user_project'
 TAGS = ['user', 'project', 'user_project']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/all')
+@routes.get('/all', response_model=FindAllAssocitationFromProjectsResponse, responses=generate_error_responses())
 async def find_all_association_from_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_association_from_projects_composer())
@@ -50,7 +55,7 @@ async def find_all_association_from_projects(request:Request, user=Security(role
         )
         return response_adapter(error_result)
 
-@routes.get('/project/count/all')
+@routes.get('/project/count/all', response_model=GetCountProjectsByUserResponse, responses=generate_error_responses())
 async def get_count_projets_by_user(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_count_projets_by_user_composer())
@@ -72,7 +77,7 @@ async def get_count_projets_by_user(request:Request, user=Security(role_required
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def associate_vereador_with_a_project(body:AssociateVereadorWithAProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, associate_vereador_with_a_project_composer())
@@ -94,7 +99,7 @@ async def associate_vereador_with_a_project(body:AssociateVereadorWithAProjectFo
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_association(body:DeleteAssociationFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_association_composer())
@@ -116,7 +121,7 @@ async def delete_association(body:DeleteAssociationFormat, request:Request, user
         )
         return response_adapter(error_result)
 
-@routes.patch('/')
+@routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_association_from_project(body:UpdateAssociationFromProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_association_from_project_composer())
