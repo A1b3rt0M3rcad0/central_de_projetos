@@ -14,7 +14,7 @@ class Fiscal(BaseModel):
     email:Mapped[str] = mapped_column(String(50), nullable=True)
     phone:Mapped[str] = mapped_column(String(20), nullable=True)
     password:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=True)
-    token:Mapped[str] = mapped_column(String(255), nullable=True)
+    refresh_token:Mapped[str] = mapped_column(String(255), nullable=True)
     created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
     project_fiscals:Mapped[List["ProjectFiscal"]] = relationship("ProjectFiscal", back_populates='fiscal', lazy="selectin")
