@@ -14,6 +14,11 @@ from src.main.composers.get_project_types_count_by_bairro_composer import get_pr
 from src.main.routes.api.project_type.request_format.create_project_type_format import CreateProjectTypeFormat
 from src.main.routes.api.project_type.request_format.delete_project_type_format import DeleteProjectTypeFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.project_type.project_type_response.find_type_from_project_response import FindTypeFromProjectResponse
+from src.main.routes.api.project_type.project_type_response.get_project_types_count_by_bairro import GetProjectTypesCountByBairroResponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -26,7 +31,7 @@ PREFIX = '/project_type'
 TAGS = ['project', 'type']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{project_id}')
+@routes.get('/{project_id}', response_model=FindTypeFromProjectResponse, responses=generate_error_responses())
 async def find_type_from_project(project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['project_id'] = project_id
@@ -49,7 +54,7 @@ async def find_type_from_project(project_id:int, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.get('/project/types/count')
+@routes.get('/project/types/count', response_model=GetProjectTypesCountByBairroResponse, responses=generate_error_responses())
 async def get_project_types_count_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_project_types_count_by_bairro_composer())
@@ -71,7 +76,7 @@ async def get_project_types_count_by_bairro(request:Request, user=Security(role_
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_type(body:CreateProjectTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response  = await request_adapter(request, create_project_type_composer())
@@ -93,7 +98,7 @@ async def create_project_type(body:CreateProjectTypeFormat, request:Request, use
         )
         return response_adapter(error_result)
     
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_type(body:DeleteProjectTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_project_type_composer())
