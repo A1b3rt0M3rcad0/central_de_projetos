@@ -12,8 +12,11 @@ from src.main.composers.delete_project_fiscal_composer import delete_project_fis
 from src.main.composers.get_count_projects_by_fiscal_composer import get_count_projects_by_fiscal_composer
 
 ## request Formats
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
 from src.main.routes.api.project_fiscal.request_format.create_project_fiscal import CreateProjectFiscalFormat
 from src.main.routes.api.project_fiscal.request_format.delete_project_fiscal import DeleteProjectFiscalFormat
+from src.main.routes.api.project_fiscal.project_fiscal_response.get_count_projects_by_fiscal_response import GetCountProjectsByFiscalResponse
 
 ## Auth
 from fastapi import Security
@@ -27,7 +30,7 @@ PREFIX = '/project_fiscal'
 TAGS = ['project', 'fiscal', 'project_fiscal']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.post("/")
+@routes.post("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_fiscal(body:CreateProjectFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_project_fiscal_composer())
@@ -49,7 +52,7 @@ async def create_project_fiscal(body:CreateProjectFiscalFormat, request:Request,
         )
         return response_adapter(error_result)
 
-@routes.get("/project/count")
+@routes.get("/project/count", response_model=GetCountProjectsByFiscalResponse, responses=generate_error_responses())
 async def get_count_projects_by_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_count_projects_by_fiscal_composer())
@@ -71,7 +74,7 @@ async def get_count_projects_by_fiscal(request:Request, user=Security(role_requi
         )
         return response_adapter(error_result)
 
-@routes.delete("/")
+@routes.delete("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_fiscal(body:DeleteProjectFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_project_fiscal_composer())

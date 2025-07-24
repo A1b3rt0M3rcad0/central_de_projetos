@@ -17,6 +17,12 @@ from src.main.routes.api.status.format_request.create_status_format import Creat
 from src.main.routes.api.status.format_request.delete_status_format import DeleteStatusFormat
 from src.main.routes.api.status.format_request.update_status_description_format import UpdateStatusDescriptionFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.status.status_response.find_status_response import FindStatusReponse
+from src.main.routes.api.status.status_response.find_all_status_response import FindAllStatusResponse
+from src.main.routes.api.status.status_response.find_project_by_status_response import FindProjectbyStatusReponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -29,7 +35,7 @@ PREFIX = '/status'
 TAGS = ['status']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{status_id}')
+@routes.get('/{status_id}', response_model=FindStatusReponse, responses=generate_error_responses())
 async def find_status(status_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['status_id'] = status_id
@@ -52,7 +58,7 @@ async def find_status(status_id:int, request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_status(body:CreateStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_status_composer())
@@ -74,7 +80,7 @@ async def create_status(body:CreateStatusFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_status(body:DeleteStatusFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_status_composer())
@@ -96,7 +102,7 @@ async def delete_status(body:DeleteStatusFormat, request:Request, user=Security(
         )
         return response_adapter(error_result)
 
-@routes.patch('/')
+@routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_status_description(body:UpdateStatusDescriptionFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_status_description_composer())
@@ -118,7 +124,7 @@ async def update_status_description(body:UpdateStatusDescriptionFormat, request:
         )
         return response_adapter(error_result)
     
-@routes.get('/status/all/')
+@routes.get('/status/all/', response_model=FindAllStatusResponse, responses=generate_error_responses())
 async def find_all_status(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_status_composer())
@@ -140,7 +146,7 @@ async def find_all_status(request:Request, user=Security(role_required(["ADMIN",
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/{status_id}')
+@routes.get('/projects/{status_id}', response_model=FindProjectbyStatusReponse, responses=generate_error_responses())
 async def find_project_by_status(status_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['status_id'] = status_id

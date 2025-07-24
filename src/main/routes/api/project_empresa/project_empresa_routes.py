@@ -15,6 +15,12 @@ from src.main.composers.get_count_projects_by_empresas_composer import get_count
 from src.main.routes.api.project_empresa.request_format.create_project_empresa_format import CreateProjectEmpresaFormat
 from src.main.routes.api.project_empresa.request_format.delete_project_empresa_format import DeleteProjectEmpresaFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.project_empresa.project_empresa_response.find_project_empresa_response import FindProjectEmpresaResponse
+from src.main.routes.api.project_empresa.project_empresa_response.find_all_projects_from_empresa_response import FindAllProjectsFromEmpresaResponse
+from src.main.routes.api.project_empresa.project_empresa_response.get_count_projects_by_empresa_response import GetCountProjectsByEmpresaResponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -27,7 +33,7 @@ PREFIX = '/project_empresa'
 TAGS = ['project', 'empresa', 'project_empresa']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{empresa_id}/{project_id}')
+@routes.get('/{empresa_id}/{project_id}', response_model=FindProjectEmpresaResponse, responses=generate_error_responses())
 async def find_project_empresa(empresa_id:int, project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['empresa_id'] = empresa_id
@@ -51,7 +57,7 @@ async def find_project_empresa(empresa_id:int, project_id:int, request:Request, 
         )
         return response_adapter(error_result)
 
-@routes.get('/{empresa_id}')
+@routes.get('/{empresa_id}', response_model=FindAllProjectsFromEmpresaResponse, responses=generate_error_responses())
 async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params['empresa_id'] = empresa_id
@@ -74,7 +80,7 @@ async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=S
         )
         return response_adapter(error_result)
 
-@routes.get('/project/count/all')
+@routes.get('/project/count/all', response_model=GetCountProjectsByEmpresaResponse, responses=generate_error_responses())
 async def get_count_projects_by_empresas(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, get_count_projects_by_empresas_composer())
@@ -96,7 +102,7 @@ async def get_count_projects_by_empresas(request:Request, user=Security(role_req
         )
         return response_adapter(error_result)
 
-@routes.post('/')
+@routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_project_empresa_composer())
@@ -118,7 +124,7 @@ async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Reques
         )
         return response_adapter(error_result)
 
-@routes.delete('/')
+@routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_empresa(body:DeleteProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_project_empresa_composer())

@@ -19,6 +19,13 @@ from src.main.routes.api.user.request_format.delete_user_format import DeleteUse
 from src.main.routes.api.user.request_format.update_user_email_format import UpdateUserEmailFormat
 from src.main.routes.api.user.request_format.update_user_password_format import UpdateUserPasswordFormat
 
+from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.user.user_response.get_user_response import GetUserResponse
+from src.main.routes.api.user.user_response.get_all_users_response import GetAllUsersResponse
+from src.main.routes.api.user.user_response.get_all_users_by_role import GetAllUsersByRoleResponse
+from src.main.routes.api.user.user_response.who_am_i_response import WhoAmIReponse
+
 ## Auth
 from fastapi import Security
 from src.main.routes.middleware.authorization import role_required
@@ -31,7 +38,7 @@ PREFIX = '/users'
 TAGS = ['users']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get("/{user_cpf}")
+@routes.get("/{user_cpf}", response_model=GetUserResponse, responses=generate_error_responses())
 async def get_user(user_cpf: str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_user_composer())
@@ -53,7 +60,7 @@ async def get_user(user_cpf: str, request: Request, user=Security(role_required(
         )
         return response_adapter(error_result)
 
-@routes.get("/users/all")
+@routes.get("/users/all", response_model=GetAllUsersResponse, responses=generate_error_responses())
 async def get_all_users(request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, find_all_user_composer())
@@ -75,7 +82,7 @@ async def get_all_users(request: Request, user=Security(role_required(["ADMIN", 
         )
         return response_adapter(error_result)
 
-@routes.get("/users/all/{role}")
+@routes.get("/users/all/{role}", response_model=GetAllUsersByRoleResponse, responses=generate_error_responses())
 async def get_all_users_by_role(role:str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         request.path_params["role"] = role
@@ -98,7 +105,7 @@ async def get_all_users_by_role(role:str, request: Request, user=Security(role_r
         )
         return response_adapter(error_result)
 
-@routes.get("/who_am_i/{token}")
+@routes.get("/who_am_i/{token}", response_model=WhoAmIReponse, responses=generate_error_responses())
 async def who_am_i(token: str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     try:
         http_response = await request_adapter(request, who_am_i_composer())
@@ -120,7 +127,7 @@ async def who_am_i(token: str, request: Request, user=Security(role_required(["A
         )
         return response_adapter(error_result)
 
-@routes.post("/")
+@routes.post("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_user(body:CreateUserFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, create_user_composer())
@@ -142,7 +149,7 @@ async def create_user(body:CreateUserFormat, request:Request, user=Security(role
         )
         return response_adapter(error_result)
 
-@routes.delete("/")
+@routes.delete("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_user(body:DeleteUserFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, delete_user_composer())
@@ -164,7 +171,7 @@ async def delete_user(body:DeleteUserFormat, request:Request, user=Security(role
         )
         return response_adapter(error_result)
 
-@routes.patch("/password")
+@routes.patch("/password", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_password(body:UpdateUserPasswordFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_user_password_composer())
@@ -186,7 +193,7 @@ async def update_password(body:UpdateUserPasswordFormat, request:Request, user=S
         )
         return response_adapter(error_result)
 
-@routes.patch("/email")
+@routes.patch("/email", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_email(body:UpdateUserEmailFormat, request:Request, user=Security(role_required(["ADMIN"]))):
     try:
         http_response = await request_adapter(request, update_user_email_composer())
