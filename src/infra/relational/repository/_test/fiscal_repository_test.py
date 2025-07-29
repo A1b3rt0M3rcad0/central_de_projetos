@@ -5,6 +5,10 @@ import pytest
 from sqlalchemy import text
 from datetime import datetime, timezone
 
+from src.domain.value_objects.email import Email
+from src.domain.value_objects.password import Password
+from src.security.hashedpassword_factory import hashedpassword_factory
+
 @pytest.fixture(autouse=True)
 def cleanup_all():
     db_connection_handler = DBConnectionHandler(StringConnection())
@@ -117,3 +121,30 @@ def test_find_by_id() -> None:
     assert fiscal
     assert fiscal.fiscal_id == fiscal_id
     assert fiscal.name == 'nome_teste'
+
+def test_insert_all_from_user() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    fiscal_repository = FiscalRepository(db_connection_handler)
+
+    email = Email(email='teste@email.com')
+    password = hashedpassword_factory(Password(password='Senha@123'))
+    phone = '48999990000'
+
+    fiscal_repository.insert_all_from_user(
+        name='nome_teste',
+        email=email,
+        password=password,
+        phone=phone
+    )
+
+    with db_connection_handler as db:
+        result = db.session.execute(
+            text('SELECT * FROM fiscal WHERE name = :name'),
+            {'name': 'nome_teste'}
+        ).fetchone()
+
+    assert result is not None
+    assert result.name == 'nome_teste'
+    assert result.email == 'teste@email.com'
+    assert result.phone == '48999990000'
+    assert result.password == password.hashed_password
