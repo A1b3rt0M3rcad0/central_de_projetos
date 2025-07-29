@@ -1,3 +1,17 @@
+"""
+Composer responsável por montar a cadeia de dependências para o endpoint de associação de um vereador a um projeto.
+
+Retorna o handler do controller, que recebe um HttpRequest e retorna um HttpResponse.
+
+Fluxo:
+- Instancia UserProjectRepository com o handler de conexão
+- Instancia ProjectRepository com o handler de conexão
+- Instancia UserRepository com o handler de conexão
+- Instancia o use case AssociateVereadorWithAProject
+- Instancia o controller AssociateVereadorWithAProjectController
+- Retorna o método handle do controller
+"""
+
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.user_project_repository import UserProjectRepository
 from src.infra.relational.repository.project_repository import ProjectRepository
