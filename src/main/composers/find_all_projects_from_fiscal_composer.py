@@ -1,3 +1,16 @@
+"""
+Composer responsável por montar a cadeia de dependências para o endpoint de busca de todos os projetos de um fiscal.
+
+Retorna o handler do controller, que recebe um HttpRequest e retorna um HttpResponse.
+
+Fluxo:
+- Instancia ProjectFiscalRepository com o handler de conexão
+- Instancia o use case FindAllProjectsFromFiscal
+- Instancia o use case FindProject
+- Instancia o controller FindAllProjectsFromFiscalController
+- Retorna o método handle do controller
+"""
+
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
 from src.infra.relational.repository.project_repository import ProjectRepository

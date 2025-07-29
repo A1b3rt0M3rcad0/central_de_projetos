@@ -3,6 +3,10 @@ from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_fiscal_repository import IFiscalRepository
 
+# Domain
+from src.domain.value_objects.email import Email
+from src.security.value_objects.hashed_password import HashedPassword
+
 # Errors
 from src.errors.repository.not_exists_error.fiscal_not_exists import FiscalNotExists
 from src.errors.repository.already_exists_error.fiscal_already_exists import FiscalAlreadyExists
@@ -31,6 +35,21 @@ class FiscalRepository(IFiscalRepository):
             raise FiscalAlreadyExists(message=f'Fiscal {name} already exists: {str(e)}') from e
         except Exception as e:
             raise ErrorOnInsertFiscal(message=f'Error on insert fiscal {name}: {str(e)}') from e
+    
+    def insert_all_from_fiscal(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                db.session.add(
+                    Fiscal(
+                        name=name,
+                        email=email.email,
+                        password=password.hashed_password,
+                        phone=phone
+                    )
+                )
+                db.session.commit()
+            except Exception as e:
+                raise ErrorOnInsertFiscal(message=f'Error on insert Fiscal: {name}: {str(e)}') from e
 
     def find_by_name(self, name:str) -> FiscalEntity:
         try:
@@ -43,7 +62,11 @@ class FiscalRepository(IFiscalRepository):
                 return FiscalEntity(
                     fiscal_id=fiscal.id,
                     name=fiscal.name,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    email=fiscal.email,
+                    phone=fiscal.phone,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -61,12 +84,38 @@ class FiscalRepository(IFiscalRepository):
                 return FiscalEntity(
                     fiscal_id=fiscal.id,
                     name=fiscal.name,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    email=fiscal.email,
+                    phone=fiscal.phone,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
             raise e from e
         except Exception as e:
             raise ErrorOnFindFiscal(message=f'Error on find fiscal by id {fiscal_id}: {str(e)}') from e
+    
+    def find_by_email(self, email:Email) -> FiscalEntity:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(
+                    Fiscal.email == email.email
+                ).first()
+                if fiscal is None:
+                    raise FiscalNotExists(message=f'The fiscal with email {email.email} does not exists')
+                return FiscalEntity(
+                    fiscal_id=fiscal.id,
+                    name=fiscal.name,
+                    phone=fiscal.phone,
+                    email=fiscal.email,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token,
+                    created_at=fiscal.created_at
+                )
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindFiscal(message=f'Error on find fiscal by email {email.email}: {str(e)}') from e
     
     def find_all(self) -> List[FiscalEntity]:
         try:

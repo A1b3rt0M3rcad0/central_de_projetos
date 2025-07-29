@@ -1,3 +1,15 @@
+"""
+Composer responsável por montar a cadeia de dependências para o endpoint de criação de fiscal.
+
+Retorna o handler do controller, que recebe um HttpRequest e retorna um HttpResponse.
+
+Fluxo:
+- Instancia FiscalRepository com o handler de conexão
+- Instancia o use case CreateFiscal
+- Instancia o controller CreateFiscalController
+- Retorna o método handle do controller
+"""
+
 from src.presentation.controllers.create_fiscal_controller import CreateFiscalController
 from src.data.use_cases.create_fiscal import CreateFiscal
 from src.infra.relational.repository.fiscal_repository import FiscalRepository

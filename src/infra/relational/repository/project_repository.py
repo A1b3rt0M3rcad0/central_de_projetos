@@ -397,8 +397,44 @@ class ProjectRepository(IProjectRepository):
                     expected_completion_date=p.expected_completion_date,
                     start_date=p.start_date,
                     end_date=p.end_date,
-                    status_id=p.status_id
-                    ) for p in projects]
+                    status_id=p.status_id,
+                    name=p.name,
+                    bairro=(
+                        BairroEntity(
+                            bairro_id=p.project_bairros[0].bairro.id,
+                            name=p.project_bairros[0].bairro.name,
+                            created_at=p.project_bairros[0].bairro.created_at
+                        ) if p.project_bairros and len(p.project_bairros) > 0 else None
+                    ),
+                    empresa=(
+                        EmpresaEntity(
+                            empresa_id=p.project_empresas[0].empresa.id,
+                            name=p.project_empresas[0].empresa.name,
+                            created_at=p.project_empresas[0].empresa.created_at
+                        ) if p.project_empresas and len(p.project_empresas) > 0 else None
+                    ),
+                    fiscal=(
+                        FiscalEntity(
+                            fiscal_id=p.project_fiscals[0].fiscal.id,
+                            name=p.project_fiscals[0].fiscal.name,
+                            created_at=p.project_fiscals[0].fiscal.created_at
+                        ) if p.project_fiscals and len(p.project_fiscals) > 0 else None
+                    ),
+                    types=(
+                        TypesEntity(
+                            types_id=p.project_types[0].types.id,
+                            name=p.project_types[0].types.name,
+                            created_at=p.project_types[0].types.created_at
+                        ) if p.project_types and len(p.project_types) > 0 else None
+                    ),
+                    status=(
+                        StatusEntity(
+                            status_id=p.status.id,
+                            description=p.status.description,
+                            created_at=p.status.created_at
+                        ) if p.status else None
+                    )
+                ) for p in projects]
 
                 return {
                     "page": page,

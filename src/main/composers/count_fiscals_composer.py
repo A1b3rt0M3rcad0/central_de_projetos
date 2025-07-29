@@ -1,3 +1,15 @@
+"""
+Composer responsável por montar a cadeia de dependências para o endpoint de contagem de fiscais.
+
+Retorna o handler do controller, que recebe um HttpRequest e retorna um HttpResponse.
+
+Fluxo:
+- Instancia FiscalRepository com o handler de conexão
+- Instancia o use case CountFiscals
+- Instancia o controller CountFiscalsController
+- Retorna o método handle do controller
+"""
+
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.fiscal_repository import FiscalRepository
 from src.data.use_cases.count_fiscals import CountFiscals

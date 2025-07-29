@@ -11,7 +11,7 @@ class Fiscal(BaseModel):
 
     id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name:Mapped[str] = mapped_column(String(100))
-    email:Mapped[str] = mapped_column(String(50), nullable=True)
+    email:Mapped[str] = mapped_column(String(50), nullable=True, unique=True)
     phone:Mapped[str] = mapped_column(String(20), nullable=True)
     password:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=True)
     refresh_token:Mapped[str] = mapped_column(String(255), nullable=True)
