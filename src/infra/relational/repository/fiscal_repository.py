@@ -36,7 +36,7 @@ class FiscalRepository(IFiscalRepository):
         except Exception as e:
             raise ErrorOnInsertFiscal(message=f'Error on insert fiscal {name}: {str(e)}') from e
     
-    def insert_all_from_user(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:
+    def insert_all_from_fiscal(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:
         with self.__db_connection_handler as db:
             try:
                 db.session.add(

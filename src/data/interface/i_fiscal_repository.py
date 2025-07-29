@@ -10,7 +10,7 @@ class IFiscalRepository(ABC):
     def insert(self, name:str) -> None:pass
 
     @abstractmethod
-    def insert_all_from_user(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:pass
+    def insert_all_from_fiscal(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:pass
 
     @abstractmethod
     def find_by_name(self, name:str) -> FiscalEntity:pass

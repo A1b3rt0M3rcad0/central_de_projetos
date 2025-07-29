@@ -122,7 +122,7 @@ def test_find_by_id() -> None:
     assert fiscal.fiscal_id == fiscal_id
     assert fiscal.name == 'nome_teste'
 
-def test_insert_all_from_user() -> None:
+def test_insert_all_from_fiscal() -> None:
     db_connection_handler = DBConnectionHandler(StringConnection())
     fiscal_repository = FiscalRepository(db_connection_handler)
 
@@ -130,7 +130,7 @@ def test_insert_all_from_user() -> None:
     password = hashedpassword_factory(Password(password='Senha@123'))
     phone = '48999990000'
 
-    fiscal_repository.insert_all_from_user(
+    fiscal_repository.insert_all_from_fiscal(
         name='nome_teste',
         email=email,
         password=password,
