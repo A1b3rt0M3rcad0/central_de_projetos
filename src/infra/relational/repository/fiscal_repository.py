@@ -62,7 +62,11 @@ class FiscalRepository(IFiscalRepository):
                 return FiscalEntity(
                     fiscal_id=fiscal.id,
                     name=fiscal.name,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    email=fiscal.email,
+                    phone=fiscal.phone,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -80,12 +84,38 @@ class FiscalRepository(IFiscalRepository):
                 return FiscalEntity(
                     fiscal_id=fiscal.id,
                     name=fiscal.name,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    email=fiscal.email,
+                    phone=fiscal.phone,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
             raise e from e
         except Exception as e:
             raise ErrorOnFindFiscal(message=f'Error on find fiscal by id {fiscal_id}: {str(e)}') from e
+    
+    def find_by_email(self, email:Email) -> FiscalEntity:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(
+                    Fiscal.email == email.email
+                ).first()
+                if fiscal is None:
+                    raise FiscalNotExists(message=f'The fiscal with email {email.email} does not exists')
+                return FiscalEntity(
+                    fiscal_id=fiscal.id,
+                    name=fiscal.name,
+                    phone=fiscal.phone,
+                    email=fiscal.email,
+                    password=fiscal.password,
+                    refresh_token=fiscal.refresh_token,
+                    created_at=fiscal.created_at
+                )
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErrorOnFindFiscal(message=f'Error on find fiscal by email {email.email}: {str(e)}') from e
     
     def find_all(self) -> List[FiscalEntity]:
         try:
