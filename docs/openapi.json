@@ -1,0 +1,7310 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/test/secure": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Secure Route",
+        "operationId": "secure_route_test_secure_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/test/base_template": {
+      "get": {
+        "tags": [
+          "auth",
+          "login"
+        ],
+        "summary": "Base Template Test",
+        "operationId": "base_template_test_test_base_template_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test/base_project_view": {
+      "get": {
+        "tags": [
+          "auth",
+          "login"
+        ],
+        "summary": "Project View Test",
+        "operationId": "project_view_test_test_base_project_view_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_cpf}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get User",
+        "operationId": "get_user_users__user_cpf__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_cpf",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Cpf"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/users/users/all": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get All Users",
+        "operationId": "get_all_users_users_users_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllUsersResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/users/users/all/{role}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get All Users By Role",
+        "operationId": "get_all_users_by_role_users_users_all__role__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllUsersByRoleResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/users/who_am_i/{token}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Who Am I",
+        "operationId": "who_am_i_users_who_am_i__token__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhoAmIReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create User",
+        "operationId": "create_user_users__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete User",
+        "operationId": "delete_user_users__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteUserFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/users/password": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Password",
+        "operationId": "update_password_users_password_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserPasswordFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/users/email": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update Email",
+        "operationId": "update_email_users_email_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserEmailFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/bairro/{bairro_name}": {
+      "get": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Find Bairro By Name",
+        "operationId": "find_bairro_by_name_bairro__bairro_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bairro_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bairro Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindBairroByNameResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/bairro/count/all": {
+      "get": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Count Bairros",
+        "operationId": "count_bairros_bairro_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountBairrosResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/bairro/bairro/all": {
+      "get": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Find All Bairro",
+        "operationId": "find_all_bairro_bairro_bairro_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/bairro/": {
+      "post": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Create Bairro",
+        "operationId": "create_bairro_bairro__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBairroFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Delete Bairro",
+        "operationId": "delete_bairro_bairro__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteBairroFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/bairro/name": {
+      "patch": {
+        "tags": [
+          "bairros"
+        ],
+        "summary": "Update Bairro Name",
+        "operationId": "update_bairro_name_bairro_name_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBairroNameFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/empresa/{empresa_name}": {
+      "get": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Find Empresa",
+        "operationId": "find_empresa_empresa__empresa_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "empresa_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "title": "Empresa Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindEmpresaResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/empresa/empresa/all": {
+      "get": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Find All Empresa",
+        "operationId": "find_all_empresa_empresa_empresa_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllEmpresaResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/empresa/empresa/count/all": {
+      "get": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Count Empresas",
+        "operationId": "count_empresas_empresa_empresa_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountEmpresasResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/empresa/": {
+      "post": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Create Empresa",
+        "operationId": "create_empresa_empresa__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmpresaFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Delete Empresa",
+        "operationId": "delete_empresa_empresa__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteEmpresaFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "empresas"
+        ],
+        "summary": "Update Empresa",
+        "operationId": "update_empresa_empresa__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmpresasFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/fiscal/{fiscal_name}": {
+      "get": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Find Fiscal By Name",
+        "operationId": "find_fiscal_by_name_fiscal__fiscal_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fiscal_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "title": "Fiscal Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindFiscalByNameResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/fiscal/fiscal/all": {
+      "get": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Find All Fiscal",
+        "operationId": "find_all_fiscal_fiscal_fiscal_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllFiscalReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/fiscal/fiscal/count/all": {
+      "get": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Count Fiscals",
+        "operationId": "count_fiscals_fiscal_fiscal_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountFiscalReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/fiscal/": {
+      "post": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Create Fiscal",
+        "operationId": "create_fiscal_fiscal__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFiscalFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Delete Fiscal",
+        "operationId": "delete_fiscal_fiscal__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteFiscalFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Update Fiscal",
+        "operationId": "update_fiscal_fiscal__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFiscalNameFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/history_project/": {
+      "get": {
+        "tags": [
+          "history_project",
+          "project"
+        ],
+        "summary": "Find All History From Project",
+        "operationId": "find_all_history_from_project_history_project__get",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindAllHistoryFromProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllHistoryFromProjectReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "history_project",
+          "project"
+        ],
+        "summary": "Create History Project",
+        "operationId": "create_history_project_history_project__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHistoryProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth",
+          "login"
+        ],
+        "summary": "Login",
+        "operationId": "login_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/project/{project_id}": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Find Project",
+        "operationId": "find_project_project__project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project/count/all": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Count Projects",
+        "operationId": "count_projects_project_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/projects/all": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Find All Projects",
+        "operationId": "find_all_projects_project_projects_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllProjectsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/projects/associations/all": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Find Associations Projects",
+        "operationId": "find_associations_projects_project_projects_associations_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAssociationProjectsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/projects/all/details": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Find All Projects Details",
+        "operationId": "find_all_projects_details_project_projects_all_details_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllProjectWithBasicDetailsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/": {
+      "post": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Create Project",
+        "operationId": "create_project_project__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Delete Project",
+        "operationId": "delete_project_project__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/name": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Project Name",
+        "operationId": "update_project_name_project_name_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProjectNameFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/andamento_do_projeto": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Project Andamento",
+        "operationId": "update_project_andamento_project_andamento_do_projeto_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProjectAndamentoFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/end_date": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update End Date",
+        "operationId": "update_end_date_project_end_date_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEndDateProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/projet_expected_completion_date": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Expected Completion Date",
+        "operationId": "update_expected_completion_date_project_projet_expected_completion_date_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExpectedCompletionDateFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/start_date": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Start Date",
+        "operationId": "update_start_date_project_start_date_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStartDateFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/verba": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Project Verba",
+        "operationId": "update_project_verba_project_verba_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVerbaFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/status": {
+      "patch": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Update Project Status",
+        "operationId": "update_project_status_project_status_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStartStatusFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project/project_detail/{project_id}": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Project Detail",
+        "operationId": "project_detail_project_project_detail__project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDetailResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project/projects/pagination/{page_size}/{page}": {
+      "get": {
+        "tags": [
+          "project"
+        ],
+        "summary": "Get Projects With Pagination",
+        "operationId": "get_projects_with_pagination_project_projects_pagination__page_size___page__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectsWithPaginationReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_bairro/{bairro_id}/{project_id}": {
+      "get": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Find Project Bairro",
+        "operationId": "find_project_bairro_project_bairro__bairro_id___project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bairro_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bairro Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindProjectBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_bairro/project/count/": {
+      "get": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Get Project Counts By Bairro",
+        "operationId": "get_project_counts_by_bairro_project_bairro_project_count__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectCountByBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_bairro/project/verba/": {
+      "get": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Get Project Verba By Bairro R",
+        "operationId": "get_project_verba_by_bairro_r_project_bairro_project_verba__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectVerbaByBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_bairro/project/status/": {
+      "get": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Get Project Status Count By Bairro R",
+        "operationId": "get_project_status_count_by_bairro_r_project_bairro_project_status__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectStatusCountByBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_bairro/": {
+      "post": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Create Project Bairro",
+        "operationId": "create_project_bairro_project_bairro__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectBairroFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Delete Project Bairro",
+        "operationId": "delete_project_bairro_project_bairro__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectBairroFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_bairro/{bairro_id}": {
+      "get": {
+        "tags": [
+          "project",
+          "bairro"
+        ],
+        "summary": "Find All Projects From Bairro",
+        "operationId": "find_all_projects_from_bairro_project_bairro__bairro_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bairro_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bairro Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllProjectsFromBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_empresa/{empresa_id}/{project_id}": {
+      "get": {
+        "tags": [
+          "project",
+          "empresa",
+          "project_empresa"
+        ],
+        "summary": "Find Project Empresa",
+        "operationId": "find_project_empresa_project_empresa__empresa_id___project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "empresa_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Empresa Id"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindProjectEmpresaResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_empresa/{empresa_id}": {
+      "get": {
+        "tags": [
+          "project",
+          "empresa",
+          "project_empresa"
+        ],
+        "summary": "Find All Projects From Empresa",
+        "operationId": "find_all_projects_from_empresa_project_empresa__empresa_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "empresa_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Empresa Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllProjectsFromEmpresaResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_empresa/project/count/all": {
+      "get": {
+        "tags": [
+          "project",
+          "empresa",
+          "project_empresa"
+        ],
+        "summary": "Get Count Projects By Empresas",
+        "operationId": "get_count_projects_by_empresas_project_empresa_project_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCountProjectsByEmpresaResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_empresa/": {
+      "post": {
+        "tags": [
+          "project",
+          "empresa",
+          "project_empresa"
+        ],
+        "summary": "Create Project Empresa",
+        "operationId": "create_project_empresa_project_empresa__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectEmpresaFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "project",
+          "empresa",
+          "project_empresa"
+        ],
+        "summary": "Delete Project Empresa",
+        "operationId": "delete_project_empresa_project_empresa__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectEmpresaFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_type/{project_id}": {
+      "get": {
+        "tags": [
+          "project",
+          "type"
+        ],
+        "summary": "Find Type From Project",
+        "operationId": "find_type_from_project_project_type__project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindTypeFromProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/project_type/project/types/count": {
+      "get": {
+        "tags": [
+          "project",
+          "type"
+        ],
+        "summary": "Get Project Types Count By Bairro",
+        "operationId": "get_project_types_count_by_bairro_project_type_project_types_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectTypesCountByBairroResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_type/": {
+      "post": {
+        "tags": [
+          "project",
+          "type"
+        ],
+        "summary": "Create Project Type",
+        "operationId": "create_project_type_project_type__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectTypeFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "project",
+          "type"
+        ],
+        "summary": "Delete Project Type",
+        "operationId": "delete_project_type_project_type__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectTypeFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/status/{status_id}": {
+      "get": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Find Status",
+        "operationId": "find_status_status__status_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Status Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindStatusReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/status/": {
+      "post": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Create Status",
+        "operationId": "create_status_status__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStatusFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Delete Status",
+        "operationId": "delete_status_status__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteStatusFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Update Status Description",
+        "operationId": "update_status_description_status__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatusDescriptionFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/status/status/all/": {
+      "get": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Find All Status",
+        "operationId": "find_all_status_status_status_all__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllStatusResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/status/projects/{status_id}": {
+      "get": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Find Project By Status",
+        "operationId": "find_project_by_status_status_projects__status_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Status Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindProjectbyStatusReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/user_project/all": {
+      "get": {
+        "tags": [
+          "user",
+          "project",
+          "user_project"
+        ],
+        "summary": "Find All Association From Projects",
+        "operationId": "find_all_association_from_projects_user_project_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllAssocitationFromProjectsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/user_project/project/count/all": {
+      "get": {
+        "tags": [
+          "user",
+          "project",
+          "user_project"
+        ],
+        "summary": "Get Count Projets By User",
+        "operationId": "get_count_projets_by_user_user_project_project_count_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCountProjectsByUserResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/user_project/": {
+      "post": {
+        "tags": [
+          "user",
+          "project",
+          "user_project"
+        ],
+        "summary": "Associate Vereador With A Project",
+        "operationId": "associate_vereador_with_a_project_user_project__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssociateVereadorWithAProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "user",
+          "project",
+          "user_project"
+        ],
+        "summary": "Delete Association",
+        "operationId": "delete_association_user_project__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAssociationFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "user",
+          "project",
+          "user_project"
+        ],
+        "summary": "Update Association From Project",
+        "operationId": "update_association_from_project_user_project__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssociationFromProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/document/save": {
+      "post": {
+        "tags": [
+          "document"
+        ],
+        "summary": "Save Document",
+        "operationId": "save_document_document_save_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_save_document_document_save_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveDocumentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/document/{project_id}/{document_name}": {
+      "get": {
+        "tags": [
+          "document"
+        ],
+        "summary": "Get Document",
+        "operationId": "get_document_document__project_id___document_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "document_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/document/projects/{project_id}/documents": {
+      "get": {
+        "tags": [
+          "document"
+        ],
+        "summary": "Get All Document Names",
+        "operationId": "get_all_document_names_document_projects__project_id__documents_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllDocumentNamesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/document/": {
+      "delete": {
+        "tags": [
+          "document"
+        ],
+        "summary": "Delete Document",
+        "operationId": "delete_document_document__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteDocumentFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/document/all": {
+      "delete": {
+        "tags": [
+          "document"
+        ],
+        "summary": "Delete All Documents From Project",
+        "operationId": "delete_all_documents_from_project_document_all_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleAllDocumentsFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/types/": {
+      "post": {
+        "tags": [
+          "type"
+        ],
+        "summary": "Create Type",
+        "operationId": "create_type_types__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTypeFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "type"
+        ],
+        "summary": "Delete Type",
+        "operationId": "delete_type_types__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteTypeFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "type"
+        ],
+        "summary": "Update Type",
+        "operationId": "update_type_types__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTypeFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/types/find_by_name/{type_name}": {
+      "get": {
+        "tags": [
+          "type"
+        ],
+        "summary": "Find Type By Exact Name",
+        "operationId": "find_type_by_exact_name_types_find_by_name__type_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Type Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindTypeByExactNameReponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/types/all": {
+      "get": {
+        "tags": [
+          "type"
+        ],
+        "summary": "Find All Types",
+        "operationId": "find_all_types_types_all_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindAllTypesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_fiscal/": {
+      "post": {
+        "tags": [
+          "project",
+          "fiscal",
+          "project_fiscal"
+        ],
+        "summary": "Create Project Fiscal",
+        "operationId": "create_project_fiscal_project_fiscal__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectFiscalFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "project",
+          "fiscal",
+          "project_fiscal"
+        ],
+        "summary": "Delete Project Fiscal",
+        "operationId": "delete_project_fiscal_project_fiscal__delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProjectFiscalFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/project_fiscal/project/count": {
+      "get": {
+        "tags": [
+          "project",
+          "fiscal",
+          "project_fiscal"
+        ],
+        "summary": "Get Count Projects By Fiscal",
+        "operationId": "get_count_projects_by_fiscal_project_fiscal_project_count_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCountProjectsByFiscalResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/web/login": {
+      "get": {
+        "tags": [
+          "auth",
+          "login"
+        ],
+        "summary": "Login",
+        "operationId": "login_web_login_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssociateVereadorWithAProjectFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "project_id"
+        ],
+        "title": "AssociateVereadorWithAProjectFormat"
+      },
+      "Association": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "data_atribuicao": {
+            "type": "string",
+            "title": "Data Atribuicao"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "project_id",
+          "data_atribuicao"
+        ],
+        "title": "Association"
+      },
+      "BairroContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "BairroContent"
+      },
+      "BaseMessageResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "BaseMessageResponse"
+      },
+      "Body_save_document_document_save_post": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "file"
+        ],
+        "title": "Body_save_document_document_save_post"
+      },
+      "CountBairrosContent": {
+        "properties": {
+          "bairros": {
+            "type": "integer",
+            "title": "Bairros"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairros"
+        ],
+        "title": "CountBairrosContent"
+      },
+      "CountBairrosResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/CountBairrosContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "CountBairrosResponse"
+      },
+      "CountEmpresasContent": {
+        "properties": {
+          "empresa_name": {
+            "type": "integer",
+            "title": "Empresa Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "empresa_name"
+        ],
+        "title": "CountEmpresasContent"
+      },
+      "CountEmpresasResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/CountEmpresasContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "CountEmpresasResponse"
+      },
+      "CountFiscalReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "CountFiscalReponse"
+      },
+      "CountProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "CountProjectResponse"
+      },
+      "CreateBairroFormat": {
+        "properties": {
+          "bairro_name": {
+            "type": "string",
+            "title": "Bairro Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairro_name"
+        ],
+        "title": "CreateBairroFormat"
+      },
+      "CreateEmpresaFormat": {
+        "properties": {
+          "empresa_name": {
+            "type": "string",
+            "title": "Empresa Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "empresa_name"
+        ],
+        "title": "CreateEmpresaFormat"
+      },
+      "CreateFiscalFormat": {
+        "properties": {
+          "fiscal_name": {
+            "type": "string",
+            "title": "Fiscal Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_name"
+        ],
+        "title": "CreateFiscalFormat"
+      },
+      "CreateHistoryProjectFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "data_name": {
+            "type": "string",
+            "title": "Data Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "data_name",
+          "description"
+        ],
+        "title": "CreateHistoryProjectFormat"
+      },
+      "CreateProjectBairroFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "bairro_id": {
+            "type": "integer",
+            "title": "Bairro Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "bairro_id"
+        ],
+        "title": "CreateProjectBairroFormat"
+      },
+      "CreateProjectEmpresaFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "empresa_id": {
+            "type": "integer",
+            "title": "Empresa Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "empresa_id"
+        ],
+        "title": "CreateProjectEmpresaFormat"
+      },
+      "CreateProjectFiscalFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "fiscal_id"
+        ],
+        "title": "CreateProjectFiscalFormat"
+      },
+      "CreateProjectFormat": {
+        "properties": {
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_id",
+          "name",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "start_date",
+          "expected_completion_date",
+          "end_date"
+        ],
+        "title": "CreateProjectFormat"
+      },
+      "CreateProjectTypeFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "types_id": {
+            "type": "integer",
+            "title": "Types Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "types_id"
+        ],
+        "title": "CreateProjectTypeFormat"
+      },
+      "CreateStatusFormat": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "description"
+        ],
+        "title": "CreateStatusFormat"
+      },
+      "CreateTypeFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateTypeFormat"
+      },
+      "CreateUserFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "cpf",
+          "email",
+          "role",
+          "password"
+        ],
+        "title": "CreateUserFormat"
+      },
+      "DeleAllDocumentsFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id"
+        ],
+        "title": "DeleAllDocumentsFormat"
+      },
+      "DeleteAssociationFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "project_id"
+        ],
+        "title": "DeleteAssociationFormat"
+      },
+      "DeleteBairroFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DeleteBairroFormat"
+      },
+      "DeleteDocumentFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "document_name": {
+            "type": "string",
+            "title": "Document Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "document_name"
+        ],
+        "title": "DeleteDocumentFormat"
+      },
+      "DeleteEmpresaFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DeleteEmpresaFormat"
+      },
+      "DeleteFiscalFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DeleteFiscalFormat"
+      },
+      "DeleteProjectBairroFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "bairro_id": {
+            "type": "integer",
+            "title": "Bairro Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "bairro_id"
+        ],
+        "title": "DeleteProjectBairroFormat"
+      },
+      "DeleteProjectEmpresaFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "empresa_id": {
+            "type": "integer",
+            "title": "Empresa Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "empresa_id"
+        ],
+        "title": "DeleteProjectEmpresaFormat"
+      },
+      "DeleteProjectFiscalFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "fiscal_id"
+        ],
+        "title": "DeleteProjectFiscalFormat"
+      },
+      "DeleteProjectFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id"
+        ],
+        "title": "DeleteProjectFormat"
+      },
+      "DeleteProjectTypeFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "types_id": {
+            "type": "integer",
+            "title": "Types Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "types_id"
+        ],
+        "title": "DeleteProjectTypeFormat"
+      },
+      "DeleteStatusFormat": {
+        "properties": {
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_id"
+        ],
+        "title": "DeleteStatusFormat"
+      },
+      "DeleteTypeFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DeleteTypeFormat"
+      },
+      "DeleteUserFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf"
+        ],
+        "title": "DeleteUserFormat"
+      },
+      "Empresa": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Empresa"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/Errors"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "errors"
+        ],
+        "title": "ErrorResponse"
+      },
+      "Errors": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "detail"
+        ],
+        "title": "Errors"
+      },
+      "FindAllAssocitationFromProjectsResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/Association"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllAssocitationFromProjectsResponse"
+      },
+      "FindAllBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/BairroContent"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllBairroResponse"
+      },
+      "FindAllEmpresaContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FindAllEmpresaContent"
+      },
+      "FindAllEmpresaResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/FindAllEmpresaContent"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllEmpresaResponse"
+      },
+      "FindAllFiscalContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FindAllFiscalContent"
+      },
+      "FindAllFiscalReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/FindAllFiscalContent"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllFiscalReponse"
+      },
+      "FindAllHistoryFromProjectFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id"
+        ],
+        "title": "FindAllHistoryFromProjectFormat"
+      },
+      "FindAllHistoryFromProjectReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryContent"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllHistoryFromProjectReponse"
+      },
+      "FindAllProjectWithBasicDetailsResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectDetails"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllProjectWithBasicDetailsResponse"
+      },
+      "FindAllProjectsFromBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project_bairro__project_bairro_response__find_all_projects_from_bairro_response__Project"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllProjectsFromBairroResponse"
+      },
+      "FindAllProjectsFromEmpresaResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectEmpresa"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllProjectsFromEmpresaResponse"
+      },
+      "FindAllProjectsResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectContent"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllProjectsResponse"
+      },
+      "FindAllStatusResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/Status"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllStatusResponse"
+      },
+      "FindAllTypesResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__types__types_response__find_all_types_response__Types"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAllTypesResponse"
+      },
+      "FindAssociationProjectsContet": {
+        "properties": {
+          "bairro": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project__project_response__find_associations_projects_response__Bairro"
+            },
+            "type": "array",
+            "title": "Bairro"
+          },
+          "empresa": {
+            "items": {
+              "$ref": "#/components/schemas/Empresa"
+            },
+            "type": "array",
+            "title": "Empresa"
+          },
+          "fiscal": {
+            "items": {
+              "$ref": "#/components/schemas/Fiscal"
+            },
+            "type": "array",
+            "title": "Fiscal"
+          },
+          "type": {
+            "items": {
+              "$ref": "#/components/schemas/Type"
+            },
+            "type": "array",
+            "title": "Type"
+          },
+          "vereador": {
+            "items": {
+              "$ref": "#/components/schemas/Vereador"
+            },
+            "type": "array",
+            "title": "Vereador"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairro",
+          "empresa",
+          "fiscal",
+          "type",
+          "vereador"
+        ],
+        "title": "FindAssociationProjectsContet"
+      },
+      "FindAssociationProjectsResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FindAssociationProjectsContet"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindAssociationProjectsResponse"
+      },
+      "FindBairroByNameResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FindBairroByNameResponseContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindBairroByNameResponse"
+      },
+      "FindBairroByNameResponseContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FindBairroByNameResponseContent"
+      },
+      "FindEmpresaContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FindEmpresaContent"
+      },
+      "FindEmpresaResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FindEmpresaContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindEmpresaResponse"
+      },
+      "FindFiscalByNameContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FindFiscalByNameContent"
+      },
+      "FindFiscalByNameResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FindFiscalByNameContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindFiscalByNameResponse"
+      },
+      "FindProjectBairroContent": {
+        "properties": {
+          "bairro_id": {
+            "type": "integer",
+            "title": "Bairro Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairro_id",
+          "project_id",
+          "created_at"
+        ],
+        "title": "FindProjectBairroContent"
+      },
+      "FindProjectBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FindProjectBairroContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindProjectBairroResponse"
+      },
+      "FindProjectEmpresaResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ProjectEmpresaContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindProjectEmpresaResponse"
+      },
+      "FindProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ProjectContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindProjectResponse"
+      },
+      "FindProjectbyStatusReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__status__status_response__find_project_by_status_response__Project"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindProjectbyStatusReponse"
+      },
+      "FindStatusReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindStatusReponse"
+      },
+      "FindTypeByExactNameReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/src__main__routes__api__types__types_response__find_type_by_exact_name_response__Types"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindTypeByExactNameReponse"
+      },
+      "FindTypeFromProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectType"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "FindTypeFromProjectResponse"
+      },
+      "Fiscal": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Fiscal"
+      },
+      "GenericModel": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "GenericModel"
+      },
+      "GetAllDocumentNamesResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetAllDocumentNamesResponse"
+      },
+      "GetAllUsersByRoleResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__user__user_response__get_all_users_by_role__User"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetAllUsersByRoleResponse"
+      },
+      "GetAllUsersResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__user__user_response__get_all_users_response__User"
+            },
+            "type": "array",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetAllUsersResponse"
+      },
+      "GetCountProjectsByEmpresaResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetCountProjectsByEmpresaResponse"
+      },
+      "GetCountProjectsByFiscalResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetCountProjectsByFiscalResponse"
+      },
+      "GetCountProjectsByUserResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Content"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetCountProjectsByUserResponse"
+      },
+      "GetProjecCountsByBairroContent": {
+        "properties": {
+          "bairros": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project_bairro__project_bairro_response__get_project_counts_by_bairro_response__Bairro"
+            },
+            "type": "array",
+            "title": "Bairros"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairros",
+          "counts"
+        ],
+        "title": "GetProjecCountsByBairroContent"
+      },
+      "GetProjectCountByBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetProjecCountsByBairroContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetProjectCountByBairroResponse"
+      },
+      "GetProjectStatusCountByBairroContent": {
+        "properties": {
+          "bairros": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project_bairro__project_bairro_response__get_project_status_count_by_bairro_response__Bairro"
+            },
+            "type": "array",
+            "title": "Bairros"
+          },
+          "status": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bairros",
+          "status"
+        ],
+        "title": "GetProjectStatusCountByBairroContent"
+      },
+      "GetProjectStatusCountByBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetProjectStatusCountByBairroContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetProjectStatusCountByBairroResponse"
+      },
+      "GetProjectTypesCountByBairroContent": {
+        "properties": {
+          "types": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project_type__project_type_response__get_project_types_count_by_bairro__Types"
+            },
+            "type": "array",
+            "title": "Types"
+          },
+          "types_count_by_bairro": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Types Count By Bairro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "types",
+          "types_count_by_bairro"
+        ],
+        "title": "GetProjectTypesCountByBairroContent"
+      },
+      "GetProjectTypesCountByBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetProjectTypesCountByBairroContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetProjectTypesCountByBairroResponse"
+      },
+      "GetProjectVerbaByBairroContent": {
+        "properties": {
+          "verba": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Verba"
+          },
+          "bairros": {
+            "items": {
+              "$ref": "#/components/schemas/BairroContent"
+            },
+            "type": "array",
+            "title": "Bairros"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verba",
+          "bairros"
+        ],
+        "title": "GetProjectVerbaByBairroContent"
+      },
+      "GetProjectVerbaByBairroResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/GetProjectVerbaByBairroContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetProjectVerbaByBairroResponse"
+      },
+      "GetProjectsWithPaginationReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/PaginationProjects"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetProjectsWithPaginationReponse"
+      },
+      "GetUserResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/src__main__routes__api__user__user_response__get_user_response__User"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "GetUserResponse"
+      },
+      "HistoryContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "data_name": {
+            "type": "string",
+            "title": "Data Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "data_name",
+          "description",
+          "updated_at"
+        ],
+        "title": "HistoryContent"
+      },
+      "HistoryProject": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "data_name": {
+            "type": "string",
+            "title": "Data Name"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "description",
+          "data_name",
+          "updated_at"
+        ],
+        "title": "HistoryProject"
+      },
+      "LoginFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "password"
+        ],
+        "title": "LoginFormat"
+      },
+      "LoginResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "LoginResponse"
+      },
+      "PaginationProjects": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_items": {
+            "type": "integer",
+            "title": "Total Items"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          },
+          "project": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__project__project_response__get_projects_with_pagination_response__Project"
+            },
+            "type": "array",
+            "title": "Project"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "page_size",
+          "total_items",
+          "total_pages",
+          "project"
+        ],
+        "title": "PaginationProjects"
+      },
+      "ProjectContent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status_id",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "start_date",
+          "expected_completion_date",
+          "end_date"
+        ],
+        "title": "ProjectContent"
+      },
+      "ProjectDetailResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/src__main__routes__api__project__project_response__project_detail_response__Project"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "ProjectDetailResponse"
+      },
+      "ProjectDetails": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "bairro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bairro"
+          },
+          "empresa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Empresa"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fiscal"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "types": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Types"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "bairro",
+          "empresa",
+          "fiscal",
+          "status",
+          "andamento_do_projeto",
+          "user",
+          "expected_completion_date",
+          "start_date",
+          "end_date",
+          "verba_disponivel",
+          "types"
+        ],
+        "title": "ProjectDetails"
+      },
+      "ProjectEmpresa": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "empresa_id": {
+            "type": "integer",
+            "title": "Empresa Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "empresa_id",
+          "created_at"
+        ],
+        "title": "ProjectEmpresa"
+      },
+      "ProjectEmpresaContent": {
+        "properties": {
+          "empresa_id": {
+            "type": "integer",
+            "title": "Empresa Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "empresa_id",
+          "project_id",
+          "created_at"
+        ],
+        "title": "ProjectEmpresaContent"
+      },
+      "ProjectType": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "types_id": {
+            "type": "integer",
+            "title": "Types Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "types_id",
+          "created_at"
+        ],
+        "title": "ProjectType"
+      },
+      "SaveDocumentResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "name"
+        ],
+        "title": "SaveDocumentResponse"
+      },
+      "Status": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "created_at"
+        ],
+        "title": "Status"
+      },
+      "Type": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Type"
+      },
+      "UpdateAssociationFromProjectFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "new_cpf": {
+            "type": "string",
+            "title": "New Cpf"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "new_cpf",
+          "project_id"
+        ],
+        "title": "UpdateAssociationFromProjectFormat"
+      },
+      "UpdateBairroNameFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "new_name": {
+            "type": "string",
+            "title": "New Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "new_name"
+        ],
+        "title": "UpdateBairroNameFormat"
+      },
+      "UpdateEmpresasFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "new_name": {
+            "type": "string",
+            "title": "New Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "new_name"
+        ],
+        "title": "UpdateEmpresasFormat"
+      },
+      "UpdateEndDateProjectFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "end_date"
+        ],
+        "title": "UpdateEndDateProjectFormat"
+      },
+      "UpdateExpectedCompletionDateFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "expected_completion_date"
+        ],
+        "title": "UpdateExpectedCompletionDateFormat"
+      },
+      "UpdateFiscalNameFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "new_name": {
+            "type": "string",
+            "title": "New Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "new_name"
+        ],
+        "title": "UpdateFiscalNameFormat"
+      },
+      "UpdateProjectAndamentoFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "andamento_do_projeto"
+        ],
+        "title": "UpdateProjectAndamentoFormat"
+      },
+      "UpdateProjectNameFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "name"
+        ],
+        "title": "UpdateProjectNameFormat"
+      },
+      "UpdateStartDateFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "start_date"
+        ],
+        "title": "UpdateStartDateFormat"
+      },
+      "UpdateStartStatusFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "status_id"
+        ],
+        "title": "UpdateStartStatusFormat"
+      },
+      "UpdateStatusDescriptionFormat": {
+        "properties": {
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status_id",
+          "description"
+        ],
+        "title": "UpdateStatusDescriptionFormat"
+      },
+      "UpdateTypeFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "new_name": {
+            "type": "string",
+            "title": "New Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "new_name"
+        ],
+        "title": "UpdateTypeFormat"
+      },
+      "UpdateUserEmailFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "email"
+        ],
+        "title": "UpdateUserEmailFormat"
+      },
+      "UpdateUserPasswordFormat": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "password"
+        ],
+        "title": "UpdateUserPasswordFormat"
+      },
+      "UpdateVerbaFormat": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "verba_disponivel"
+        ],
+        "title": "UpdateVerbaFormat"
+      },
+      "UserInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "role"
+        ],
+        "title": "UserInfo"
+      },
+      "Vereador": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Vereador"
+      },
+      "WhoAmIReponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/UserInfo"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "WhoAmIReponse"
+      },
+      "src__main__routes__api__project__project_response__find_associations_projects_response__Bairro": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Bairro"
+      },
+      "src__main__routes__api__project__project_response__get_projects_with_pagination_response__Project": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "expected_completion_date",
+          "start_date",
+          "end_date"
+        ],
+        "title": "Project"
+      },
+      "src__main__routes__api__project__project_response__project_detail_response__Project": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "empresa": {
+            "$ref": "#/components/schemas/GenericModel"
+          },
+          "fiscal": {
+            "$ref": "#/components/schemas/GenericModel"
+          },
+          "types": {
+            "$ref": "#/components/schemas/GenericModel"
+          },
+          "history_project": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryProject"
+            },
+            "type": "array",
+            "title": "History Project"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "documents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Documents"
+          },
+          "user": {
+            "$ref": "#/components/schemas/src__main__routes__api__project__project_response__project_detail_response__User"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "empresa",
+          "fiscal",
+          "types",
+          "history_project",
+          "andamento_do_projeto",
+          "expected_completion_date",
+          "end_date",
+          "start_date",
+          "verba_disponivel",
+          "documents",
+          "user"
+        ],
+        "title": "Project"
+      },
+      "src__main__routes__api__project__project_response__project_detail_response__User": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "name"
+        ],
+        "title": "User"
+      },
+      "src__main__routes__api__project_bairro__project_bairro_response__find_all_projects_from_bairro_response__Project": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "name",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "start_date",
+          "expected_completion_date",
+          "end_date"
+        ],
+        "title": "Project"
+      },
+      "src__main__routes__api__project_bairro__project_bairro_response__get_project_counts_by_bairro_response__Bairro": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "Bairro"
+      },
+      "src__main__routes__api__project_bairro__project_bairro_response__get_project_status_count_by_bairro_response__Bairro": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "Bairro"
+      },
+      "src__main__routes__api__project_type__project_type_response__get_project_types_count_by_bairro__Types": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "integer",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "Types"
+      },
+      "src__main__routes__api__status__status_response__find_project_by_status_response__Project": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "verba_disponivel": {
+            "type": "number",
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "type": "string",
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "name",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "start_date",
+          "expected_completion_date",
+          "end_date"
+        ],
+        "title": "Project"
+      },
+      "src__main__routes__api__types__types_response__find_all_types_response__Types": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "Types"
+      },
+      "src__main__routes__api__types__types_response__find_type_by_exact_name_response__Types": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "Types"
+      },
+      "src__main__routes__api__user__user_response__get_all_users_by_role__User": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "title": "User"
+      },
+      "src__main__routes__api__user__user_response__get_all_users_response__User": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "title": "User"
+      },
+      "src__main__routes__api__user__user_response__get_user_response__User": {
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "title": "Cpf"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cpf",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "title": "User"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
