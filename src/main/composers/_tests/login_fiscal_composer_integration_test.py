@@ -1,7 +1,10 @@
 import pytest
 import time
 from datetime import datetime
-from src.main.composers.login_fiscal_composer import login_fiscal_composer
+from src.presentation.controllers.login_fiscal_controller import LoginFiscalController
+from src.data.use_cases.login_fiscal import LoginFiscal
+from src.data.use_cases.create_refresh_token_fiscal import CreateRefreshTokenFiscal
+from src.data.use_cases.update_refresh_token_fiscal import UpdateRefreshTokenFiscal
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.domain.value_objects.email import Email
@@ -9,7 +12,8 @@ from src.domain.value_objects.password import Password
 from src.security.hashedpassword_factory import hashedpassword_factory
 from src.errors.use_cases.fiscal_not_found_error import FiscalNotFoundError
 from src.errors.use_cases.invalid_password_error import InvalidPasswordError
-from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
+from src.infra.relational.config.connection.t_string_connection import TStringConnection
+from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.repository.fiscal_repository import FiscalRepository
 
 # Import models to ensure SQLAlchemy can resolve relationships
@@ -35,11 +39,27 @@ class TestLoginFiscalComposerIntegration:
     
     def test_login_fiscal_composer_with_valid_credentials(self):
         # Arrange
-        composer = login_fiscal_composer()
+        composer = LoginFiscalController(
+            login_fiscal_case=LoginFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            create_refresh_token_fiscal=CreateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            update_refresh_token_fiscal=UpdateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            )
+        ).handle
         
         # Create a test fiscal in the database
         
-        fiscal_repository = FiscalRepository(db_connection_handler_factory())
+        fiscal_repository = FiscalRepository(DBConnectionHandler(TStringConnection()))
         
         # Create hashed password for test
         password = Password('TestPassword123')
@@ -81,7 +101,23 @@ class TestLoginFiscalComposerIntegration:
     
     def test_login_fiscal_composer_with_invalid_email(self):
         # Arrange
-        composer = login_fiscal_composer()
+        composer = LoginFiscalController(
+            login_fiscal_case=LoginFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            create_refresh_token_fiscal=CreateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            update_refresh_token_fiscal=UpdateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            )
+        ).handle
         
         http_request = HttpRequest(
             body={
@@ -98,10 +134,26 @@ class TestLoginFiscalComposerIntegration:
     
     def test_login_fiscal_composer_with_invalid_password(self):
         # Arrange
-        composer = login_fiscal_composer()
+        composer = LoginFiscalController(
+            login_fiscal_case=LoginFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            create_refresh_token_fiscal=CreateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            update_refresh_token_fiscal=UpdateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            )
+        ).handle
         
         # Create a test fiscal in the database
-        fiscal_repository = FiscalRepository(db_connection_handler_factory())
+        fiscal_repository = FiscalRepository(DBConnectionHandler(TStringConnection()))
         
         # Create hashed password for test
         password = Password('TestPassword123')
@@ -134,10 +186,26 @@ class TestLoginFiscalComposerIntegration:
     
     def test_login_fiscal_composer_refresh_token_update(self):
         # Arrange
-        composer = login_fiscal_composer()
+        composer = LoginFiscalController(
+            login_fiscal_case=LoginFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            create_refresh_token_fiscal=CreateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            ),
+            update_refresh_token_fiscal=UpdateRefreshTokenFiscal(
+                fiscal_repository=FiscalRepository(
+                    db_connection_handler=DBConnectionHandler(TStringConnection())
+                )
+            )
+        ).handle
         
         # Create a test fiscal in the database
-        fiscal_repository = FiscalRepository(db_connection_handler_factory())
+        fiscal_repository = FiscalRepository(DBConnectionHandler(TStringConnection()))
         
         # Create hashed password for test
         password = Password('TestPassword123')
