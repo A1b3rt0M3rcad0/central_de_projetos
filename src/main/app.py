@@ -19,6 +19,9 @@ from src.main.routes.api.document.document_routes import routes as document_rout
 from src.main.routes.api.types.types_routes import routes as types_routes
 from src.main.routes.api.project_fiscal.project_fiscal_routes import routes as project_fiscal_routes
 
+# Mobile Routes
+from src.main.routes.mobile.fiscal.fiscal_mobile_routes import routes as fiscal_mobile_routes
+
 # Web
 from src.main.routes.web.login.routes_login import routes as login_web
 
@@ -33,7 +36,7 @@ app.include_router(test_base_route)
 # Static Files
 app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
 
-# Routes
+# API Routes
 app.include_router(user_routes)
 app.include_router(bairro_routes)
 app.include_router(empresa_routes)
@@ -49,6 +52,9 @@ app.include_router(user_project_routes)
 app.include_router(document_routes)
 app.include_router(types_routes)
 app.include_router(project_fiscal_routes)
+
+# Mobile Routes
+app.include_router(fiscal_mobile_routes)
 
 # Web
 app.include_router(login_web)
