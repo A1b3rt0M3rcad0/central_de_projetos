@@ -13,6 +13,7 @@ from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import Log
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
 from src.logs.log_http import log_http
+from src.presentation.http_types.http_response import HttpResponse
 
 PREFIX = '/mobile/fiscal'
 
@@ -97,7 +98,7 @@ async def test_fiscal_mobile(
         log_http(
             level='INFO',
             logger_name=PREFIX,
-            http_response={"status_code": 200, "body": response_data},
+            http_response=HttpResponse(status_code=200, body=response_data),
             request=request
         )
         
