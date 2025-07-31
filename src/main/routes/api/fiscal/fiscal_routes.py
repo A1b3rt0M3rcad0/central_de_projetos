@@ -1,5 +1,5 @@
 #pylint:disable=W0718
-#pylint:disable=W0613, W9016, W0012
+#pylint:disable=W0613,W0012,W9016
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
