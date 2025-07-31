@@ -11,6 +11,7 @@ from src.security.value_objects.hashed_password import HashedPassword
 from src.errors.repository.not_exists_error.fiscal_not_exists import FiscalNotExists
 from src.errors.repository.already_exists_error.fiscal_already_exists import FiscalAlreadyExists
 from src.errors.repository.error_on_insert.error_on_insert_fiscal import ErrorOnInsertFiscal
+from src.errors.repository.error_on_insert.error_on_insert_refresh_token import ErrorOnInsertRefreshToken
 from src.errors.repository.error_on_find.error_on_find_fiscal import ErrorOnFindFiscal
 from src.errors.repository.error_on_update.error_on_update_fiscal import ErroronUpdateFiscal
 from src.errors.repository.error_on_delete.error_on_delete_fiscal import ErrorOnDeleteFiscal
@@ -44,12 +45,29 @@ class FiscalRepository(IFiscalRepository):
                         name=name,
                         email=email.email,
                         password=password.hashed_password,
+                        salt=password.salt,
                         phone=phone
                     )
                 )
                 db.session.commit()
             except Exception as e:
                 raise ErrorOnInsertFiscal(message=f'Error on insert Fiscal: {name}: {str(e)}') from e
+    
+    def insert_refresh_token(self, fiscal_id:int, refresh_token:str) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(Fiscal).where(Fiscal.id == fiscal_id).update({'refresh_token':refresh_token})
+                db.session.commit()
+            except Exception as e:
+                raise ErrorOnInsertRefreshToken(message=f'Error on insert refresh token: {str(e)}') from e
+    
+    def update_email(self, fiscal_id:int, email:Email) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                db.session.query(Fiscal).where(Fiscal.id == fiscal_id).update({'email':email.email})
+                db.session.commit()
+            except Exception as e:
+                raise ErroronUpdateFiscal(message=f'Error on update email: {str(e)}') from e 
 
     def find_by_name(self, name:str) -> FiscalEntity:
         try:
@@ -66,6 +84,7 @@ class FiscalRepository(IFiscalRepository):
                     email=fiscal.email,
                     phone=fiscal.phone,
                     password=fiscal.password,
+                    salt=fiscal.salt,
                     refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
@@ -88,6 +107,7 @@ class FiscalRepository(IFiscalRepository):
                     email=fiscal.email,
                     phone=fiscal.phone,
                     password=fiscal.password,
+                    salt=fiscal.salt,
                     refresh_token=fiscal.refresh_token
                 )
         except FiscalNotExists as e:
@@ -109,6 +129,7 @@ class FiscalRepository(IFiscalRepository):
                     phone=fiscal.phone,
                     email=fiscal.email,
                     password=fiscal.password,
+                    salt=fiscal.salt,
                     refresh_token=fiscal.refresh_token,
                     created_at=fiscal.created_at
                 )

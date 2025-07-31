@@ -13,6 +13,9 @@ class IFiscalRepository(ABC):
     def insert_all_from_fiscal(self, name:str, email:Email, password:HashedPassword, phone:str) -> None:pass
 
     @abstractmethod
+    def insert_refresh_token(self, fiscal_id:int, refresh_token:str) -> None:pass
+
+    @abstractmethod
     def find_by_name(self, name:str) -> FiscalEntity:pass
 
     @abstractmethod

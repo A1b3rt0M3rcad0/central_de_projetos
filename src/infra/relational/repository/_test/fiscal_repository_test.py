@@ -9,6 +9,25 @@ from src.domain.value_objects.email import Email
 from src.domain.value_objects.password import Password
 from src.security.hashedpassword_factory import hashedpassword_factory
 
+# Import models to ensure SQLAlchemy can resolve relationships
+# These imports are necessary for SQLAlchemy to properly configure relationships
+# pylint: disable=unused-import
+from src.infra.relational.models.fiscal import Fiscal
+from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.project_empresa import ProjectEmpresa
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.empresa import Empresa
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.user import User
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.refresh_token import RefreshToken
+# pylint: enable=unused-import
+
 @pytest.fixture(autouse=True)
 def cleanup_all():
     db_connection_handler = DBConnectionHandler(StringConnection())
@@ -148,3 +167,53 @@ def test_insert_all_from_fiscal() -> None:
     assert result.email == 'teste@email.com'
     assert result.phone == '48999990000'
     assert result.password == password.hashed_password
+
+def test_insert_refresh_token() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    fiscal_repository = FiscalRepository(db_connection_handler)
+
+    # First create a fiscal
+    with db_connection_handler as db:
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {
+                'name': 'nome_teste',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        fiscal_id = db.session.execute(text('SELECT LAST_INSERT_ID()')).scalar()
+        db.session.commit()
+
+    # Then insert refresh token
+    fiscal_repository.insert_refresh_token(fiscal_id=fiscal_id, refresh_token='refresh_token_teste')
+
+    with db_connection_handler as db:
+        result = db.session.execute(text('SELECT * FROM fiscal WHERE id = :id'), {'id': fiscal_id}).fetchone()
+    
+    assert result is not None
+    assert result.refresh_token == 'refresh_token_teste'
+
+def test_update_email() -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    fiscal_repository = FiscalRepository(db_connection_handler)
+
+    # First create a fiscal
+    with db_connection_handler as db:
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {
+                'name': 'nome_teste',
+                'created_at': datetime.now(timezone.utc)
+            }
+        )
+        fiscal_id = db.session.execute(text('SELECT LAST_INSERT_ID()')).scalar()
+        db.session.commit()
+
+    # Then update email
+    fiscal_repository.update_email(fiscal_id=fiscal_id, email=Email(email='teste@email.com'))
+
+    with db_connection_handler as db:
+        result = db.session.execute(text('SELECT * FROM fiscal WHERE id = :id'), {'id': fiscal_id}).fetchone()
+    
+    assert result is not None
+    assert result.email == 'teste@email.com'

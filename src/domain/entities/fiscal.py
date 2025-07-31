@@ -8,6 +8,7 @@ class FiscalEntity:
                  name:str, 
                  created_at:datetime,
                  password:bytes=None,
+                 salt:bytes=None,
                  email:Email=None,
                  phone:str=None,
                  refresh_token:str=None) -> None:
@@ -15,6 +16,7 @@ class FiscalEntity:
         self.name = name
         self.created_at = created_at
         self.password = password
+        self.salt = salt
         self.email = email
         self.phone = phone
         self.refresh_token = refresh_token
