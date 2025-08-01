@@ -426,14 +426,17 @@ refactor: refatora lógica de autenticação
 ## 🏢 Informações do Projeto
 
 ### Propriedade
+
 Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o código e documentação são propriedade exclusiva da organização.
 
 ### Acesso
+
 - **Repositório**: Acesso restrito apenas para membros autorizados da equipe
 - **Documentação**: Interna e confidencial
 - **Deploy**: Ambientes controlados e seguros
 
 ### Contato Interno
+
 - **Equipe de Desenvolvimento**: dev@gabinete.local
 - **Suporte Técnico**: suporte@gabinete.local
 - **Gerente de Projeto**: gerente@gabinete.local
