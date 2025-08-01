@@ -138,7 +138,17 @@ source .venv/bin/activate  # Linux/macOS
 
 ### 3. Configuração do Banco de Dados
 
-Crie um arquivo `.env` na raiz do projeto:
+Crie um arquivo `.env` na raiz do projeto baseado no arquivo `config.example.env`:
+
+```bash
+# Copie o arquivo de exemplo
+cp config.example.env .env
+
+# Edite o arquivo .env com suas configurações
+nano .env
+```
+
+Exemplo de configuração mínima:
 
 ```env
 # Configurações do Banco de Dados
@@ -382,6 +392,8 @@ jobs:
 
 ## 🔧 Desenvolvimento
 
+Para informações técnicas detalhadas sobre desenvolvimento, consulte o arquivo [DEVELOPMENT.md](DEVELOPMENT.md).
+
 ### Comandos Úteis
 
 ```bash
@@ -440,6 +452,29 @@ Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o cód
 - **Equipe de Desenvolvimento**: dev@gabinete.local
 - **Suporte Técnico**: suporte@gabinete.local
 - **Gerente de Projeto**: gerente@gabinete.local
+
+---
+
+## 👨‍💻 Desenvolvedor
+
+### Autor
+
+**Alberto da Silva Mercado**
+
+### Contato
+
+- **Email**: alberto.zimba2013@gmail.com
+- **Telefone**: (48) 99162-3022
+
+### Desenvolvimento
+
+Este projeto foi desenvolvido integralmente por Alberto da Silva Mercado, incluindo:
+
+- Arquitetura e design do sistema
+- Implementação de todas as funcionalidades
+- Configuração de infraestrutura
+- Documentação técnica
+- Testes e qualidade de código
 
 ---
 
