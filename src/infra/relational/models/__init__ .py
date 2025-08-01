@@ -14,3 +14,4 @@ from .status import Status
 from .types import Types
 from .user import User
 from .user_project import UserProject
+from .work_project import WorkProject

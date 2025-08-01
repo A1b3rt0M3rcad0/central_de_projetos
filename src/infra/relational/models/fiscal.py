@@ -19,3 +19,4 @@ class Fiscal(BaseModel):
     created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
     project_fiscals:Mapped[List["ProjectFiscal"]] = relationship("ProjectFiscal", back_populates='fiscal', lazy="selectin")
+    work_projects:Mapped[List["WorkProject"]] = relationship("WorkProject", back_populates='fiscal', lazy="selectin")

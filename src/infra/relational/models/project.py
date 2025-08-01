@@ -24,3 +24,4 @@ class Project(BaseModel):
     project_types:Mapped[List["ProjectType"]] = relationship("ProjectType", back_populates="project", lazy="selectin")
     user_projects:Mapped[List["UserProject"]] = relationship("UserProject", back_populates="project", lazy="selectin")
     status:Mapped["Status"] = relationship("Status", back_populates="projects", lazy="joined")
+    work_projects:Mapped[List["WorkProject"]] = relationship("WorkProject", back_populates="project", lazy="selectin")
