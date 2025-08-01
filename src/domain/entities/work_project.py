@@ -3,7 +3,7 @@ from datetime import datetime
 from src.domain.entities.fiscal import FiscalEntity
 from src.domain.entities.project import ProjectEntity
 
-class WorkProject(BaseModel):
+class WorkProjectEntity(BaseModel):
     id: int
     project_id: int
     fiscal_id: int
