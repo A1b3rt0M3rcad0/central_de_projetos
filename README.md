@@ -37,7 +37,7 @@ Sistema interno para gestão de projetos legislativos municipais desenvolvido co
 - **Linguagem**: Python 3.12+
 - **Framework**: FastAPI (API REST moderna e rápida)
 - **ORM**: SQLAlchemy 2.0 (mapeamento objeto-relacional)
-- **Banco de Dados**: MySQL (principal) + MongoDB (documentos) + Redis (cache)
+- **Banco de Dados**: MySQL (principal) + RavenDB (documentos) + MongoDB (logs) + Redis (cache)
 - **Autenticação**: JWT + bcrypt para senhas
 - **Validação**: Pydantic (validação de dados)
 
@@ -109,6 +109,7 @@ central_de_projetos/
 - MySQL 8.0+
 - MongoDB (opcional)
 - Redis (opcional)
+- RavenDB
 
 ### 1. Instalando o UV
 
@@ -151,24 +152,52 @@ nano .env
 Exemplo de configuração mínima:
 
 ```env
-# Configurações do Banco de Dados
-DATABASE_URL=mysql+pymysql://usuario:senha@localhost:3306/central_de_projetos
-TEST_DATABASE_URL=mysql+pymysql://usuario:senha@localhost:3306/test_central_de_projetos
+# Server Config
+HOMOLOGACAO=True|False
 
-# Configurações de Autenticação
-JWT_SECRET_KEY=sua_chave_secreta_muito_segura
-JWT_ALGORITHM=HS256
-JWT_EXPIRATION_TIME=3600
+# AUTH SECRET KEY
+SECRET_KEY=YOUR_SECRET_KEY
+EXPIRE_TIME_TOKEN=48 # In hours FLOAT
+EXPIRE_TIME_REFRESH_TOKEN=7 #In Days FLOAT
 
-# Configurações do Ambiente
-HOMOLOGACAO=True  # Para desenvolvimento
-DEBUG=True
+# DATABASE CONNECTION
+DATABASE=mysql
+DRIVE=pymysql
+USERNAME=root
+PASSWORD=password
+HOST=localhost
+PORT=3306
+DATABASE_NAME=central_de_projetos
 
-# Configurações do MongoDB (opcional)
-MONGO_URL=mongodb://localhost:27017/central_de_projetos
+# TEST DATABASE CONNECTION
+TDATABASE=mysql
+TDRIVE=pymysql
+TUSERNAME=root
+TPASSWORD=password
+THOST=localhost
+TPORT=3306
+TDATABASE_NAME=test_central_de_projetos
 
-# Configurações do Redis (opcional)
-REDIS_URL=redis://localhost:6379/0
+# MONGODB
+MONGO_HOST=localhost
+MONGO_PORT= 27017
+MONGO_USERNAME=username | null
+MONGO_PASSWORD=password | null
+MONGO_DB_NAME=central_de_projetos
+
+# TESTE MONGODB
+TMONGO_HOST=localhost
+TMONGO_PORT= 27017
+TMONGO_USERNAME=username | null
+TMONGO_PASSWORD=password | null
+TMONGO_DB_NAME=test_central_de_projetos
+
+# RAVEN DATABASE
+
+RAVEN_URL=http://localhost:8080
+RAVEN_DATABASE=database_name
+RAVEN_CERTIFICATE_PATH=path|null
+RAVEN_CERTIFICATE_PASSWORD=password|null
 ```
 
 ### 4. Executando Migrações
