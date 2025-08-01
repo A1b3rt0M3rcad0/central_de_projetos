@@ -58,46 +58,194 @@ Sistema interno para gestão de projetos legislativos municipais desenvolvido co
 
 ---
 
-## 📦 Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 central_de_projetos/
-├── src/
-│   ├── auth/                    # Autenticação e autorização
-│   │   ├── config/             # Configurações de auth
-│   │   └── encrypt/            # Criptografia
-│   ├── data/                   # Camada de dados
-│   │   ├── interface/          # Interfaces dos repositórios
-│   │   └── use_cases/          # Implementação dos casos de uso
-│   ├── domain/                 # Regras de negócio puras
-│   │   ├── entities/           # Entidades do domínio
-│   │   ├── use_cases/          # Interfaces dos casos de uso
-│   │   └── value_objects/      # Objetos de valor
-│   ├── errors/                 # Sistema de erros personalizados
-│   │   ├── http/              # Erros HTTP
-│   │   ├── repository/        # Erros de repositório
-│   │   └── use_cases/         # Erros de casos de uso
-│   ├── infra/                 # Infraestrutura
-│   │   ├── mongo/             # MongoDB
-│   │   ├── raven/             # RavenDB
-│   │   ├── redis/             # Redis
-│   │   └── relational/        # MySQL + SQLAlchemy
-│   ├── logs/                  # Sistema de logs
-│   ├── main/                  # Aplicação FastAPI
-│   │   ├── composers/         # Composição de dependências
-│   │   ├── config/           # Configurações
-│   │   └── routes/           # Rotas da API
-│   ├── presentation/          # Controllers e interfaces
-│   │   ├── controllers/      # Controllers HTTP
-│   │   ├── static/          # Arquivos estáticos
-│   │   └── templates/       # Templates HTML
-│   ├── security/             # Segurança e criptografia
-│   └── utils/                # Utilitários
-├── migrations/               # Migrações do banco (Alembic)
-├── docs/                    # Documentação OpenAPI
-├── tests/                   # Testes de integração
-└── requirements.txt         # Dependências (gerado pelo UV)
+├── .vscode/                    # Configurações do VS Code
+├── docs/                       # Documentação da API
+├── migrations/                 # Migrações do banco de dados
+│   └── versions/              # Versões das migrações
+└── src/                       # Código fonte principal
+    ├── auth/                  # Autenticação e autorização
+    │   ├── config/           # Configurações de auth
+    │   │   └── interface/    # Interfaces de configuração
+    │   └── encrypt/          # Criptografia
+    │       └── interface/    # Interfaces de criptografia
+    ├── data/                 # Camada de dados (Clean Architecture)
+    │   ├── interface/        # Interfaces dos repositórios
+    │   └── use_cases/        # Casos de uso da camada de dados
+    │       └── _tests/       # Testes dos casos de uso
+    ├── domain/               # Camada de domínio (Clean Architecture)
+    │   ├── entities/         # Entidades de negócio
+    │   ├── use_cases/        # Interfaces dos casos de uso
+    │   └── value_objects/    # Objetos de valor
+    ├── errors/               # Tratamento de erros
+    │   ├── http/            # Erros HTTP
+    │   ├── repository/      # Erros de repositório
+    │   │   ├── __base/      # Classes base de erro
+    │   │   ├── already_exists_error/
+    │   │   ├── error_on_delete/
+    │   │   ├── error_on_find/
+    │   │   ├── error_on_insert/
+    │   │   ├── error_on_update/
+    │   │   ├── has_related_children/
+    │   │   └── not_exists_error/
+    │   ├── use_cases/       # Erros de casos de uso
+    │   │   └── __base/      # Classes base de erro
+    │   └── value_object/    # Erros de objetos de valor
+    │       └── __base/      # Classes base de erro
+    ├── infra/               # Camada de infraestrutura (Clean Architecture)
+    │   ├── mongo/           # Configuração MongoDB
+    │   │   ├── config/      # Configurações de conexão
+    │   │   │   ├── connection/
+    │   │   │   │   └── interface/
+    │   │   │   └── interface/
+    │   │   ├── documents/   # Documentos MongoDB
+    │   │   │   └── tests/
+    │   │   ├── models/      # Modelos MongoDB
+    │   │   └── repositories/ # Repositórios MongoDB
+    │   ├── raven/           # Configuração RavenDB
+    │   │   ├── config/      # Configurações de conexão
+    │   │   │   └── connection/
+    │   │   │       ├── __test/
+    │   │   │       └── interface/
+    │   │   ├── documents/   # Documentos RavenDB
+    │   │   ├── models/      # Modelos RavenDB
+    │   │   └── repositories/ # Repositórios RavenDB
+    │   │       └── __test/
+    │   ├── redis/           # Configuração Redis
+    │   │   ├── config/      # Configurações de conexão
+    │   │   │   └── connection/
+    │   │   ├── models/      # Modelos Redis
+    │   │   └── repositories/ # Repositórios Redis
+    │   └── relational/      # Configuração banco relacional (MySQL)
+    │       ├── config/      # Configurações de conexão
+    │       │   ├── base/    # Classes base
+    │       │   ├── connection/
+    │       │   └── interface/
+    │       ├── models/      # Modelos SQLAlchemy
+    │       ├── models_v1/   # Versão 1 dos modelos
+    │       └── repository/  # Repositórios SQLAlchemy
+    │           └── _test/   # Testes dos repositórios
+    ├── logs/                # Sistema de logs
+    │   ├── config/          # Configurações de log
+    │   └── logger/          # Implementação do logger
+    ├── main/                # Camada principal (Clean Architecture)
+    │   ├── adapters/        # Adaptadores de entrada/saída
+    │   ├── composers/       # Composição de dependências
+    │   │   ├── _tests/      # Testes de integração
+    │   │   └── internal/    # Composições internas
+    │   ├── config/          # Configurações da aplicação
+    │   │   └── database/    # Configurações de banco
+    │   ├── routes/          # Rotas da aplicação
+    │   │   ├── api/         # Rotas da API REST
+    │   │   │   ├── __base_response/
+    │   │   │   ├── __error/
+    │   │   │   ├── auth/    # Rotas de autenticação
+    │   │   │   │   ├── request_format/
+    │   │   │   │   └── response_format/
+    │   │   │   ├── bairro/  # Rotas de bairros
+    │   │   │   │   ├── bairro_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── document/ # Rotas de documentos
+    │   │   │   │   ├── document_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── empresa/ # Rotas de empresas
+    │   │   │   │   ├── empresa_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── fiscal/  # Rotas de fiscais
+    │   │   │   │   ├── fiscal_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── history_project/ # Rotas de histórico
+    │   │   │   │   ├── history_project_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── project/ # Rotas de projetos
+    │   │   │   │   ├── project_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── project_bairro/ # Rotas de associação projeto-bairro
+    │   │   │   │   ├── project_bairro_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── project_empresa/ # Rotas de associação projeto-empresa
+    │   │   │   │   ├── project_empresa_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── project_fiscal/ # Rotas de associação projeto-fiscal
+    │   │   │   │   ├── project_fiscal_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── project_type/ # Rotas de tipos de projeto
+    │   │   │   │   ├── project_type_response/
+    │   │   │   │   └── request_format/
+    │   │   │   ├── status/  # Rotas de status
+    │   │   │   │   ├── format_request/
+    │   │   │   │   └── status_response/
+    │   │   │   ├── types/   # Rotas de tipos
+    │   │   │   │   ├── request_format/
+    │   │   │   │   └── types_response/
+    │   │   │   ├── user/    # Rotas de usuários
+    │   │   │   │   ├── request_format/
+    │   │   │   │   └── user_response/
+    │   │   │   └── user_project/ # Rotas de associação usuário-projeto
+    │   │   │       ├── request_format/
+    │   │   │       └── user_project_response/
+    │   │   ├── middleware/  # Middlewares da aplicação
+    │   │   ├── mobile/      # Rotas para aplicação mobile
+    │   │   │   └── fiscal/  # Rotas específicas para fiscais mobile
+    │   │   │       ├── request_format/
+    │   │   │       └── response_format/
+    │   │   └── web/         # Rotas para aplicação web
+    │   │       ├── __test/
+    │   │       └── login/
+    │   └── templates/       # Templates da aplicação
+    ├── presentation/         # Camada de apresentação (Clean Architecture)
+    │   ├── controllers/     # Controladores HTTP
+    │   │   └── _tests/      # Testes dos controladores
+    │   ├── http_types/      # Tipos HTTP (Request/Response)
+    │   ├── interface/       # Interfaces dos controladores
+    │   ├── static/          # Arquivos estáticos
+    │   │   ├── base/        # Arquivos base
+    │   │   │   └── icons/   # Ícones
+    │   │   ├── login/       # Arquivos de login
+    │   │   └── test/        # Arquivos de teste
+    │   └── templates/       # Templates HTML
+    │       ├── base/        # Templates base
+    │       │   ├── components/
+    │       │   └── page/
+    │       ├── content/     # Conteúdo das páginas
+    │       │   └── __test/
+    │       └── login/       # Templates de login
+    ├── security/            # Segurança e criptografia
+    │   ├── cryptography/    # Implementações criptográficas
+    │   │   ├── interface/   # Interfaces de criptografia
+    │   │   └── utils/       # Utilitários de criptografia
+    │   └── value_objects/   # Objetos de valor de segurança
+    │       └── interface/   # Interfaces de segurança
+    └── utils/               # Utilitários gerais
+        └── decorators/      # Decoradores personalizados
 ```
+
+### 📋 Descrição das Camadas
+
+#### 🏗️ **Clean Architecture**
+
+O projeto segue a arquitetura limpa com 4 camadas principais:
+
+- **`presentation/`**: Interface com usuários (HTTP, Web, Mobile)
+- **`domain/`**: Regras de negócio e entidades
+- **`data/`**: Casos de uso e acesso a dados
+- **`infra/`**: Infraestrutura (banco de dados, APIs externas)
+
+#### 🗄️ **Bancos de Dados**
+
+- **`infra/relational/`**: MySQL (dados principais)
+- **`infra/raven/`**: RavenDB (documentos)
+- **`infra/mongo/`**: MongoDB (logs)
+- **`infra/redis/`**: Redis (cache)
+
+#### 🔐 **Segurança**
+
+- **`auth/`**: Autenticação JWT
+- **`security/`**: Criptografia e hash de senhas
+- **`middleware/`**: Autorização e rate limiting
 
 ---
 
