@@ -1,5 +1,5 @@
 from src.infra.relational.config.base.base_model import BaseModel
-from sqlalchemy import Integer, String, DateTime, ForeignKey
+from sqlalchemy import Integer, String, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import mapped_column, relationship
 from datetime import datetime
 
@@ -13,9 +13,9 @@ class WorkProject(BaseModel):
     title = mapped_column(String(255), index=True)
     description = mapped_column(String(500), index=True)
     photo_name = mapped_column(String(255), index=True)
+    additional_documents = mapped_column(JSON, nullable=True)  # JSON array of additional document names
     created_at = mapped_column(DateTime, default=datetime.now)
     updated_at = mapped_column(DateTime, default=datetime.now)
 
     project = relationship("Project", back_populates="work_projects")
     fiscal = relationship("Fiscal", back_populates="work_projects")
-    

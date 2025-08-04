@@ -28,7 +28,7 @@ class WorkProjectRepository(IWorkProjectRepository):
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
     
-    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str) -> None:
+    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents:str=None) -> None:
         with self.__db_connection_handler as db:
             try:
                 db.session.add(WorkProject(
@@ -36,7 +36,8 @@ class WorkProjectRepository(IWorkProjectRepository):
                     fiscal_id=fiscal_id,
                     title=title,
                     description=description,
-                    photo_name=photo_name
+                    photo_name=photo_name,
+                    additional_documents=additional_documents
                 ))
                 db.session.commit()
             except IntegrityError as e:
@@ -68,6 +69,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     title=work_project.title,
                     description=work_project.description,
                     photo_name=work_project.photo_name,
+                    additional_documents=work_project.additional_documents,
                     created_at=work_project.created_at,
                     updated_at=work_project.updated_at,
                     fiscal=FiscalEntity(
@@ -109,6 +111,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
+                        additional_documents=wp.additional_documents,
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -151,6 +154,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
+                        additional_documents=wp.additional_documents,
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -193,6 +197,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
+                        additional_documents=wp.additional_documents,
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -236,6 +241,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
+                        additional_documents=wp.additional_documents,
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -280,6 +286,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     title=work_project.title,
                     description=work_project.description,
                     photo_name=work_project.photo_name,
+                    additional_documents=work_project.additional_documents,
                     created_at=work_project.created_at,
                     updated_at=work_project.updated_at,
                     fiscal=FiscalEntity(
@@ -335,6 +342,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
+                        additional_documents=wp.additional_documents,
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(

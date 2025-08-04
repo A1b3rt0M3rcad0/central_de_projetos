@@ -22,13 +22,13 @@ def test_insert_work_project_calls_repository(mock_repository):
     use_case = InsertWorkProject(mock_repository)
     use_case.insert(1, 2, 'title', 'desc', 'photo.png')
     mock_repository.insert.assert_called_once_with(
-        project_id=1, fiscal_id=2, title='title', description='desc', photo_name='photo.png'
+        project_id=1, fiscal_id=2, title='title', description='desc', photo_name='photo.png', additional_documents=None
     )
 
 def test_get_work_project_calls_repository_and_returns_entity(mock_repository):
     entity = WorkProjectEntity(
         id=1, project_id=1, fiscal_id=2, title='t', description='d', photo_name='p',
-        created_at=datetime.now(), updated_at=datetime.now()
+        additional_documents=None, created_at=datetime.now(), updated_at=datetime.now()
     )
     mock_repository.find.return_value = entity
     use_case = GetWorkProject(mock_repository)
