@@ -1,9 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from src.domain.entities.fiscal import FiscalEntity
-from src.domain.entities.project import ProjectEntity
+from typing import Optional, Any
 
 class WorkProjectEntity(BaseModel):
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+    
     id: int
     project_id: int
     fiscal_id: int
@@ -12,11 +13,8 @@ class WorkProjectEntity(BaseModel):
     photo_name: str
     created_at: datetime
     updated_at: datetime
-    fiscal: FiscalEntity
-    project: ProjectEntity
-
-    class Config:
-        orm_mode = True
+    fiscal: Optional[Any] = None
+    project: Optional[Any] = None
 
     def __repr__(self):
         return f"<WorkProject(id={self.id}, project_id={self.project_id}, fiscal_id={self.fiscal_id}, title={self.title}, description={self.description}, photo_name={self.photo_name})>"

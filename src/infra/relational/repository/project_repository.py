@@ -26,6 +26,14 @@ from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.models.project_type import ProjectType
 from src.infra.relational.models.types import Types
 
+# Import additional models to ensure SQLAlchemy can resolve relationships
+# These imports are necessary for SQLAlchemy to properly configure relationships
+# pylint: disable=unused-import
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.refresh_token import RefreshToken
+from src.infra.relational.models.user import User
+from src.infra.relational.models.work_project import WorkProject
+
 # Errors
 from src.errors.repository.not_exists_error.projects_does_not_exists import ProjectNotExists
 from src.errors.repository.already_exists_error.project_already_exists import ProjectAlreadyExists

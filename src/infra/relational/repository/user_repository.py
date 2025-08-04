@@ -9,6 +9,24 @@ from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
 from typing import Optional, Dict
 
+# Import models to ensure SQLAlchemy can resolve relationships
+# These imports are necessary for SQLAlchemy to properly configure relationships
+# pylint: disable=unused-import
+from src.infra.relational.models.fiscal import Fiscal
+from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.project_empresa import ProjectEmpresa
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.empresa import Empresa
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.refresh_token import RefreshToken
+from src.infra.relational.models.work_project import WorkProject
+
 # Errors
 from src.errors.repository.not_exists_error.user_not_exists import UserNotExists
 from src.errors.repository.already_exists_error.user_already_exists import UserAlreadyExists

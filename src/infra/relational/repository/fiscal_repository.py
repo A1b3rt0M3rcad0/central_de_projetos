@@ -3,6 +3,24 @@ from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from src.data.interface.i_fiscal_repository import IFiscalRepository
 
+# Import models to ensure SQLAlchemy can resolve relationships
+# These imports are necessary for SQLAlchemy to properly configure relationships
+# pylint: disable=unused-import
+from src.infra.relational.models.project_fiscal import ProjectFiscal
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.project_empresa import ProjectEmpresa
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.empresa import Empresa
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.refresh_token import RefreshToken
+from src.infra.relational.models.user import User
+from src.infra.relational.models.work_project import WorkProject
+
 # Domain
 from src.domain.value_objects.email import Email
 from src.security.value_objects.hashed_password import HashedPassword
