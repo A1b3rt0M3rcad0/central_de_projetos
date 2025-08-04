@@ -12,16 +12,16 @@ class TestGetFiscalDocumentNames:
         
         get_fiscal_document_names = GetFiscalDocumentNames(mock_repository)
         
-        project_id = 123
+        work_project_id = 123
         fiscal_id = 456
         
         # Act
-        result = get_fiscal_document_names.get_names(project_id, fiscal_id)
+        result = get_fiscal_document_names.get_names(work_project_id, fiscal_id)
         
         # Assert
         assert result == expected_names
         mock_repository.get_fiscal_document_names.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id
         )
     
@@ -32,16 +32,16 @@ class TestGetFiscalDocumentNames:
         
         get_fiscal_document_names = GetFiscalDocumentNames(mock_repository)
         
-        project_id = 123
+        work_project_id = 123
         fiscal_id = 456
         
         # Act
-        result = get_fiscal_document_names.get_names(project_id, fiscal_id)
+        result = get_fiscal_document_names.get_names(work_project_id, fiscal_id)
         
         # Assert
         assert result == []
         mock_repository.get_fiscal_document_names.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id
         )
     
@@ -52,11 +52,11 @@ class TestGetFiscalDocumentNames:
         
         get_fiscal_document_names = GetFiscalDocumentNames(mock_repository)
         
-        project_id = 123
+        work_project_id = 123
         fiscal_id = 456
         
         # Act & Assert
         with pytest.raises(Exception) as exc_info:
-            get_fiscal_document_names.get_names(project_id, fiscal_id)
+            get_fiscal_document_names.get_names(work_project_id, fiscal_id)
         
-        assert 'Database error' in str(exc_info.value) 
+        assert "Database error" in str(exc_info.value) 

@@ -312,6 +312,53 @@ class WorkProjectRepository(IWorkProjectRepository):
                     message=f'Error on find work_project with title: {title}: {str(e)}'
                 ) from e
     
+    def find_by_title_and_fiscal(self, title:str, fiscal_id:int) -> WorkProjectEntity:
+        with self.__db_connection_handler as db:
+            try:
+                work_project = db.session.query(WorkProject).options(
+                    joinedload(WorkProject.project),
+                    joinedload(WorkProject.fiscal)
+                ).where(
+                    WorkProject.title == title,
+                    WorkProject.fiscal_id == fiscal_id
+                ).first()
+                
+                if not work_project:
+                    raise WorkProjectNotExists(message=f'WorkProject with title: {title} and fiscal_id: {fiscal_id} does not exists')
+                
+                return WorkProjectEntity(
+                    id=work_project.id,
+                    project_id=work_project.project_id,
+                    fiscal_id=work_project.fiscal_id,
+                    title=work_project.title,
+                    description=work_project.description,
+                    photo_name=work_project.photo_name,
+                    additional_documents=work_project.additional_documents,
+                    created_at=work_project.created_at,
+                    updated_at=work_project.updated_at,
+                    fiscal=FiscalEntity(
+                        fiscal_id=work_project.fiscal.id,
+                        name=work_project.fiscal.name,
+                        created_at=work_project.fiscal.created_at
+                    ),
+                    project=ProjectEntity(
+                        project_id=work_project.project.id,
+                        status_id=work_project.project.status_id,
+                        name=work_project.project.name,
+                        andamento_do_projeto=work_project.project.andamento_do_projeto,
+                        verba_disponivel=MonetaryValue(work_project.project.verba_disponivel),
+                        start_date=work_project.project.start_date,
+                        expected_completion_date=work_project.project.expected_completion_date,
+                        end_date=work_project.project.end_date
+                    )
+                )
+            except WorkProjectNotExists:
+                raise
+            except Exception as e:
+                raise ErrorOnFindWorkProject(
+                    message=f'Error on find work_project with title: {title} and fiscal_id: {fiscal_id}: {str(e)}'
+                ) from e
+    
     def count_work_projects(self) -> Dict[str, int]:
         with self.__db_connection_handler as db:
             try:

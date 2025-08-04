@@ -6,8 +6,8 @@ class ProjectDocumentsFiscal:
         self.name = name
         self.description = description
     
-    def make_to_store(self, project_id:int) -> Dict:
+    def make_to_store(self, work_project_id:int) -> Dict:
         return {
             'entity': self,
-            'key': self.__class__.__name__ +'/'+f'{project_id}'
+            'key': self.__class__.__name__ +'/'+f'{work_project_id}'
         }
