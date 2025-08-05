@@ -28,18 +28,21 @@ class WorkProjectRepository(IWorkProjectRepository):
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
     
-    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents:str=None) -> None:
+    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents:str=None) -> int:
         with self.__db_connection_handler as db:
             try:
-                db.session.add(WorkProject(
+                work_project = WorkProject(
                     project_id=project_id,
                     fiscal_id=fiscal_id,
                     title=title,
                     description=description,
                     photo_name=photo_name,
                     additional_documents=additional_documents
-                ))
+                )
+                db.session.add(work_project)
                 db.session.commit()
+                db.session.refresh(work_project)
+                return work_project.id
             except IntegrityError as e:
                 raise WorkProjectAlreadyExists(
                     message=f'WorkProject with project_id={project_id}, fiscal_id={fiscal_id}, title={title} already exists: {str(e)}'
