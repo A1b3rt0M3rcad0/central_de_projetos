@@ -1187,6 +1187,53 @@
         ]
       }
     },
+    "/fiscal/insert-all": {
+      "post": {
+        "tags": [
+          "fiscal"
+        ],
+        "summary": "Insert All Fiscal From User",
+        "description": "Endpoint para inserir fiscal com todos os dados (nome, email, senha, telefone).\nApenas ADMIN pode acessar este endpoint.\n\nArgs:\n    body: Dados do fiscal (nome, email, senha, telefone)\n    request: Objeto da requisição HTTP\n    user: Usuário autenticado (deve ser ADMIN)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso\n    \nRaises:\n    FiscalAlreadyExists: Se o fiscal já existe\n    InternalServerError: Para outros erros internos",
+        "operationId": "insert_all_fiscal_from_user_fiscal_insert_all_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsertAllFiscalFromUserFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseMessageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/history_project/": {
       "get": {
         "tags": [
@@ -1292,6 +1339,49 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/LoginFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/fiscal": {
+      "post": {
+        "tags": [
+          "auth",
+          "login"
+        ],
+        "summary": "Login Fiscal",
+        "description": "Endpoint para login do fiscal via API.\n\nArgs:\n    body: Dados de login (email e senha)\n    request: Objeto da requisição HTTP\n    \nReturns:\n    LoginResponse: Token JWT e mensagem de sucesso\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    InvalidPasswordError: Se a senha estiver incorreta\n    InternalServerError: Para outros erros internos",
+        "operationId": "login_fiscal_auth_login_fiscal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/src__main__routes__api__auth__request_format__login_fiscal_format__LoginFiscalFormat"
               }
             }
           },
@@ -3818,6 +3908,85 @@
         ]
       }
     },
+    "/mobile/fiscal/login": {
+      "post": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Login Fiscal Mobile",
+        "description": "Endpoint para login do fiscal via aplicativo mobile.\n\nArgs:\n    body: Dados de login (email e senha)\n    request: Objeto da requisição HTTP\n    \nReturns:\n    LoginFiscalResponse: Token JWT e mensagem de sucesso\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    InvalidPasswordError: Se a senha estiver incorreta\n    InternalServerError: Para outros erros internos",
+        "operationId": "login_fiscal_mobile_mobile_fiscal_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__request_format__login_fiscal_format__LoginFiscalFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginFiscalResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/test": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Test Fiscal Mobile",
+        "description": "Endpoint de teste para verificar se o fiscal está autenticado.\n\nArgs:\n    request: Objeto da requisição HTTP\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    TestFiscalResponse: Dados do fiscal autenticado e timestamp\n    \nRaises:\n    HTTPException: Se o fiscal não estiver autenticado ou não tiver permissão",
+        "operationId": "test_fiscal_mobile_mobile_fiscal_test_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FiscalTestResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/web/login": {
       "get": {
         "tags": [
@@ -5529,6 +5698,40 @@
         ],
         "title": "Fiscal"
       },
+      "FiscalTestResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "fiscal_email": {
+            "type": "string",
+            "title": "Fiscal Email"
+          },
+          "fiscal_role": {
+            "type": "string",
+            "title": "Fiscal Role"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "fiscal_email",
+          "fiscal_role",
+          "timestamp"
+        ],
+        "title": "FiscalTestResponse",
+        "description": "Resposta para o endpoint de teste dos fiscais mobile."
+      },
       "GenericModel": {
         "properties": {
           "id": {
@@ -6097,6 +6300,55 @@
           "updated_at"
         ],
         "title": "HistoryProject"
+      },
+      "InsertAllFiscalFromUserFormat": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password",
+          "phone"
+        ],
+        "title": "InsertAllFiscalFromUserFormat",
+        "description": "Formato de requisição para inserir fiscal com todos os dados.\n\nAttributes:\n    name: Nome completo do fiscal\n    email: Email do fiscal\n    password: Senha do fiscal\n    phone: Telefone do fiscal"
+      },
+      "LoginFiscalResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Login realizado com sucesso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "LoginFiscalResponse",
+        "description": "Formato de resposta para login do fiscal via mobile.\n\nAttributes:\n    token: JWT token de acesso\n    message: Mensagem de sucesso"
       },
       "LoginFormat": {
         "properties": {
@@ -6846,6 +7098,26 @@
         ],
         "title": "WhoAmIReponse"
       },
+      "src__main__routes__api__auth__request_format__login_fiscal_format__LoginFiscalFormat": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginFiscalFormat",
+        "description": "Formato de requisição para login do fiscal via API.\n\nAttributes:\n    email: Email do fiscal\n    password: Senha do fiscal"
+      },
       "src__main__routes__api__project__project_response__find_associations_projects_response__Bairro": {
         "properties": {
           "id": {
@@ -7298,6 +7570,26 @@
           "created_at"
         ],
         "title": "User"
+      },
+      "src__main__routes__mobile__fiscal__request_format__login_fiscal_format__LoginFiscalFormat": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginFiscalFormat",
+        "description": "Formato de requisição para login do fiscal via mobile.\n\nAttributes:\n    email: Email do fiscal\n    password: Senha do fiscal"
       }
     },
     "securitySchemes": {

@@ -4,12 +4,12 @@ from abc import ABC, abstractmethod
 class IGetFiscalDocument(ABC):
 
     @abstractmethod
-    def get(self, project_id:int, fiscal_id:int, document_name:str) -> Document:
+    def get(self, work_project_id:int, fiscal_id:int, document_name:str) -> Document:
         """
-        Obtém um documento específico enviado por um fiscal para um projeto.
+        Obtém um documento específico enviado por um fiscal para um work project.
 
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             document_name: Nome do documento a ser recuperado
 
@@ -19,6 +19,6 @@ class IGetFiscalDocument(ABC):
         Raises:
             FiscalDocumentNotFoundError (404): Se o documento não for encontrado
             FiscalNotFoundError (404): Se o fiscal não for encontrado
-            ProjectNotFoundError (404): Se o projeto não for encontrado
+            WorkProjectNotFoundError (404): Se o work project não for encontrado
             InternalServerError (500): Para qualquer outro erro durante a operação
         """

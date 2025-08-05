@@ -8,7 +8,7 @@
 
 ## 📌 Visão Geral
 
-Sistema interno para gestão de projetos legislativos municipais desenvolvido com arquitetura limpa e boas práticas de desenvolvimento. Permite o acompanhamento completo de projetos legislativos, incluindo:
+Sistema interno para gestão de projetos legislativos municipais desenvolvido com **Clean Architecture** e boas práticas de desenvolvimento. Permite o acompanhamento completo de projetos legislativos, incluindo gestão de projetos, acompanhamento de andamento, controle financeiro, cronogramas e documentação centralizada.
 
 ### 🎯 Funcionalidades Principais
 
@@ -20,13 +20,6 @@ Sistema interno para gestão de projetos legislativos municipais desenvolvido co
 - **Responsabilidades**: Vereadores, fiscais e empresas envolvidas
 - **Documentação**: Acesso centralizado aos documentos de cada projeto
 - **Autenticação**: Sistema seguro de login para vereadores e assessores
-
-### 🏗️ Arquitetura
-
-- **Clean Architecture**: Separação clara entre domínio, casos de uso e infraestrutura
-- **Domain-Driven Design**: Modelos de domínio bem definidos
-- **Repository Pattern**: Abstração de acesso a dados
-- **Dependency Injection**: Composição flexível de dependências
 
 ---
 
@@ -49,203 +42,52 @@ Sistema interno para gestão de projetos legislativos municipais desenvolvido co
 - **Pre-commit**: Hooks para qualidade de código
 - **Migrações**: Alembic (controle de versão do banco)
 
-### Infraestrutura
-
-- **Documentação**: OpenAPI/Swagger (gerada automaticamente)
-- **Rate Limiting**: Proteção contra abuso da API
-- **CORS**: Configuração para frontend
-- **Logs**: Sistema estruturado de logging
-
 ---
 
-## 📁 Estrutura do Projeto
+## 🏗️ Arquitetura
+
+### Clean Architecture
+
+O projeto segue os princípios da Clean Architecture com as seguintes camadas:
 
 ```
-central_de_projetos/
-├── .vscode/                    # Configurações do VS Code
-├── docs/                       # Documentação da API
-├── migrations/                 # Migrações do banco de dados
-│   └── versions/              # Versões das migrações
-└── src/                       # Código fonte principal
-    ├── auth/                  # Autenticação e autorização
-    │   ├── config/           # Configurações de auth
-    │   │   └── interface/    # Interfaces de configuração
-    │   └── encrypt/          # Criptografia
-    │       └── interface/    # Interfaces de criptografia
-    ├── data/                 # Camada de dados (Clean Architecture)
-    │   ├── interface/        # Interfaces dos repositórios
-    │   └── use_cases/        # Casos de uso da camada de dados
-    │       └── _tests/       # Testes dos casos de uso
-    ├── domain/               # Camada de domínio (Clean Architecture)
-    │   ├── entities/         # Entidades de negócio
-    │   ├── use_cases/        # Interfaces dos casos de uso
-    │   └── value_objects/    # Objetos de valor
-    ├── errors/               # Tratamento de erros
-    │   ├── http/            # Erros HTTP
-    │   ├── repository/      # Erros de repositório
-    │   │   ├── __base/      # Classes base de erro
-    │   │   ├── already_exists_error/
-    │   │   ├── error_on_delete/
-    │   │   ├── error_on_find/
-    │   │   ├── error_on_insert/
-    │   │   ├── error_on_update/
-    │   │   ├── has_related_children/
-    │   │   └── not_exists_error/
-    │   ├── use_cases/       # Erros de casos de uso
-    │   │   └── __base/      # Classes base de erro
-    │   └── value_object/    # Erros de objetos de valor
-    │       └── __base/      # Classes base de erro
-    ├── infra/               # Camada de infraestrutura (Clean Architecture)
-    │   ├── mongo/           # Configuração MongoDB
-    │   │   ├── config/      # Configurações de conexão
-    │   │   │   ├── connection/
-    │   │   │   │   └── interface/
-    │   │   │   └── interface/
-    │   │   ├── documents/   # Documentos MongoDB
-    │   │   │   └── tests/
-    │   │   ├── models/      # Modelos MongoDB
-    │   │   └── repositories/ # Repositórios MongoDB
-    │   ├── raven/           # Configuração RavenDB
-    │   │   ├── config/      # Configurações de conexão
-    │   │   │   └── connection/
-    │   │   │       ├── __test/
-    │   │   │       └── interface/
-    │   │   ├── documents/   # Documentos RavenDB
-    │   │   ├── models/      # Modelos RavenDB
-    │   │   └── repositories/ # Repositórios RavenDB
-    │   │       └── __test/
-    │   ├── redis/           # Configuração Redis
-    │   │   ├── config/      # Configurações de conexão
-    │   │   │   └── connection/
-    │   │   ├── models/      # Modelos Redis
-    │   │   └── repositories/ # Repositórios Redis
-    │   └── relational/      # Configuração banco relacional (MySQL)
-    │       ├── config/      # Configurações de conexão
-    │       │   ├── base/    # Classes base
-    │       │   ├── connection/
-    │       │   └── interface/
-    │       ├── models/      # Modelos SQLAlchemy
-    │       ├── models_v1/   # Versão 1 dos modelos
-    │       └── repository/  # Repositórios SQLAlchemy
-    │           └── _test/   # Testes dos repositórios
-    ├── logs/                # Sistema de logs
-    │   ├── config/          # Configurações de log
-    │   └── logger/          # Implementação do logger
-    ├── main/                # Camada principal (Clean Architecture)
-    │   ├── adapters/        # Adaptadores de entrada/saída
-    │   ├── composers/       # Composição de dependências
-    │   │   ├── _tests/      # Testes de integração
-    │   │   └── internal/    # Composições internas
-    │   ├── config/          # Configurações da aplicação
-    │   │   └── database/    # Configurações de banco
-    │   ├── routes/          # Rotas da aplicação
-    │   │   ├── api/         # Rotas da API REST
-    │   │   │   ├── __base_response/
-    │   │   │   ├── __error/
-    │   │   │   ├── auth/    # Rotas de autenticação
-    │   │   │   │   ├── request_format/
-    │   │   │   │   └── response_format/
-    │   │   │   ├── bairro/  # Rotas de bairros
-    │   │   │   │   ├── bairro_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── document/ # Rotas de documentos
-    │   │   │   │   ├── document_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── empresa/ # Rotas de empresas
-    │   │   │   │   ├── empresa_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── fiscal/  # Rotas de fiscais
-    │   │   │   │   ├── fiscal_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── history_project/ # Rotas de histórico
-    │   │   │   │   ├── history_project_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── project/ # Rotas de projetos
-    │   │   │   │   ├── project_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── project_bairro/ # Rotas de associação projeto-bairro
-    │   │   │   │   ├── project_bairro_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── project_empresa/ # Rotas de associação projeto-empresa
-    │   │   │   │   ├── project_empresa_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── project_fiscal/ # Rotas de associação projeto-fiscal
-    │   │   │   │   ├── project_fiscal_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── project_type/ # Rotas de tipos de projeto
-    │   │   │   │   ├── project_type_response/
-    │   │   │   │   └── request_format/
-    │   │   │   ├── status/  # Rotas de status
-    │   │   │   │   ├── format_request/
-    │   │   │   │   └── status_response/
-    │   │   │   ├── types/   # Rotas de tipos
-    │   │   │   │   ├── request_format/
-    │   │   │   │   └── types_response/
-    │   │   │   ├── user/    # Rotas de usuários
-    │   │   │   │   ├── request_format/
-    │   │   │   │   └── user_response/
-    │   │   │   └── user_project/ # Rotas de associação usuário-projeto
-    │   │   │       ├── request_format/
-    │   │   │       └── user_project_response/
-    │   │   ├── middleware/  # Middlewares da aplicação
-    │   │   ├── mobile/      # Rotas para aplicação mobile
-    │   │   │   └── fiscal/  # Rotas específicas para fiscais mobile
-    │   │   │       ├── request_format/
-    │   │   │       └── response_format/
-    │   │   └── web/         # Rotas para aplicação web
-    │   │       ├── __test/
-    │   │       └── login/
-    │   └── templates/       # Templates da aplicação
-    ├── presentation/         # Camada de apresentação (Clean Architecture)
-    │   ├── controllers/     # Controladores HTTP
-    │   │   └── _tests/      # Testes dos controladores
-    │   ├── http_types/      # Tipos HTTP (Request/Response)
-    │   ├── interface/       # Interfaces dos controladores
-    │   ├── static/          # Arquivos estáticos
-    │   │   ├── base/        # Arquivos base
-    │   │   │   └── icons/   # Ícones
-    │   │   ├── login/       # Arquivos de login
-    │   │   └── test/        # Arquivos de teste
-    │   └── templates/       # Templates HTML
-    │       ├── base/        # Templates base
-    │       │   ├── components/
-    │       │   └── page/
-    │       ├── content/     # Conteúdo das páginas
-    │       │   └── __test/
-    │       └── login/       # Templates de login
-    ├── security/            # Segurança e criptografia
-    │   ├── cryptography/    # Implementações criptográficas
-    │   │   ├── interface/   # Interfaces de criptografia
-    │   │   └── utils/       # Utilitários de criptografia
-    │   └── value_objects/   # Objetos de valor de segurança
-    │       └── interface/   # Interfaces de segurança
-    └── utils/               # Utilitários gerais
-        └── decorators/      # Decoradores personalizados
+┌─────────────────────────────────────┐
+│           Presentation              │  ← Controllers, HTTP
+├─────────────────────────────────────┤
+│              Domain                 │  ← Entidades, Regras de Negócio
+├─────────────────────────────────────┤
+│               Data                  │  ← Casos de Uso, Repositórios
+├─────────────────────────────────────┤
+│            Infrastructure           │  ← Banco de Dados, APIs Externas
+└─────────────────────────────────────┘
 ```
 
-### 📋 Descrição das Camadas
+### Estrutura de Diretórios
 
-#### 🏗️ **Clean Architecture**
-
-O projeto segue a arquitetura limpa com 4 camadas principais:
-
-- **`presentation/`**: Interface com usuários (HTTP, Web, Mobile)
-- **`domain/`**: Regras de negócio e entidades
-- **`data/`**: Casos de uso e acesso a dados
-- **`infra/`**: Infraestrutura (banco de dados, APIs externas)
-
-#### 🗄️ **Bancos de Dados**
-
-- **`infra/relational/`**: MySQL (dados principais)
-- **`infra/raven/`**: RavenDB (documentos)
-- **`infra/mongo/`**: MongoDB (logs)
-- **`infra/redis/`**: Redis (cache)
-
-#### 🔐 **Segurança**
-
-- **`auth/`**: Autenticação JWT
-- **`security/`**: Criptografia e hash de senhas
-- **`middleware/`**: Autorização e rate limiting
+```
+src/
+├── auth/                    # Autenticação e autorização
+│   ├── config/             # Configurações de auth
+│   └── encrypt/            # Criptografia
+├── data/                   # Camada de dados
+│   ├── interface/          # Interfaces dos repositórios
+│   └── use_cases/          # Implementação dos casos de uso
+├── domain/                 # Regras de negócio puras
+│   ├── entities/           # Entidades do domínio
+│   ├── use_cases/          # Interfaces dos casos de uso
+│   └── value_objects/      # Objetos de valor
+├── errors/                 # Sistema de erros personalizados
+├── infra/                  # Infraestrutura
+│   ├── mongo/             # MongoDB
+│   ├── raven/             # RavenDB
+│   ├── redis/             # Redis
+│   └── relational/        # MySQL + SQLAlchemy
+├── logs/                  # Sistema de logs
+├── main/                  # Aplicação FastAPI
+├── presentation/          # Controllers e interfaces
+├── security/             # Segurança e criptografia
+└── utils/                # Utilitários
+```
 
 ---
 
@@ -272,7 +114,7 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ### 2. Clonando e Configurando o Projeto
 
 ```bash
-# Clone o repositório (acesso restrito)
+# Clone o repositório
 git clone https://github.com/seu-usuario/central-de-projetos.git
 cd central-de-projetos
 
@@ -287,7 +129,7 @@ source .venv/bin/activate  # Linux/macOS
 
 ### 3. Configuração do Banco de Dados
 
-Crie um arquivo `.env` na raiz do projeto baseado no arquivo `config.example.env`:
+Crie um arquivo `.env` na raiz do projeto:
 
 ```bash
 # Copie o arquivo de exemplo
@@ -301,12 +143,12 @@ Exemplo de configuração mínima:
 
 ```env
 # Server Config
-HOMOLOGACAO=True|False
+HOMOLOGACAO=True
 
 # AUTH SECRET KEY
 SECRET_KEY=YOUR_SECRET_KEY
-EXPIRE_TIME_TOKEN=48 # In hours FLOAT
-EXPIRE_TIME_REFRESH_TOKEN=7 #In Days FLOAT
+EXPIRE_TIME_TOKEN=48
+EXPIRE_TIME_REFRESH_TOKEN=7
 
 # DATABASE CONNECTION
 DATABASE=mysql
@@ -328,24 +170,16 @@ TDATABASE_NAME=test_central_de_projetos
 
 # MONGODB
 MONGO_HOST=localhost
-MONGO_PORT= 27017
-MONGO_USERNAME=username | null
-MONGO_PASSWORD=password | null
+MONGO_PORT=27017
+MONGO_USERNAME=username
+MONGO_PASSWORD=password
 MONGO_DB_NAME=central_de_projetos
 
-# TESTE MONGODB
-TMONGO_HOST=localhost
-TMONGO_PORT= 27017
-TMONGO_USERNAME=username | null
-TMONGO_PASSWORD=password | null
-TMONGO_DB_NAME=test_central_de_projetos
-
 # RAVEN DATABASE
-
 RAVEN_URL=http://localhost:8080
 RAVEN_DATABASE=database_name
-RAVEN_CERTIFICATE_PATH=path|null
-RAVEN_CERTIFICATE_PASSWORD=password|null
+RAVEN_CERTIFICATE_PATH=path
+RAVEN_CERTIFICATE_PASSWORD=password
 ```
 
 ### 4. Executando Migrações
@@ -404,8 +238,11 @@ pytest -v
 # Testes específicos
 pytest src/infra/relational/repository/_test/
 
-# Com cobertura (requer pytest-cov)
+# Com cobertura
 pytest --cov=src --cov-report=html
+
+# Testes paralelos
+pytest -n auto
 ```
 
 ### Estrutura de Testes
@@ -417,6 +254,128 @@ pytest --cov=src --cov-report=html
 ### Configuração de Testes
 
 Os testes usam um banco de dados separado (`test_central_de_projetos`) e são executados em transações que são revertidas após cada teste.
+
+---
+
+## 🔄 Migrações
+
+### Alembic
+
+O projeto usa Alembic para controle de versão do banco de dados.
+
+### Migration Manager
+
+O projeto inclui um script personalizado (`migration_manager.py`) para gerenciar migrações em múltiplos ambientes (teste e produção) usando variáveis de ambiente.
+
+#### Configuração das Variáveis de Ambiente
+
+O script usa as variáveis do arquivo `.env`:
+
+```bash
+# Banco de Produção
+HOST=localhost
+PORT=3306
+USERNAME=root
+PASSWORD=sua_senha
+DATABASE_NAME=central_de_projetos
+
+# Banco de Teste
+THOST=localhost
+TPORT=3306
+TUSERNAME=root
+TPASSWORD=sua_senha_teste
+TDATABASE_NAME=test_central_de_projetos
+```
+
+#### Comandos do Migration Manager
+
+```bash
+# Aplicar migrações em ambos os bancos
+python migration_manager.py upgrade head --all
+
+# Apenas banco de teste
+python migration_manager.py upgrade head --test
+
+# Apenas banco de produção
+python migration_manager.py upgrade head --prod
+
+# Reverter migração em ambos os bancos
+python migration_manager.py downgrade -1 --all
+
+# Verificar versão atual
+python migration_manager.py current --all
+
+# Ver histórico de migrações
+python migration_manager.py history --all
+
+# Criar nova migração automática
+python migration_manager.py revision --autogenerate -m "descrição da migração" --all
+```
+
+#### Funcionalidades do Migration Manager
+
+- 🎯 **Múltiplos ambientes**: Execute em teste, produção ou ambos
+- 🔄 **Todos os comandos Alembic**: Aceita qualquer comando do Alembic
+- ✅ **Confirmação de segurança**: Sempre pede confirmação antes de executar
+- 📊 **Relatório de sucesso**: Mostra quantas operações foram bem-sucedidas
+- 🛡️ **Tratamento de erros**: Captura e exibe erros de forma clara
+
+### Comandos Alembic Diretos
+
+```bash
+# Criar nova migração
+alembic revision --autogenerate -m "descrição da mudança"
+
+# Aplicar migrações
+alembic upgrade head
+
+# Reverter migração
+alembic downgrade -1
+
+# Ver histórico
+alembic history
+
+# Ver status atual
+alembic current
+
+# Ver detalhes de uma migração
+alembic show <revision_id>
+```
+
+### Boas Práticas
+
+1. **Sempre** gere migrações para mudanças no modelo
+2. **Teste** as migrações em ambiente de desenvolvimento primeiro
+3. **Use o Migration Manager** para operações em múltiplos ambientes
+4. **Documente** mudanças complexas
+5. **Faça backup** antes de aplicar em produção
+6. **Verifique** o comando antes de confirmar a execução
+
+### Segurança
+
+- ✅ **Sem senhas no código**: Todas as credenciais vêm do arquivo `.env`
+- ✅ **Confirmação**: O script sempre pede confirmação antes de executar
+- ✅ **Ambientes separados**: Teste e produção são completamente independentes
+- ✅ **Logs detalhados**: Mostra exatamente o que está sendo executado
+
+### Troubleshooting
+
+#### Erro: "ModuleNotFoundError: No module named 'dotenv'"
+
+```bash
+pip install python-dotenv
+```
+
+#### Erro: "Connection refused"
+
+- Verifique se o MySQL está rodando
+- Confirme as credenciais no arquivo `.env`
+- Teste a conexão manualmente
+
+#### Erro: "Database does not exist"
+
+- Crie o banco de dados antes de executar as migrações
+- Verifique o nome do banco no arquivo `.env`
 
 ---
 
@@ -468,12 +427,133 @@ async with httpx.AsyncClient() as client:
 
 ---
 
+## 🔐 Sistema de Autenticação
+
+### JWT (JSON Web Tokens)
+
+- **Algoritmo**: HS256
+- **Expiração**: Configurável via `JWT_EXPIRATION_TIME`
+- **Refresh Tokens**: Implementados para renovação automática
+
+### Criptografia de Senhas
+
+- **Algoritmo**: bcrypt
+- **Salt**: Gerado automaticamente
+- **Rounds**: 12 (configurável)
+
+### Exemplo de Implementação
+
+```python
+from src.auth.config.auth_secret_key import SecretKey
+from src.auth.encrypt.encrypt import Encrypt
+
+# Criptografar senha
+encrypt = Encrypt()
+hashed_password = encrypt.hash_password("senha123")
+
+# Verificar senha
+is_valid = encrypt.verify_password("senha123", hashed_password)
+```
+
+---
+
+## 🗄️ Modelos de Dados
+
+### Entidades Principais
+
+#### Project
+
+- **Tabela**: `project`
+- **Campos**: id, status_id, name, verba_disponivel, andamento_do_projeto, start_date, expected_completion_date, end_date
+- **Relacionamentos**: Status, HistoryProject, ProjectFiscal, ProjectBairro, ProjectEmpresa, ProjectType, UserProject, WorkProject
+
+#### Fiscal
+
+- **Tabela**: `fiscal`
+- **Campos**: id, name, email, phone, password, salt, refresh_token, created_at
+- **Relacionamentos**: ProjectFiscal, WorkProject
+
+#### User
+
+- **Tabela**: `user`
+- **Campos**: id, cpf, password, salt, role, email, name, created_at
+- **Relacionamentos**: UserProject, RefreshToken
+
+### Relacionamentos
+
+```
+Project ──┬── ProjectFiscal ── Fiscal
+          ├── ProjectBairro ── Bairro
+          ├── ProjectEmpresa ── Empresa
+          ├── ProjectType ── Types
+          ├── UserProject ── User
+          └── WorkProject ── Fiscal
+```
+
+---
+
+## 🔧 Ferramentas de Desenvolvimento
+
+### Pre-commit Hooks
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: .venv/bin/pylint
+        language: system
+        types: [python]
+        args: ["-rn", "-sn", "--rcfile=.pylintrc"]
+```
+
+### Linting e Formatação
+
+```bash
+# Pylint
+uv run pylint src/
+
+# Black (formatação)
+uv run black src/
+
+# isort (imports)
+uv run isort src/
+
+# Type checking
+uv run mypy src/
+```
+
+### Comandos Úteis
+
+```bash
+# Formatar código
+uv run black src/
+
+# Linting
+uv run pylint src/
+
+# Pre-commit hooks
+pre-commit run --all-files
+
+# Criar nova migração
+alembic revision --autogenerate -m "descrição da mudança"
+
+# Aplicar migrações
+alembic upgrade head
+
+# Gerar documentação OpenAPI
+python generate_docs.py
+```
+
+---
+
 ## 🚢 Deploy
 
 ### Docker
 
 ```dockerfile
-# Dockerfile
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -481,10 +561,8 @@ WORKDIR /app
 # Instalar UV
 RUN pip install uv
 
-# Copiar arquivos de dependências
+# Copiar dependências
 COPY pyproject.toml uv.lock ./
-
-# Instalar dependências
 RUN uv sync --no-dev
 
 # Copiar código
@@ -500,7 +578,6 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ### Docker Compose
 
 ```yaml
-# docker-compose.yml
 version: "3.8"
 
 services:
@@ -531,84 +608,120 @@ volumes:
   mysql_data:
 ```
 
-### CI/CD (GitHub Actions)
+### Ambientes
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy
+1. **Desenvolvimento**: Local com hot-reload
+2. **Homologação**: Ambiente de testes
+3. **Produção**: Ambiente final
 
-on:
-  push:
-    branches: [main]
+### Configurações por Ambiente
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-      - run: |
-          pip install uv
-          uv sync
-          pytest
+```env
+# Desenvolvimento
+HOMOLOGACAO=True
+DEBUG=True
+LOG_LEVEL=DEBUG
 
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build and push Docker image
-        run: |
-          docker build -t central-de-projetos .
-          docker push ${{ secrets.REGISTRY }}/central-de-projetos:latest
+# Produção
+HOMOLOGACAO=False
+DEBUG=False
+LOG_LEVEL=WARNING
 ```
 
 ---
 
-## 🔧 Desenvolvimento
+## 📊 Monitoramento
 
-Para informações técnicas detalhadas sobre desenvolvimento, consulte o arquivo [DEVELOPMENT.md](DEVELOPMENT.md).
+### Logs
 
-### Comandos Úteis
+O sistema usa logging estruturado com diferentes níveis:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+logger.info("Operação realizada com sucesso")
+logger.error("Erro na operação", exc_info=True)
+```
+
+### Métricas
+
+- **Rate Limiting**: Proteção contra abuso
+- **Health Checks**: Verificação de saúde da aplicação
+- **Performance**: Monitoramento de tempo de resposta
+
+---
+
+## 🔒 Segurança
+
+### Validação de Dados
+
+- **Pydantic**: Validação automática de schemas
+- **SQL Injection**: Prevenida pelo SQLAlchemy
+- **XSS**: Sanitização de inputs
+
+### Autenticação
+
+- **JWT**: Tokens seguros
+- **bcrypt**: Senhas criptografadas
+- **Rate Limiting**: Proteção contra ataques
+
+### CORS
+
+```python
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+---
+
+## 🐛 Debugging
+
+### Logs de Desenvolvimento
+
+```python
+# Ativar logs detalhados
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### Debugger
+
+```python
+import pdb; pdb.set_trace()  # Python debugger
+```
+
+### FastAPI Debug
 
 ```bash
-# Formatar código
-uv run black src/
-
-# Linting
-uv run pylint src/
-
-# Pre-commit hooks
-pre-commit run --all-files
-
-# Criar nova migração
-alembic revision --autogenerate -m "descrição da mudança"
-
-# Aplicar migrações
-alembic upgrade head
-
-# Gerar documentação OpenAPI
-python generate_docs.py
+uvicorn main:app --reload --log-level debug
 ```
 
-### Padrões de Código
+---
 
-- **PEP 8**: Estilo de código Python
-- **Type Hints**: Tipagem estática
-- **Docstrings**: Documentação de funções
-- **Clean Architecture**: Separação de responsabilidades
+## 📚 Recursos Adicionais
 
-### Estrutura de Commits
+### Documentação
 
-```
-feat: adiciona funcionalidade de upload de documentos
-fix: corrige bug na validação de email
-docs: atualiza documentação da API
-test: adiciona testes para novo endpoint
-refactor: refatora lógica de autenticação
-```
+- **OpenAPI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **Este guia**: README.md
+
+### Comunidade
+
+- **FastAPI**: https://fastapi.tiangolo.com/
+- **SQLAlchemy**: https://docs.sqlalchemy.org/
+- **Pydantic**: https://pydantic-docs.helpmanual.io/
 
 ---
 
@@ -616,19 +729,13 @@ refactor: refatora lógica de autenticação
 
 ### Propriedade
 
-Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o código e documentação são propriedade exclusiva da organização.
+Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o código e documentação são propriedade exclusiva de Alberto da Silva Mercado.
 
 ### Acesso
 
-- **Repositório**: Acesso restrito apenas para membros autorizados da equipe
+- **Repositório**: Acesso restrito apenas para membros autorizados
 - **Documentação**: Interna e confidencial
 - **Deploy**: Ambientes controlados e seguros
-
-### Contato Interno
-
-- **Equipe de Desenvolvimento**: dev@gabinete.local
-- **Suporte Técnico**: suporte@gabinete.local
-- **Gerente de Projeto**: gerente@gabinete.local
 
 ---
 

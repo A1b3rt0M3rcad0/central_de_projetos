@@ -24,7 +24,7 @@ class TestFiscalDocumentIntegration:
         delete_use_case = DeleteFiscalDocument(mock_repository)
         delete_all_use_case = DeleteAllFiscalDocumentsFromProject(mock_repository)
         
-        project_id = 123
+        work_project_id = 123
         fiscal_id = 456
         documents = [
             GenericDocument(document=b"content1", document_name="relatorio.pdf", content_type="application/pdf"),
@@ -37,41 +37,41 @@ class TestFiscalDocumentIntegration:
         mock_repository.get_fiscal_document.return_value = mock_document
         
         # Act & Assert - 1. Salvar documentos
-        save_use_case.save(project_id, fiscal_id, documents)
+        save_use_case.save(work_project_id, fiscal_id, documents)
         mock_repository.insert_fiscal_documents.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id,
             documents=documents
         )
         
         # Act & Assert - 2. Listar nomes dos documentos
-        document_names = get_names_use_case.get_names(project_id, fiscal_id)
+        document_names = get_names_use_case.get_names(work_project_id, fiscal_id)
         assert document_names == ["relatorio.pdf", "foto.jpg"]
         mock_repository.get_fiscal_document_names.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id
         )
         
         # Act & Assert - 3. Obter documento específico
-        document = get_use_case.get(project_id, fiscal_id, "relatorio.pdf")
+        document = get_use_case.get(work_project_id, fiscal_id, "relatorio.pdf")
         assert document == mock_document
         mock_repository.get_fiscal_document.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id,
             document_name="relatorio.pdf"
         )
         
         # Act & Assert - 4. Deletar documento específico
-        delete_use_case.delete(project_id, fiscal_id, "relatorio.pdf")
+        delete_use_case.delete(work_project_id, fiscal_id, "relatorio.pdf")
         mock_repository.delete_fiscal_document.assert_called_once_with(
-            project_id=project_id,
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id,
             document_name="relatorio.pdf"
         )
         
         # Act & Assert - 5. Deletar todos os documentos
-        delete_all_use_case.delete_all(project_id, fiscal_id)
-        mock_repository.delete_all_fiscal_documents_from_project.assert_called_once_with(
-            project_id=project_id,
+        delete_all_use_case.delete_all(work_project_id, fiscal_id)
+        mock_repository.delete_all_fiscal_documents_from_work_project.assert_called_once_with(
+            work_project_id=work_project_id,
             fiscal_id=fiscal_id
         ) 

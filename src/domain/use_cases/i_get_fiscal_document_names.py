@@ -4,12 +4,12 @@ from abc import ABC, abstractmethod
 class IGetFiscalDocumentNames(ABC):
 
     @abstractmethod
-    def get_names(self, project_id:int, fiscal_id:int) -> List[str]:
+    def get_names(self, work_project_id:int, fiscal_id:int) -> List[str]:
         """
-        Lista todos os nomes dos documentos enviados por um fiscal para um projeto.
+        Lista todos os nomes dos documentos enviados por um fiscal para um work project.
 
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
 
         Returns:
@@ -18,6 +18,6 @@ class IGetFiscalDocumentNames(ABC):
         Raises:
             FiscalDocumentNamesNotFoundError (404): Se não forem encontrados documentos
             FiscalNotFoundError (404): Se o fiscal não for encontrado
-            ProjectNotFoundError (404): Se o projeto não for encontrado
+            WorkProjectNotFoundError (404): Se o work project não for encontrado
             InternalServerError (500): Para qualquer outro erro durante a operação
         """

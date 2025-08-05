@@ -5,7 +5,7 @@ from src.domain.entities.work_project import WorkProjectEntity
 class IWorkProjectRepository(ABC):
     
     @abstractmethod
-    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str) -> None:pass
+    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents:str=None) -> None:pass
 
     @abstractmethod
     def find(self, work_project_id:int) -> WorkProjectEntity:pass

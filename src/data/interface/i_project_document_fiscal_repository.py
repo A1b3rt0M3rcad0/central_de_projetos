@@ -7,12 +7,12 @@ from typing import List
 class IProjectDocumentFiscalRepository(ABC):
 
     @abstractmethod
-    def insert_fiscal_documents(self, project_id:int, fiscal_id:int, documents:List[Document]) -> None:
+    def insert_fiscal_documents(self, work_project_id:int, fiscal_id:int, documents:List[Document]) -> None:
         """
-        Insere documentos enviados por um fiscal específico para um projeto.
+        Insere documentos enviados por um fiscal específico para um work project.
         
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             documents: Lista de documentos a serem inseridos
             
@@ -21,12 +21,12 @@ class IProjectDocumentFiscalRepository(ABC):
         """
 
     @abstractmethod
-    def get_fiscal_document(self, project_id:int, fiscal_id:int, document_name:str) -> Document:
+    def get_fiscal_document(self, work_project_id:int, fiscal_id:int, document_name:str) -> Document:
         """
         Obtém um documento específico enviado por um fiscal.
         
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             document_name: Nome do documento
             
@@ -39,12 +39,12 @@ class IProjectDocumentFiscalRepository(ABC):
 
 
     @abstractmethod
-    def get_fiscal_document_names(self, project_id:int, fiscal_id:int) -> List[str]:
+    def get_fiscal_document_names(self, work_project_id:int, fiscal_id:int) -> List[str]:
         """
-        Lista todos os nomes dos documentos enviados por um fiscal para um projeto.
+        Lista todos os nomes dos documentos enviados por um fiscal para um work project.
         
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             
         Returns:
@@ -52,12 +52,12 @@ class IProjectDocumentFiscalRepository(ABC):
         """
 
     @abstractmethod
-    def delete_fiscal_document(self, project_id:int, fiscal_id:int, document_name:str) -> None:
+    def delete_fiscal_document(self, work_project_id:int, fiscal_id:int, document_name:str) -> None:
         """
         Deleta um documento específico enviado por um fiscal.
         
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             document_name: Nome do documento a ser deletado
             
@@ -66,12 +66,12 @@ class IProjectDocumentFiscalRepository(ABC):
         """
 
     @abstractmethod
-    def delete_all_fiscal_documents_from_project(self, project_id:int, fiscal_id:int) -> None:
+    def delete_all_fiscal_documents_from_work_project(self, work_project_id:int, fiscal_id:int) -> None:
         """
-        Deleta todos os documentos enviados por um fiscal para um projeto.
+        Deleta todos os documentos enviados por um fiscal para um work project.
         
         Args:
-            project_id: ID do projeto
+            work_project_id: ID do work project
             fiscal_id: ID do fiscal
             
         Raises:

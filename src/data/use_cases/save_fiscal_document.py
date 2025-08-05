@@ -10,14 +10,14 @@ class SaveFiscalDocument(ISaveFiscalDocument):
     def __init__(self, project_document_fiscal_repository:IProjectDocumentFiscalRepository) -> None:
         self.__project_document_fiscal_repository = project_document_fiscal_repository
     
-    def save(self, project_id:int, fiscal_id:int, documents:List[Document]) -> None:
+    def save(self, work_project_id:int, fiscal_id:int, documents:List[Document]) -> None:
         try:
             self.__project_document_fiscal_repository.insert_fiscal_documents(
-                project_id=project_id,
+                work_project_id=work_project_id,
                 fiscal_id=fiscal_id,
                 documents=documents
             )
         except Exception as e:
             raise RuntimeError(
-                f'Erro ao salvar documentos do fiscal {fiscal_id} no projeto {project_id}: {e}'
+                f'Erro ao salvar documentos do fiscal {fiscal_id} no work project {work_project_id}: {e}'
             ) from e 
