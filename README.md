@@ -263,7 +263,64 @@ Os testes usam um banco de dados separado (`test_central_de_projetos`) e são ex
 
 O projeto usa Alembic para controle de versão do banco de dados.
 
-### Comandos Úteis
+### Migration Manager
+
+O projeto inclui um script personalizado (`migration_manager.py`) para gerenciar migrações em múltiplos ambientes (teste e produção) usando variáveis de ambiente.
+
+#### Configuração das Variáveis de Ambiente
+
+O script usa as variáveis do arquivo `.env`:
+
+```bash
+# Banco de Produção
+HOST=localhost
+PORT=3306
+USERNAME=root
+PASSWORD=sua_senha
+DATABASE_NAME=central_de_projetos
+
+# Banco de Teste
+THOST=localhost
+TPORT=3306
+TUSERNAME=root
+TPASSWORD=sua_senha_teste
+TDATABASE_NAME=test_central_de_projetos
+```
+
+#### Comandos do Migration Manager
+
+```bash
+# Aplicar migrações em ambos os bancos
+python migration_manager.py upgrade head --all
+
+# Apenas banco de teste
+python migration_manager.py upgrade head --test
+
+# Apenas banco de produção
+python migration_manager.py upgrade head --prod
+
+# Reverter migração em ambos os bancos
+python migration_manager.py downgrade -1 --all
+
+# Verificar versão atual
+python migration_manager.py current --all
+
+# Ver histórico de migrações
+python migration_manager.py history --all
+
+# Criar nova migração automática
+python migration_manager.py revision --autogenerate -m "descrição da migração" --all
+```
+
+#### Funcionalidades do Migration Manager
+
+- 🎯 **Múltiplos ambientes**: Execute em teste, produção ou ambos
+- 🔄 **Todos os comandos Alembic**: Aceita qualquer comando do Alembic
+- ✅ **Confirmação de segurança**: Sempre pede confirmação antes de executar
+- 📊 **Relatório de sucesso**: Mostra quantas operações foram bem-sucedidas
+- 🛡️ **Tratamento de erros**: Captura e exibe erros de forma clara
+
+### Comandos Alembic Diretos
 
 ```bash
 # Criar nova migração
@@ -280,14 +337,45 @@ alembic history
 
 # Ver status atual
 alembic current
+
+# Ver detalhes de uma migração
+alembic show <revision_id>
 ```
 
 ### Boas Práticas
 
 1. **Sempre** gere migrações para mudanças no modelo
-2. **Teste** as migrações em ambiente de desenvolvimento
-3. **Documente** mudanças complexas
-4. **Faça backup** antes de aplicar em produção
+2. **Teste** as migrações em ambiente de desenvolvimento primeiro
+3. **Use o Migration Manager** para operações em múltiplos ambientes
+4. **Documente** mudanças complexas
+5. **Faça backup** antes de aplicar em produção
+6. **Verifique** o comando antes de confirmar a execução
+
+### Segurança
+
+- ✅ **Sem senhas no código**: Todas as credenciais vêm do arquivo `.env`
+- ✅ **Confirmação**: O script sempre pede confirmação antes de executar
+- ✅ **Ambientes separados**: Teste e produção são completamente independentes
+- ✅ **Logs detalhados**: Mostra exatamente o que está sendo executado
+
+### Troubleshooting
+
+#### Erro: "ModuleNotFoundError: No module named 'dotenv'"
+
+```bash
+pip install python-dotenv
+```
+
+#### Erro: "Connection refused"
+
+- Verifique se o MySQL está rodando
+- Confirme as credenciais no arquivo `.env`
+- Teste a conexão manualmente
+
+#### Erro: "Database does not exist"
+
+- Crie o banco de dados antes de executar as migrações
+- Verifique o nome do banco no arquivo `.env`
 
 ---
 
