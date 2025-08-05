@@ -729,11 +729,11 @@ uvicorn main:app --reload --log-level debug
 
 ### Propriedade
 
-Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o código e documentação são propriedade exclusiva da organização.
+Este é um projeto privado desenvolvido para o Gabinete de Projetos. Todo o código e documentação são propriedade exclusiva de Alberto da Silva Mercado.
 
 ### Acesso
 
-- **Repositório**: Acesso restrito apenas para membros autorizados da equipe
+- **Repositório**: Acesso restrito apenas para membros autorizados
 - **Documentação**: Interna e confidencial
 - **Deploy**: Ambientes controlados e seguros
 
