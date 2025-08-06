@@ -1,5 +1,6 @@
 from src.domain.use_cases.i_insert_work_project import IInsertWorkProject
 from src.domain.use_cases.i_save_fiscal_document import ISaveFiscalDocument
+from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -10,9 +11,11 @@ class CreateWorkProjectWithFiscalDocumentController(ControllerInterface):
 
     def __init__(self, 
                  insert_work_project_case: IInsertWorkProject,
-                 save_fiscal_document_case: ISaveFiscalDocument) -> None:
+                 save_fiscal_document_case: ISaveFiscalDocument,
+                 create_history_project_case: ICreateHistoryProject) -> None:
         self.__insert_work_project_case = insert_work_project_case
         self.__save_fiscal_document_case = save_fiscal_document_case
+        self.__create_history_project_case = create_history_project_case
 
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
@@ -72,6 +75,13 @@ class CreateWorkProjectWithFiscalDocumentController(ControllerInterface):
                     work_project_id=work_project_id,
                     documents=documents
                 )
+            
+            # Criar histórico do projeto
+            self.__create_history_project_case.create(
+                project_id=project_id,
+                data_name='Work Project',
+                description=f'Work project "{title}" criado com {len(documents)} documento(s)'
+            )
             
             return HttpResponse(
                 status_code=200,

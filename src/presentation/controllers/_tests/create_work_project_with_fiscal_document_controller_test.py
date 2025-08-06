@@ -10,9 +10,11 @@ class TestCreateWorkProjectWithFiscalDocumentController:
     def setup_method(self):
         self.mock_insert_work_project = Mock()
         self.mock_save_fiscal_document = Mock()
+        self.mock_create_history_project = Mock()
         self.controller = CreateWorkProjectWithFiscalDocumentController(
             insert_work_project_case=self.mock_insert_work_project,
-            save_fiscal_document_case=self.mock_save_fiscal_document
+            save_fiscal_document_case=self.mock_save_fiscal_document,
+            create_history_project_case=self.mock_create_history_project
         )
     
     def test_handle_success_with_documents(self):
