@@ -11,7 +11,7 @@ class WorkProjectEntity(BaseModel):
     title: str
     description: str
     photo_name: str
-    additional_documents: Optional[str] = None  # JSON array of additional document names
+    additional_documents: Optional[list] = None  # JSON array of additional document names
     created_at: datetime
     updated_at: datetime
     fiscal: Optional[Any] = None

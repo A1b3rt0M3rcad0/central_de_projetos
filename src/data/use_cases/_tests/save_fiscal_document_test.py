@@ -11,19 +11,17 @@ class TestSaveFiscalDocument:
         save_fiscal_document = SaveFiscalDocument(mock_repository)
         
         work_project_id = 123
-        fiscal_id = 456
         documents = [
             GenericDocument(document=b"content1", document_name="relatorio.pdf", content_type="application/pdf"),
             GenericDocument(document=b"content2", document_name="foto.jpg", content_type="image/jpeg")
         ]
         
         # Act
-        save_fiscal_document.save(work_project_id, fiscal_id, documents)
+        save_fiscal_document.save(work_project_id, documents)
         
         # Assert
         mock_repository.insert_fiscal_documents.assert_called_once_with(
             work_project_id=work_project_id,
-            fiscal_id=fiscal_id,
             documents=documents
         )
     
@@ -34,14 +32,13 @@ class TestSaveFiscalDocument:
         save_fiscal_document = SaveFiscalDocument(mock_repository)
         
         work_project_id = 123
-        fiscal_id = 456
         documents = [GenericDocument(document=b"content", document_name="test.pdf", content_type="application/pdf")]
         
         # Act & Assert
         with pytest.raises(RuntimeError) as exc_info:
-            save_fiscal_document.save(work_project_id, fiscal_id, documents)
+            save_fiscal_document.save(work_project_id, documents)
         
-        assert 'Erro ao salvar documentos do fiscal 456 no work project 123' in str(exc_info.value)
+        assert 'Erro ao salvar documentos no work project 123' in str(exc_info.value)
     
     def test_save_fiscal_document_empty_list(self):
         # Arrange
@@ -49,15 +46,13 @@ class TestSaveFiscalDocument:
         save_fiscal_document = SaveFiscalDocument(mock_repository)
         
         work_project_id = 123
-        fiscal_id = 456
         documents = []
         
         # Act
-        save_fiscal_document.save(work_project_id, fiscal_id, documents)
+        save_fiscal_document.save(work_project_id, documents)
         
         # Assert
         mock_repository.insert_fiscal_documents.assert_called_once_with(
             work_project_id=work_project_id,
-            fiscal_id=fiscal_id,
             documents=documents
         ) 

@@ -28,7 +28,21 @@ class WorkProjectRepository(IWorkProjectRepository):
     def __init__(self, db_connection_handler:IDBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
     
-    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents:str=None) -> int:
+    def _convert_additional_documents(self, additional_documents):
+        """Converte additional_documents para lista se necessário"""
+        if additional_documents is None:
+            return None
+        if isinstance(additional_documents, list):
+            return additional_documents
+        if isinstance(additional_documents, str):
+            try:
+                import json  # pylint:disable=C0415
+                return json.loads(additional_documents)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        return []
+    
+    def insert(self, project_id:int, fiscal_id:int, title:str, description:str, photo_name:str, additional_documents=None) -> int:
         with self.__db_connection_handler as db:
             try:
                 work_project = WorkProject(
@@ -72,7 +86,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     title=work_project.title,
                     description=work_project.description,
                     photo_name=work_project.photo_name,
-                    additional_documents=work_project.additional_documents,
+                    additional_documents=self._convert_additional_documents(work_project.additional_documents),
                     created_at=work_project.created_at,
                     updated_at=work_project.updated_at,
                     fiscal=FiscalEntity(
@@ -114,7 +128,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
-                        additional_documents=wp.additional_documents,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -157,7 +171,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
-                        additional_documents=wp.additional_documents,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -200,7 +214,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
-                        additional_documents=wp.additional_documents,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -244,7 +258,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
-                        additional_documents=wp.additional_documents,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(
@@ -289,7 +303,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     title=work_project.title,
                     description=work_project.description,
                     photo_name=work_project.photo_name,
-                    additional_documents=work_project.additional_documents,
+                    additional_documents=self._convert_additional_documents(work_project.additional_documents),
                     created_at=work_project.created_at,
                     updated_at=work_project.updated_at,
                     fiscal=FiscalEntity(
@@ -336,7 +350,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     title=work_project.title,
                     description=work_project.description,
                     photo_name=work_project.photo_name,
-                    additional_documents=work_project.additional_documents,
+                    additional_documents=self._convert_additional_documents(work_project.additional_documents),
                     created_at=work_project.created_at,
                     updated_at=work_project.updated_at,
                     fiscal=FiscalEntity(
@@ -392,7 +406,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                         title=wp.title,
                         description=wp.description,
                         photo_name=wp.photo_name,
-                        additional_documents=wp.additional_documents,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
                         created_at=wp.created_at,
                         updated_at=wp.updated_at,
                         fiscal=FiscalEntity(

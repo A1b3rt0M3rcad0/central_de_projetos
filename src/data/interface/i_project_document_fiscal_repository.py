@@ -7,13 +7,12 @@ from typing import List
 class IProjectDocumentFiscalRepository(ABC):
 
     @abstractmethod
-    def insert_fiscal_documents(self, work_project_id:int, fiscal_id:int, documents:List[Document]) -> None:
+    def insert_fiscal_documents(self, work_project_id:int, documents:List[Document]) -> None:
         """
-        Insere documentos enviados por um fiscal específico para um work project.
+        Insere documentos para um work project.
         
         Args:
             work_project_id: ID do work project
-            fiscal_id: ID do fiscal
             documents: Lista de documentos a serem inseridos
             
         Raises:
