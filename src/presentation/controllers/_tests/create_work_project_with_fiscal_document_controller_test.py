@@ -55,7 +55,7 @@ class TestCreateWorkProjectWithFiscalDocumentController:
             title='Fiscalização Teste',
             description='Descrição da fiscalização',
             photo_name='foto_fiscalizacao.jpg',
-            additional_documents='foto_fiscalizacao.jpg, relatorio_fiscal.pdf'
+            additional_documents='["foto_fiscalizacao.jpg", "relatorio_fiscal.pdf"]'
         )
     
     def test_handle_success_without_documents(self):
@@ -121,7 +121,7 @@ class TestCreateWorkProjectWithFiscalDocumentController:
             title='Fiscalização Teste',
             description='Descrição da fiscalização',
             photo_name='relatorio_fiscal.pdf',
-            additional_documents='relatorio_fiscal.pdf'
+            additional_documents='["relatorio_fiscal.pdf"]'
         )
     
     def test_handle_missing_required_fields(self):

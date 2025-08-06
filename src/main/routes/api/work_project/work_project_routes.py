@@ -8,9 +8,11 @@ from src.main.adapters.response_adapter import response_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.create_work_project_with_fiscal_document_composer import create_work_project_with_fiscal_document_composer
+from src.main.composers.add_documents_to_work_project_composer import add_documents_to_work_project_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 from src.main.routes.api.work_project.work_project_response.create_work_project_with_fiscal_document_response import CreateWorkProjectWithFiscalDocumentResponse
+from src.main.routes.api.work_project.work_project_response.add_documents_to_work_project_response import AddDocumentsToWorkProjectResponse
 
 ## Auth
 from fastapi import Security
@@ -32,7 +34,7 @@ async def create_work_project_with_fiscal_documents(
     title: str = Form(...),
     description: str = Form(...),
     files: List[UploadFile] = File(None),
-    user = Security(role_required(["ADMIN"]))
+    user: dict = Security(role_required(["ADMIN"]))
 ):
     try:
         # Preparar dados do formulário
@@ -67,4 +69,61 @@ async def create_work_project_with_fiscal_documents(
             http_response=error_result,
             request=request
         )
-        return response_adapter(error_result) 
+        return response_adapter(error_result)
+
+
+@routes.post('/add_documents', response_model=AddDocumentsToWorkProjectResponse, responses=generate_error_responses())
+async def add_documents_to_work_project(
+    request: Request,
+    work_project_id: int = Form(...),
+    files: List[UploadFile] = File(None),
+    user: dict = Security(role_required(["ADMIN"]))
+):
+    """
+    Endpoint para adicionar documentos a um work project.
+    Apenas administradores podem acessar este endpoint.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project
+        files: Lista de arquivos para adicionar
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        AddDocumentsToWorkProjectResponse: Mensagem de sucesso e lista de documentos adicionados
+        
+    Raises:
+        WorkProjectNotExists: Se o work project não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Preparar dados do formulário
+        form_data = {
+            'work_project_id': work_project_id
+        }
+        
+        # Usar multipart_adapter para processar formulário + arquivos
+        http_response = await multipart_adapter(
+            request=request,
+            controller=add_documents_to_work_project_composer(),
+            form_data=form_data,
+            files=files
+        )
+        
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)

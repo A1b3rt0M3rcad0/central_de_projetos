@@ -37,10 +37,9 @@ class TestFiscalDocumentIntegration:
         mock_repository.get_fiscal_document.return_value = mock_document
         
         # Act & Assert - 1. Salvar documentos
-        save_use_case.save(work_project_id, fiscal_id, documents)
+        save_use_case.save(work_project_id, documents)
         mock_repository.insert_fiscal_documents.assert_called_once_with(
             work_project_id=work_project_id,
-            fiscal_id=fiscal_id,
             documents=documents
         )
         

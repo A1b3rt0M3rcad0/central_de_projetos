@@ -15,9 +15,9 @@ class ProjectDocumentFiscalRepository(IProjectDocumentFiscalRepository):
 
 
     # Métodos específicos para documentos de fiscais
-    def insert_fiscal_documents(self, work_project_id:int, fiscal_id:int, documents:List[Document]) -> None:
+    def insert_fiscal_documents(self, work_project_id:int, documents:List[Document]) -> None:
         """
-        Insere documentos enviados por um fiscal específico para um work project.
+        Insere documentos para um work project.
         """
         with self.__db_connection_handler as db:
             

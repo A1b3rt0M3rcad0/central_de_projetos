@@ -48,8 +48,9 @@ class CreateWorkProjectWithFiscalDocumentController(ControllerInterface):
                     if doc_data['content_type'].startswith('image/'):
                         photo_name = doc_data['name']
                 
-                # Criar additional_documents com a lista de nomes dos documentos
-                additional_documents = ", ".join(document_names)
+                # Criar additional_documents com a lista de nomes dos documentos como JSON
+                import json  # pylint:disable=C0415
+                additional_documents = json.dumps(document_names)
             
             # Se não houver foto específica, usar o primeiro documento como foto
             if not photo_name and documents:
@@ -69,7 +70,6 @@ class CreateWorkProjectWithFiscalDocumentController(ControllerInterface):
             if documents:
                 self.__save_fiscal_document_case.save(
                     work_project_id=work_project_id,
-                    fiscal_id=fiscal_id,
                     documents=documents
                 )
             

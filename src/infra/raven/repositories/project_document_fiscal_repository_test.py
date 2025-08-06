@@ -23,7 +23,6 @@ def test_insert_fiscal_documents() -> None:
     # Inserir os documentos fiscais
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id, 
         documents=documents
     )
 
@@ -58,7 +57,6 @@ def test_get_fiscal_document_names() -> None:
     documents = [pdf]
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id, 
         documents=documents
     )
 
@@ -95,7 +93,6 @@ def test_get_fiscal_document() -> None:
     
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id, 
         documents=documents
     )
 
@@ -158,7 +155,6 @@ def test_delete_all_fiscal_documents_from_work_project() -> None:
     
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id, 
         documents=documents
     )
 
@@ -199,13 +195,11 @@ def test_multiple_fiscals_same_work_project() -> None:
     
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id_1, 
         documents=[pdf1]
     )
     
     project_document_repository.insert_fiscal_documents(
         work_project_id=work_project_id, 
-        fiscal_id=fiscal_id_2, 
         documents=[pdf2]
     )
 
