@@ -14,6 +14,7 @@ class TestAddDocumentsToWorkProjectController:
         mock_save_fiscal_document = Mock()
         mock_update_work_project_documents = Mock()
         mock_get_work_project = Mock()
+        mock_create_history_project = Mock()
         
         # Mock work_project existente
         mock_work_project = Mock(spec=WorkProjectEntity)
@@ -22,7 +23,8 @@ class TestAddDocumentsToWorkProjectController:
         controller = AddDocumentsToWorkProjectController(
             save_fiscal_document_case=mock_save_fiscal_document,
             update_work_project_documents_case=mock_update_work_project_documents,
-            get_work_project_case=mock_get_work_project
+            get_work_project_case=mock_get_work_project,
+            create_history_project_case=mock_create_history_project
         )
         
         work_project_id = 123
@@ -63,6 +65,7 @@ class TestAddDocumentsToWorkProjectController:
         mock_save_fiscal_document = Mock()
         mock_update_work_project_documents = Mock()
         mock_get_work_project = Mock()
+        mock_create_history_project = Mock()
         
         # Mock work_project não encontrado
         mock_get_work_project.get.side_effect = Exception("Work project not found")
@@ -70,7 +73,8 @@ class TestAddDocumentsToWorkProjectController:
         controller = AddDocumentsToWorkProjectController(
             save_fiscal_document_case=mock_save_fiscal_document,
             update_work_project_documents_case=mock_update_work_project_documents,
-            get_work_project_case=mock_get_work_project
+            get_work_project_case=mock_get_work_project,
+            create_history_project_case=mock_create_history_project
         )
         
         work_project_id = 999
@@ -104,6 +108,7 @@ class TestAddDocumentsToWorkProjectController:
         mock_save_fiscal_document = Mock()
         mock_update_work_project_documents = Mock()
         mock_get_work_project = Mock()
+        mock_create_history_project = Mock()
         
         # Mock work_project existente
         mock_work_project = Mock(spec=WorkProjectEntity)
@@ -112,7 +117,8 @@ class TestAddDocumentsToWorkProjectController:
         controller = AddDocumentsToWorkProjectController(
             save_fiscal_document_case=mock_save_fiscal_document,
             update_work_project_documents_case=mock_update_work_project_documents,
-            get_work_project_case=mock_get_work_project
+            get_work_project_case=mock_get_work_project,
+            create_history_project_case=mock_create_history_project
         )
         
         work_project_id = 123

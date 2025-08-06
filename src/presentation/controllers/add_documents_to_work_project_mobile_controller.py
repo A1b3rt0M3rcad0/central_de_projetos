@@ -2,6 +2,7 @@ from src.domain.use_cases.i_save_fiscal_document import ISaveFiscalDocument
 from src.domain.use_cases.i_update_work_project_documents import IUpdateWorkProjectDocuments
 from src.domain.use_cases.i_get_work_project import IGetWorkProject
 from src.domain.use_cases.i_verify_fiscal_work_project_association import IVerifyFiscalWorkProjectAssociation
+from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -15,11 +16,13 @@ class AddDocumentsToWorkProjectMobileController(ControllerInterface):
                  save_fiscal_document_case: ISaveFiscalDocument,
                  update_work_project_documents_case: IUpdateWorkProjectDocuments,
                  get_work_project_case: IGetWorkProject,
-                 verify_fiscal_work_project_association_case: IVerifyFiscalWorkProjectAssociation) -> None:
+                 verify_fiscal_work_project_association_case: IVerifyFiscalWorkProjectAssociation,
+                 create_history_project_case: ICreateHistoryProject) -> None:
         self.__save_fiscal_document_case = save_fiscal_document_case
         self.__update_work_project_documents_case = update_work_project_documents_case
         self.__get_work_project_case = get_work_project_case
         self.__verify_fiscal_work_project_association_case = verify_fiscal_work_project_association_case
+        self.__create_history_project_case = create_history_project_case
     
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
@@ -76,6 +79,13 @@ class AddDocumentsToWorkProjectMobileController(ControllerInterface):
             self.__update_work_project_documents_case.update(
                 work_project_id=work_project_id,
                 additional_documents=json.dumps(document_names)
+            )
+            
+            # Criar histórico do projeto
+            self.__create_history_project_case.create(
+                project_id=work_project_id,
+                data_name='Documentos Mobile',
+                description=f'{len(document_names)} documento(s) adicionado(s) via mobile'
             )
             
             return HttpResponse(

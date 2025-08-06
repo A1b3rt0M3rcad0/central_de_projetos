@@ -6,6 +6,8 @@ from src.data.use_cases.save_fiscal_document import SaveFiscalDocument
 from src.data.use_cases.update_work_project_documents import UpdateWorkProjectDocuments
 from src.data.use_cases.get_work_project import GetWorkProject
 from src.data.use_cases.verify_fiscal_work_project_association import VerifyFiscalWorkProjectAssociation
+from src.data.use_cases.create_history_project import CreateHistoryProject
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.presentation.controllers.add_documents_to_work_project_mobile_controller import AddDocumentsToWorkProjectMobileController
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -30,6 +32,11 @@ def add_documents_to_work_project_mobile_composer() -> Callable[[HttpRequest], H
         ),
         verify_fiscal_work_project_association_case=VerifyFiscalWorkProjectAssociation(
             work_project_repository=WorkProjectRepository(
+                db_connection_handler=db_connection_handler_factory()
+            )
+        ),
+        create_history_project_case=CreateHistoryProject(
+            history_project_repository=HistoryProjectRepository(
                 db_connection_handler=db_connection_handler_factory()
             )
         )

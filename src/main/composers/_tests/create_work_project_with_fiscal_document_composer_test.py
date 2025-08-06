@@ -67,10 +67,12 @@ class TestCreateWorkProjectWithFiscalDocumentComposer:
         mock_save_fiscal_document_class.assert_called_once_with(mock_fiscal_repository)
         
         # Verificar se o controller foi criado com os casos de uso corretos
-        mock_controller_class.assert_called_once_with(
-            insert_work_project_case=mock_insert_work_project,
-            save_fiscal_document_case=mock_save_fiscal_document
-        )
+        # Não podemos verificar o create_history_project_case porque é criado internamente no composer
+        mock_controller_class.assert_called_once()
+        call_args = mock_controller_class.call_args
+        assert call_args[1]['insert_work_project_case'] == mock_insert_work_project
+        assert call_args[1]['save_fiscal_document_case'] == mock_save_fiscal_document
+        assert 'create_history_project_case' in call_args[1]
         
         # Verificar se o handler retornado é o método handle do controller
         assert handler == mock_controller.handle

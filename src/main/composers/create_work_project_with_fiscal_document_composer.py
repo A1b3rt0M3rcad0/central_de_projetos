@@ -10,6 +10,8 @@ from src.infra.relational.config.connection.string_connection import StringConne
 from src.infra.raven.repositories.project_document_fiscal_repository import ProjectDocumentFiscalRepository
 from src.infra.raven.config.connection.db_connection_handler import DBConnectionHandler as RavenDBConnectionHandler
 from src.infra.raven.config.connection.data_connection import DataConnection as RavenDataConnection
+from src.data.use_cases.create_history_project import CreateHistoryProject
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 
 def create_work_project_with_fiscal_document_composer() -> Callable[[HttpRequest], HttpResponse]:
     # Configuração para work project (relational database)
@@ -26,9 +28,14 @@ def create_work_project_with_fiscal_document_composer() -> Callable[[HttpRequest
     fiscal_document_repository = ProjectDocumentFiscalRepository(raven_db_connection_handler)
     save_fiscal_document_use_case = SaveFiscalDocument(fiscal_document_repository)
     
+    # Configuração para history project
+    history_project_repository = HistoryProjectRepository(db_connection_handler)
+    create_history_project_use_case = CreateHistoryProject(history_project_repository)
+    
     # Controller
     controller = CreateWorkProjectWithFiscalDocumentController(
         insert_work_project_case=insert_work_project_use_case,
-        save_fiscal_document_case=save_fiscal_document_use_case
+        save_fiscal_document_case=save_fiscal_document_use_case,
+        create_history_project_case=create_history_project_use_case
     )
     return controller.handle 
