@@ -9,7 +9,7 @@ from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.multipart_adapter import multipart_adapter
 from src.main.adapters.response_adapter import response_adapter
 from src.main.composers.login_fiscal_composer import login_fiscal_composer
-from src.main.composers.add_documents_to_work_project_composer import add_documents_to_work_project_composer
+from src.main.composers.add_documents_to_work_project_mobile_composer import add_documents_to_work_project_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
@@ -97,10 +97,13 @@ async def add_documents_to_work_project_mobile(
             'work_project_id': work_project_id
         }
         
+        # Adicionar fiscal_id ao form_data para validação
+        form_data['fiscal_id'] = fiscal.get('fiscal_id')
+        
         # Usar multipart_adapter para processar formulário + arquivos
         http_response = await multipart_adapter(
             request=request,
-            controller=add_documents_to_work_project_composer(),
+            controller=add_documents_to_work_project_mobile_composer(),
             form_data=form_data,
             files=files
         )
@@ -124,7 +127,7 @@ async def add_documents_to_work_project_mobile(
         return response_adapter(error_result)
 
 
-@routes.get('/test', 
+@routes.get('/me', 
             response_model=FiscalTestResponse, 
             responses=generate_error_responses())
 async def test_fiscal_mobile(

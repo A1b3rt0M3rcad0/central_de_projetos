@@ -36,6 +36,7 @@ class LoginFiscal(ILoginFiscal):
                     {
                         'email': result.email,
                         'role': 'fiscal',
+                        'fiscal_id': result.fiscal_id,
                         'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
                     }
                 )

@@ -58,6 +58,7 @@ def get_current_fiscal(
             fiscal_data = {
                 "email": payload.get("email"),
                 "role": payload.get("role", ""),
+                "fiscal_id": payload.get("fiscal_id"),
                 "exp": payload.get("exp")
             }
 
@@ -103,6 +104,7 @@ def get_current_fiscal(
         new_access_token = encode_jwt.encode({
             "email": payload.get("email"),
             "role": payload.get("role"),
+            "fiscal_id": fiscal_entity.fiscal_id,
             'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
         })
 
@@ -120,6 +122,7 @@ def get_current_fiscal(
         fiscal_data = {
             "email": new_payload.get("email"),
             "role": new_payload.get("role", ""),
+            "fiscal_id": new_payload.get("fiscal_id"),
             "exp": new_payload.get("exp")
         }
 
