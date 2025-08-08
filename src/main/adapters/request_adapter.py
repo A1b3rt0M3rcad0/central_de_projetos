@@ -6,10 +6,14 @@ from typing import Callable
 
 
 async def request_adapter(request: FastAPIRequest, controller: Callable[[HttpRequest], HttpResponse]) -> HttpResponse:
-    try:
-        body = await request.json()
-    except Exception:
-        body = None
+    # Verificar se existe request.state.body (usado pelas rotas mobile)
+    if hasattr(request.state, 'body') and request.state.body is not None:
+        body = request.state.body
+    else:
+        try:
+            body = await request.json()
+        except Exception:
+            body = None
 
     http_request = HttpRequest(
         body=body,

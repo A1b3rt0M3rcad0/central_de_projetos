@@ -12,12 +12,14 @@ from src.main.composers.login_fiscal_composer import login_fiscal_composer
 from src.main.composers.add_documents_to_work_project_mobile_composer import add_documents_to_work_project_mobile_composer
 from src.main.composers.create_work_project_mobile_composer import create_work_project_mobile_composer
 from src.main.composers.delete_work_project_mobile_composer import delete_work_project_mobile_composer
+from src.main.composers.get_work_projects_by_fiscal_mobile_composer import get_work_projects_by_fiscal_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
 from src.main.routes.mobile.fiscal.response_format.add_documents_to_work_project_response import AddDocumentsToWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.create_work_project_response import CreateWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.delete_work_project_response import DeleteWorkProjectMobileResponse
+from src.main.routes.mobile.fiscal.response_format.get_work_projects_by_fiscal_response import GetWorkProjectsByFiscalMobileResponse
 from src.logs.log_http import log_http
 from src.presentation.http_types.http_response import HttpResponse
 
@@ -233,6 +235,69 @@ async def delete_work_project_mobile(
         http_response = await request_adapter(
             request=request,
             controller=delete_work_project_mobile_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/work_projects/pagination/{project_id}/{page_size}/{page}', 
+            response_model=GetWorkProjectsByFiscalMobileResponse, 
+            responses=generate_error_responses())
+async def get_work_projects_by_fiscal_mobile(
+    request: Request,
+    project_id: int,
+    page_size: int,
+    page: int,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para buscar work projects do fiscal autenticado por projeto específico com paginação via aplicativo mobile.
+    Apenas fiscais podem acessar este endpoint e só veem seus próprios work projects.
+    O fiscal só vê work projects de projetos onde ele está associado.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto para filtrar os work projects
+        page_size: Número de itens por página
+        page: Número da página
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetWorkProjectsByFiscalMobileResponse: Lista de work projects do fiscal para o projeto específico com informações de paginação
+        
+    Raises:
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body (padrão das outras rotas mobile)
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        # Adicionar parâmetros de paginação ao path_params
+        request.path_params['page'] = page
+        request.path_params['page_size'] = page_size
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=get_work_projects_by_fiscal_mobile_composer()
         )
         
         log_http(
