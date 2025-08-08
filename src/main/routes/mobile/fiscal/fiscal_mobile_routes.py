@@ -11,11 +11,13 @@ from src.main.adapters.response_adapter import response_adapter
 from src.main.composers.login_fiscal_composer import login_fiscal_composer
 from src.main.composers.add_documents_to_work_project_mobile_composer import add_documents_to_work_project_mobile_composer
 from src.main.composers.create_work_project_mobile_composer import create_work_project_mobile_composer
+from src.main.composers.delete_work_project_mobile_composer import delete_work_project_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
 from src.main.routes.mobile.fiscal.response_format.add_documents_to_work_project_response import AddDocumentsToWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.create_work_project_response import CreateWorkProjectMobileResponse
+from src.main.routes.mobile.fiscal.response_format.delete_work_project_response import DeleteWorkProjectMobileResponse
 from src.logs.log_http import log_http
 from src.presentation.http_types.http_response import HttpResponse
 
@@ -175,6 +177,62 @@ async def create_work_project_mobile(
             controller=create_work_project_mobile_composer(),
             form_data=form_data,
             files=files
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.delete('/delete_work_project/{work_project_id}', 
+              response_model=DeleteWorkProjectMobileResponse, 
+              responses=generate_error_responses())
+async def delete_work_project_mobile(
+    request: Request,
+    work_project_id: int,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para deletar work project via aplicativo mobile.
+    Apenas o fiscal associado ao work project pode deletá-lo.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project a ser deletado
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        DeleteWorkProjectMobileResponse: Mensagem de sucesso e dados do work project deletado
+        
+    Raises:
+        WorkProjectNotExists: Se o work project não for encontrado
+        FiscalNotAuthorizedError: Se o fiscal não estiver associado ao work project
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=delete_work_project_mobile_composer()
         )
         
         log_http(
