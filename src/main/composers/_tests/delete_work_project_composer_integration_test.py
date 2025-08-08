@@ -3,7 +3,7 @@ from src.main.composers.delete_work_project_composer import delete_work_project_
 from src.presentation.http_types.http_request import HttpRequest
 #pylint:disable=W0611
 from src.presentation.http_types.http_response import HttpResponse
-from src.errors.use_cases.delete_work_project_error import DeleteWorkProjectError
+from src.errors.repository.not_exists_error.work_project_not_exists import WorkProjectNotExists
 
 class TestDeleteWorkProjectComposerIntegration:
     
@@ -28,7 +28,7 @@ class TestDeleteWorkProjectComposerIntegration:
         controller = delete_work_project_composer()
         
         # Deve lançar uma exceção quando o work project não existe
-        with pytest.raises(DeleteWorkProjectError):
+        with pytest.raises(WorkProjectNotExists):
             controller(http_request)
     
     def test_delete_work_project_composer_handles_missing_work_project_id(self):

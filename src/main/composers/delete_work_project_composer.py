@@ -2,7 +2,10 @@ from src.main.config.database.db_connection_handler_factory import db_connection
 from src.main.config.database.raven_connection_handler_factory import raven_connection_handler_factory
 from src.presentation.controllers.delete_work_project_controller import DeleteWorkProjectController
 from src.data.use_cases.delete_work_project import DeleteWorkProject
+from src.data.use_cases.create_history_project import CreateHistoryProject
+from src.data.use_cases.get_work_project import GetWorkProject
 from src.infra.relational.repository.work_project_repository import WorkProjectRepository
+from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
 from src.infra.raven.repositories.project_document_fiscal_repository import ProjectDocumentFiscalRepository
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -13,5 +16,11 @@ def delete_work_project_composer() -> Callable[[HttpRequest], HttpResponse]:
         delete_work_project_case=DeleteWorkProject(
             work_project_repository=WorkProjectRepository(db_connection_handler_factory()),
             project_document_fiscal_repository=ProjectDocumentFiscalRepository(raven_connection_handler_factory())
+        ),
+        create_history_project_case=CreateHistoryProject(
+            history_project_repository=HistoryProjectRepository(db_connection_handler_factory())
+        ),
+        get_work_project_case=GetWorkProject(
+            work_project_repository=WorkProjectRepository(db_connection_handler_factory())
         )
     ).handle 
