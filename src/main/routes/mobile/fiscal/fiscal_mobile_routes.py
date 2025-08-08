@@ -10,10 +10,12 @@ from src.main.adapters.multipart_adapter import multipart_adapter
 from src.main.adapters.response_adapter import response_adapter
 from src.main.composers.login_fiscal_composer import login_fiscal_composer
 from src.main.composers.add_documents_to_work_project_mobile_composer import add_documents_to_work_project_mobile_composer
+from src.main.composers.create_work_project_mobile_composer import create_work_project_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
 from src.main.routes.mobile.fiscal.response_format.add_documents_to_work_project_response import AddDocumentsToWorkProjectMobileResponse
+from src.main.routes.mobile.fiscal.response_format.create_work_project_response import CreateWorkProjectMobileResponse
 from src.logs.log_http import log_http
 from src.presentation.http_types.http_response import HttpResponse
 
@@ -104,6 +106,73 @@ async def add_documents_to_work_project_mobile(
         http_response = await multipart_adapter(
             request=request,
             controller=add_documents_to_work_project_mobile_composer(),
+            form_data=form_data,
+            files=files
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.post('/create_work_project', 
+             response_model=CreateWorkProjectMobileResponse, 
+             responses=generate_error_responses())
+async def create_work_project_mobile(
+    request: Request,
+    project_id: int = Form(...),
+    title: str = Form(...),
+    description: str = Form(...),
+    files: List[UploadFile] = File(None),
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para criar work project via aplicativo mobile.
+    Apenas fiscais vinculados ao projeto podem criar work projects.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto
+        title: Título do work project
+        description: Descrição do work project
+        files: Lista de arquivos para adicionar
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        CreateWorkProjectMobileResponse: Dados do work project criado
+        
+    Raises:
+        FiscalNotAuthorizedError: Se o fiscal não estiver vinculado ao projeto
+        WorkProjectNotExists: Se o work project não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Preparar dados do formulário
+        form_data = {
+            'project_id': project_id,
+            'fiscal_id': fiscal.get('fiscal_id'),
+            'title': title,
+            'description': description
+        }
+        
+        # Usar multipart_adapter para processar formulário + arquivos
+        http_response = await multipart_adapter(
+            request=request,
+            controller=create_work_project_mobile_composer(),
             form_data=form_data,
             files=files
         )
