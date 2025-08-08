@@ -99,6 +99,24 @@ def test_update_work_project_calls_repository(mock_repository):
     mock_repository.update.assert_called_once_with(work_project_id=1, update_params=params)
 
 def test_delete_work_project_calls_repository(mock_repository):
-    use_case = DeleteWorkProject(mock_repository)
+    # Mock para o repositório de documentos fiscais
+    mock_document_repository = MagicMock()
+    
+    # Mock para o work project que será retornado
+    mock_work_project = WorkProjectEntity(
+        id=99, project_id=1, fiscal_id=2, title='t', description='d', photo_name='p',
+        additional_documents=None, created_at=datetime.now(), updated_at=datetime.now()
+    )
+    mock_repository.find.return_value = mock_work_project
+    
+    use_case = DeleteWorkProject(mock_repository, mock_document_repository)
     use_case.delete(99)
+    
+    # Verifica se o work project foi buscado
+    mock_repository.find.assert_called_once_with(99)
+    # Verifica se os documentos foram deletados
+    mock_document_repository.delete_all_fiscal_documents_from_work_project.assert_called_once_with(
+        work_project_id=99, fiscal_id=2
+    )
+    # Verifica se o work project foi deletado
     mock_repository.delete.assert_called_once_with(work_project_id=99)
