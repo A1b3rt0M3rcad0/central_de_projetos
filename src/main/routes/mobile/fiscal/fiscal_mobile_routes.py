@@ -1,5 +1,7 @@
 #pylint:disable=W0611, W0613
 from fastapi import APIRouter, Request, Security, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
+from io import BytesIO
 from typing import List, Optional
 from datetime import datetime
 from src.errors.error_handle import error_handler
@@ -18,6 +20,7 @@ from src.main.composers.get_work_project_by_fiscal_mobile_composer import get_wo
 from src.main.composers.get_projects_by_fiscal_with_pagination_composer import get_projects_by_fiscal_with_pagination_composer
 from src.main.composers.delete_document_from_work_project_mobile_composer import delete_document_from_work_project_mobile_composer
 from src.main.composers.get_work_project_thumbnail_composer import get_work_project_thumbnail_composer
+from src.main.composers.get_work_project_document_mobile_composer import get_work_project_document_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.request_format.delete_document_from_work_project_format import DeleteDocumentFromWorkProjectFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
@@ -370,6 +373,72 @@ async def get_work_project_thumbnail_mobile(
         )
         
         return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/work_project/{work_project_id}/document/{document_name}',
+            responses=generate_error_responses())
+async def get_work_project_document_mobile(
+    request: Request,
+    work_project_id: int,
+    document_name: str,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para baixar/visualizar documento de um work project via aplicativo mobile.
+    O fiscal precisa estar associado ao projeto do work project para acessar os documentos.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project
+        document_name: Nome do documento a ser baixado
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        StreamingResponse: Documento em formato binário com Content-Type apropriado
+        
+    Raises:
+        FiscalNotAuthorizedError: Se o fiscal não estiver associado ao projeto
+        WorkProjectNotFoundError: Se o work project não for encontrado
+        DocumentNotFoundError: Se o documento não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Injetar fiscal_id no body para o controller
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+
+        http_response = await request_adapter(
+            request=request,
+            controller=get_work_project_document_mobile_composer()
+        )
+
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+
+        return StreamingResponse(
+            BytesIO(http_response.body),
+            media_type=http_response.headers.get('Content-Type', 'application/octet-stream'),
+            headers={
+                "Content-Disposition": http_response.headers.get(
+                    'Content-Disposition',
+                    f'inline; filename="{document_name}"'
+                )
+            }
+        )
     except Exception as e:
         error_result = error_handler(e)
         log_http(
