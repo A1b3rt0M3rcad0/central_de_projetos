@@ -12,6 +12,9 @@ class IWorkProjectRepository(ABC):
     def find(self, work_project_id:int) -> WorkProjectEntity:pass
 
     @abstractmethod
+    def find_by_fiscal_and_id(self, work_project_id:int, fiscal_id:int) -> WorkProjectEntity:pass
+
+    @abstractmethod
     def find_all(self) -> List[WorkProjectEntity]:pass
 
     @abstractmethod
