@@ -76,3 +76,19 @@ class IProjectDocumentFiscalRepository(ABC):
         Raises:
             Exception: Se houver erro na deleção
         """
+
+    @abstractmethod
+    def get_document_by_work_project_and_name(self, work_project_id:int, document_name:str) -> bytes:
+        """
+        Obtém um documento pelo work_project_id e nome do documento.
+        
+        Args:
+            work_project_id: ID do work project
+            document_name: Nome do documento
+            
+        Returns:
+            bytes: Conteúdo do documento em bytes
+            
+        Raises:
+            Exception: Se o documento não for encontrado
+        """

@@ -632,6 +632,230 @@ def test_get_work_projects_with_pagination(datetime_fixture, insert_status_scrip
         assert result['data'][0].title == 'Trabalho Teste 1'
         assert result['data'][1].title == 'Trabalho Teste 2'
 
+def test_get_work_projects_with_pagination_by_fiscal(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script, insert_work_projects_script) -> None:
+    """Testa a paginação de work projects por fiscal"""
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    work_projects_repository = WorkProjectRepository(db_connection_handler)
+    
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Em andamento',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(text('SELECT * FROM status')).first()
+        
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'name': 'Projeto Teste',
+            'verba_disponivel': 10000.0,
+            'andamento_do_projeto': 'Fase inicial',
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': None
+        })
+        db.session.commit()
+        project = db.session.execute(text('SELECT * FROM project')).first()
+        
+        # Inserir fiscal
+        db.session.execute(insert_fiscal_script, {
+            'name': 'Fiscal Teste',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        fiscal = db.session.execute(text('SELECT * FROM fiscal')).first()
+        
+        # Inserir work_projects para o fiscal
+        for i in range(3):
+            db.session.execute(insert_work_projects_script, {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'title': f'Trabalho Fiscal {i+1}',
+                'description': f'Descrição do trabalho fiscal {i+1}',
+                'photo_name': f'foto_fiscal{i+1}.jpg',
+                'created_at': datetime_fixture,
+                'updated_at': datetime_fixture
+            })
+        db.session.commit()
+        
+        # Testar paginação por fiscal
+        result = work_projects_repository.get_work_projects_with_pagination_by_fiscal(
+            fiscal_id=fiscal.id, 
+            page=1, 
+            page_size=2
+        )
+        
+        assert result['total'] == 3
+        assert len(result['data']) == 2
+        assert result['data'][0].fiscal_id == fiscal.id
+        assert result['data'][1].fiscal_id == fiscal.id
+
+def test_get_work_projects_with_pagination_by_fiscal_and_project(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script, insert_work_projects_script) -> None:
+    """Testa a paginação de work projects por fiscal e projeto"""
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    work_projects_repository = WorkProjectRepository(db_connection_handler)
+    
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Em andamento',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(text('SELECT * FROM status')).first()
+        
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'name': 'Projeto Teste',
+            'verba_disponivel': 10000.0,
+            'andamento_do_projeto': 'Fase inicial',
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': None
+        })
+        db.session.commit()
+        project = db.session.execute(text('SELECT * FROM project')).first()
+        
+        # Inserir fiscal
+        db.session.execute(insert_fiscal_script, {
+            'name': 'Fiscal Teste',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        fiscal = db.session.execute(text('SELECT * FROM fiscal')).first()
+        
+        # Inserir work_projects para o fiscal e projeto
+        for i in range(2):
+            db.session.execute(insert_work_projects_script, {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'title': f'Trabalho Fiscal Projeto {i+1}',
+                'description': f'Descrição do trabalho fiscal projeto {i+1}',
+                'photo_name': f'foto_fiscal_projeto{i+1}.jpg',
+                'created_at': datetime_fixture,
+                'updated_at': datetime_fixture
+            })
+        db.session.commit()
+        
+        # Testar paginação por fiscal e projeto
+        result = work_projects_repository.get_work_projects_with_pagination_by_fiscal_and_project(
+            fiscal_id=fiscal.id,
+            project_id=project.id,
+            page=1, 
+            page_size=2
+        )
+        
+        assert result['total'] == 2
+        assert len(result['data']) == 2
+        assert result['data'][0].fiscal_id == fiscal.id
+        assert result['data'][0].project_id == project.id
+        assert result['data'][1].fiscal_id == fiscal.id
+        assert result['data'][1].project_id == project.id
+
+def test_get_latest_work_projects_by_fiscal_with_date_filter(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script, insert_work_projects_script) -> None:
+    """Testa a busca dos últimos work projects por fiscal com filtro de data"""
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    work_projects_repository = WorkProjectRepository(db_connection_handler)
+    
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Em andamento',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(text('SELECT * FROM status')).first()
+        
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'name': 'Projeto Teste',
+            'verba_disponivel': 10000.0,
+            'andamento_do_projeto': 'Fase inicial',
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': None
+        })
+        db.session.commit()
+        project = db.session.execute(text('SELECT * FROM project')).first()
+        
+        # Inserir fiscal
+        db.session.execute(insert_fiscal_script, {
+            'name': 'Fiscal Teste',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        fiscal = db.session.execute(text('SELECT * FROM fiscal')).first()
+        
+        # Inserir work_projects com datas diferentes
+        work_projects_data = [
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'title': 'Trabalho Antigo',
+                'description': 'Descrição do trabalho antigo',
+                'photo_name': 'foto_antiga.jpg',
+                'created_at': datetime_fixture.replace(year=2023, month=1, day=1),
+                'updated_at': datetime_fixture.replace(year=2023, month=1, day=1)
+            },
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'title': 'Trabalho Recente',
+                'description': 'Descrição do trabalho recente',
+                'photo_name': 'foto_recente.jpg',
+                'created_at': datetime_fixture.replace(year=2023, month=12, day=15),
+                'updated_at': datetime_fixture.replace(year=2023, month=12, day=15)
+            },
+            {
+                'project_id': project.id,
+                'fiscal_id': fiscal.id,
+                'title': 'Trabalho Meio',
+                'description': 'Descrição do trabalho meio',
+                'photo_name': 'foto_meio.jpg',
+                'created_at': datetime_fixture.replace(year=2023, month=6, day=15),
+                'updated_at': datetime_fixture.replace(year=2023, month=6, day=15)
+            }
+        ]
+        
+        for wp_data in work_projects_data:
+            db.session.execute(insert_work_projects_script, wp_data)
+        db.session.commit()
+        
+        # Testar busca sem filtro de data (deve retornar todos ordenados por data decrescente)
+        result = work_projects_repository.get_latest_work_projects_by_fiscal_with_date_filter(
+            fiscal_id=fiscal.id,
+            page=1,
+            page_size=3
+        )
+        
+        assert result['total'] == 3
+        assert len(result['data']) == 3
+        # Verificar se está ordenado por data decrescente (mais recente primeiro)
+        assert result['data'][0].title == 'Trabalho Recente'  # Mais recente
+        assert result['data'][1].title == 'Trabalho Meio'     # Meio
+        assert result['data'][2].title == 'Trabalho Antigo'   # Mais antigo
+        
+        # Testar com filtro de data
+        start_date = datetime_fixture.replace(year=2023, month=6, day=1)
+        end_date = datetime_fixture.replace(year=2023, month=12, day=31)
+        
+        result_filtered = work_projects_repository.get_latest_work_projects_by_fiscal_with_date_filter(
+            fiscal_id=fiscal.id,
+            page=1,
+            page_size=3,
+            start_date=start_date,
+            end_date=end_date
+        )
+        
+        assert result_filtered['total'] == 2  # Apenas 2 work projects no período
+        assert len(result_filtered['data']) == 2
+        assert result_filtered['data'][0].title == 'Trabalho Recente'
+        assert result_filtered['data'][1].title == 'Trabalho Meio'
+
 def test_update_work_projects(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script, insert_work_projects_script) -> None:
     db_connection_handler = DBConnectionHandler(StringConnection())
     work_projects_repository = WorkProjectRepository(db_connection_handler)

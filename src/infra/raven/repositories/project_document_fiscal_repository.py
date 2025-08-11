@@ -133,3 +133,25 @@ class ProjectDocumentFiscalRepository(IProjectDocumentFiscalRepository):
                 db.advanced.attachments.delete(entity, name)
 
             db.save_changes()
+
+    def get_document_by_work_project_and_name(self, work_project_id:int, document_name:str) -> bytes:
+        """
+        Obtém um documento pelo work_project_id e nome do documento.
+        """
+        with self.__db_connection_handler as db:
+
+            dummy_project_documents = ProjectDocumentsFiscal()
+            project_document_data = dummy_project_documents.make_to_store(work_project_id=work_project_id)
+            entity = db.load(project_document_data["key"])
+
+            if entity is None:
+                # pylint: disable=broad-exception-raised
+                raise Exception(f"Work project {work_project_id} não encontrado")
+
+            # Procura pelo documento com nome original
+            attachment_result = db.advanced.attachments.get(entity, document_name)
+            if attachment_result is None:
+                # pylint: disable=broad-exception-raised
+                raise Exception(f"Documento {document_name} não encontrado no work project {work_project_id}")
+            
+            return attachment_result.data
