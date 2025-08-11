@@ -1,6 +1,6 @@
 #pylint:disable=W0611, W0613
 from fastapi import APIRouter, Request, Security, UploadFile, File, Form
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from src.errors.error_handle import error_handler
 from src.main.routes.api.__error.error_response import generate_error_responses
@@ -13,6 +13,7 @@ from src.main.composers.add_documents_to_work_project_mobile_composer import add
 from src.main.composers.create_work_project_mobile_composer import create_work_project_mobile_composer
 from src.main.composers.delete_work_project_mobile_composer import delete_work_project_mobile_composer
 from src.main.composers.get_work_projects_by_fiscal_mobile_composer import get_work_projects_by_fiscal_mobile_composer
+from src.main.composers.get_latest_work_projects_by_fiscal_composer import get_latest_work_projects_by_fiscal_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
@@ -20,6 +21,7 @@ from src.main.routes.mobile.fiscal.response_format.add_documents_to_work_project
 from src.main.routes.mobile.fiscal.response_format.create_work_project_response import CreateWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.delete_work_project_response import DeleteWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.get_work_projects_by_fiscal_response import GetWorkProjectsByFiscalMobileResponse
+from src.main.routes.mobile.fiscal.response_format.get_latest_work_projects_by_fiscal_response import GetLatestWorkProjectsByFiscalResponse
 from src.logs.log_http import log_http
 from src.presentation.http_types.http_response import HttpResponse
 
@@ -298,6 +300,66 @@ async def get_work_projects_by_fiscal_mobile(
         http_response = await request_adapter(
             request=request,
             controller=get_work_projects_by_fiscal_mobile_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/latest_work_projects/pagination/{page_size}/{page}', 
+            response_model=GetLatestWorkProjectsByFiscalResponse, 
+            responses=generate_error_responses())
+async def get_latest_work_projects_by_fiscal(
+    request: Request,
+    page_size: int,
+    page: int,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para buscar os últimos work projects do fiscal autenticado com paginação e filtro de data.
+    Apenas fiscais podem acessar este endpoint.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        page_size: Tamanho da página
+        page: Número da página
+        start_date: Data de início para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)
+        end_date: Data de fim para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetLatestWorkProjectsByFiscalResponse: Lista de últimos work projects do fiscal ordenados por data de criação
+        
+    Raises:
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body (padrão das outras rotas mobile)
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=get_latest_work_projects_by_fiscal_composer()
         )
         
         log_http(

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 from src.domain.entities.work_project import WorkProjectEntity
+from datetime import datetime
 
 class IWorkProjectRepository(ABC):
     
@@ -39,6 +40,16 @@ class IWorkProjectRepository(ABC):
 
     @abstractmethod
     def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:pass
+
+    @abstractmethod
+    def get_latest_work_projects_by_fiscal_with_date_filter(
+        self, 
+        fiscal_id: int, 
+        page: int, 
+        page_size: int,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> Dict[str, Union[int, List[WorkProjectEntity]]]: pass
 
     @abstractmethod
     def update(self, work_project_id:int, update_params:Dict) -> None:pass
