@@ -1,4 +1,5 @@
 from src.domain.use_cases.i_save_document import ISaveDocument
+from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -7,8 +8,11 @@ from src.domain.value_objects.generic_document import GenericDocument
 
 class SaveDocumentController(ControllerInterface):
 
-    def __init__(self, save_document_use_case: ISaveDocument) -> None:
+    def __init__(self, 
+                 save_document_use_case: ISaveDocument,
+                 create_history_project_case: ICreateHistoryProject) -> None:
         self.__save_document_use_case = save_document_use_case
+        self.__create_history_project_case = create_history_project_case
 
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
@@ -25,6 +29,13 @@ class SaveDocumentController(ControllerInterface):
             self.__save_document_use_case.save(
                 document=[document],
                 project_id=project_id
+            )
+            
+            # Criar histórico do projeto
+            self.__create_history_project_case.create(
+                project_id=project_id,
+                data_name='Documento',
+                description=f'Documento "{body["document_name"]}" adicionado ao projeto'
             )
 
             return HttpResponse(
