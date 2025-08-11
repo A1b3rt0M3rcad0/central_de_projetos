@@ -16,12 +16,15 @@ from src.main.composers.get_work_projects_by_fiscal_mobile_composer import get_w
 from src.main.composers.get_latest_work_projects_by_fiscal_composer import get_latest_work_projects_by_fiscal_composer
 from src.main.composers.get_work_project_by_fiscal_mobile_composer import get_work_project_by_fiscal_mobile_composer
 from src.main.composers.get_projects_by_fiscal_with_pagination_composer import get_projects_by_fiscal_with_pagination_composer
+from src.main.composers.delete_document_from_work_project_mobile_composer import delete_document_from_work_project_mobile_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
+from src.main.routes.mobile.fiscal.request_format.delete_document_from_work_project_format import DeleteDocumentFromWorkProjectFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.test_fiscal_response import FiscalTestResponse
 from src.main.routes.mobile.fiscal.response_format.add_documents_to_work_project_response import AddDocumentsToWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.create_work_project_response import CreateWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.delete_work_project_response import DeleteWorkProjectMobileResponse
+from src.main.routes.mobile.fiscal.response_format.delete_document_from_work_project_response import DeleteDocumentFromWorkProjectMobileResponse
 from src.main.routes.mobile.fiscal.response_format.get_work_projects_by_fiscal_response import GetWorkProjectsByFiscalMobileResponse
 from src.main.routes.mobile.fiscal.response_format.get_latest_work_projects_by_fiscal_response import GetLatestWorkProjectsByFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.get_work_project_by_fiscal_response import GetWorkProjectByFiscalMobileResponse
@@ -241,6 +244,65 @@ async def delete_work_project_mobile(
         http_response = await request_adapter(
             request=request,
             controller=delete_work_project_mobile_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.delete('/delete_document_from_work_project', 
+              response_model=DeleteDocumentFromWorkProjectMobileResponse, 
+              responses=generate_error_responses())
+async def delete_document_from_work_project_mobile(
+    request: Request,
+    body: DeleteDocumentFromWorkProjectFormat,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para deletar um documento de um work project via aplicativo mobile.
+    Apenas o fiscal associado ao work project pode deletar documentos.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        body: Dados da requisição (work_project_id e document_name)
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        DeleteDocumentFromWorkProjectMobileResponse: Mensagem de sucesso e dados do documento deletado
+        
+    Raises:
+        WorkProjectNotExists: Se o work project não for encontrado
+        UnauthorizedAccessError: Se o fiscal não estiver associado ao work project
+        DocumentNotFoundError: Se o documento não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id'),
+            'work_project_id': body.work_project_id,
+            'document_name': body.document_name
+        }
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=delete_document_from_work_project_mobile_composer()
         )
         
         log_http(
