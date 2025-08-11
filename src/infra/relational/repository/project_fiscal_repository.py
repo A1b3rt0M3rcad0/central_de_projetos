@@ -1,11 +1,25 @@
+#pylint:disable=W0611
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
-from typing import List
+from typing import List, Dict, Union
 from sqlalchemy import and_
 from src.data.interface.i_project_fiscal_repository import IProjectFiscalRepository
 
 # Models
 from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.models.fiscal import Fiscal
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.history_project import HistoryProject
+from src.infra.relational.models.project_bairro import ProjectBairro
+from src.infra.relational.models.project_empresa import ProjectEmpresa
+from src.infra.relational.models.project_type import ProjectType
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.bairro import Bairro
+from src.infra.relational.models.empresa import Empresa
+from src.infra.relational.models.types import Types
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.user import User
+from src.infra.relational.models.refresh_token import RefreshToken
 
 # Entities
 from src.domain.entities.project_fiscal import ProjectFiscalEntity
@@ -19,9 +33,6 @@ from src.errors.repository.error_on_insert.error_on_insert_project_fiscal import
 from src.errors.repository.error_on_find.error_on_find_project_fiscal import ErrorOnFindProjectFiscal
 from src.errors.repository.has_related_children.project_fiscal_has_related_children import ProjectFiscalhasRelatedChildren
 from sqlalchemy.exc import IntegrityError
-
-# Typing
-from typing import Dict
 
 class ProjectFiscalRepository(IProjectFiscalRepository):
 
@@ -183,4 +194,35 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
         except Exception as e:
             raise ErrorOnDeleteProjectFiscal(
                 message=f'Error on delete project fiscal association: {e}'
+            ) from e
+    
+    def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(ProjectFiscal).where(
+                    ProjectFiscal.fiscal_id == fiscal_id
+                )
+                total = query.count()
+                total_pages = (total + page_size - 1) // page_size
+                offset = (page - 1) * page_size
+                projects = query.offset(offset).limit(page_size).all()
+                
+                project_entities = [
+                    ProjectFiscalEntity(
+                        project_id=project_fiscal.project_id, 
+                        fiscal_id=project_fiscal.fiscal_id, 
+                        created_at=project_fiscal.created_at
+                    ) for project_fiscal in projects
+                ]
+                
+                return {
+                    "page": page,
+                    "page_size": page_size,
+                    "total_items": total,
+                    "total_pages": total_pages,
+                    "projects": project_entities
+                }
+        except Exception as e:
+            raise ErrorOnFindProjectFiscal(
+                message=f'Error on get projects by fiscal with pagination fiscal_id={fiscal_id}: {str(e)}'
             ) from e

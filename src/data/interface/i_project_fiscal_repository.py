@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Union
 from src.domain.entities.project_fiscal import ProjectFiscalEntity
 
 class IProjectFiscalRepository(ABC):
@@ -29,3 +29,7 @@ class IProjectFiscalRepository(ABC):
     
     @abstractmethod
     def delete_all_from_project(self, project_id:int) -> None:pass
+    
+    @abstractmethod
+    def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
+        """Retorna projetos associados a um fiscal com paginação"""

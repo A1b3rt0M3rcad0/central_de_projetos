@@ -395,3 +395,105 @@ def test_delete_project_fiscal_association(insert_project_script, insert_status_
             {'project_id': project.id, 'fiscal_id': fiscal.id}
         ).fetchone()
         assert result is None
+
+
+def test_get_projects_by_fiscal_with_pagination(insert_project_script, insert_status_script) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    project_fiscal_repository = ProjectFiscalRepository(db_connection_handler)
+
+    with db_connection_handler as db:
+        # Inserir fiscal
+        db.session.execute(
+            text('INSERT INTO fiscal (name, created_at) VALUES (:name, :created_at)'),
+            {'name': 'Fiscal Pagination', 'created_at': datetime.now(timezone.utc)}
+        )
+        fiscal = db.session.execute(
+            text('SELECT * FROM fiscal WHERE name = :name'),
+            {'name': 'Fiscal Pagination'}
+        ).fetchone()
+
+        # Inserir status
+        db.session.execute(
+            insert_status_script,
+            {'description': 'Status Pagination', 'created_at': datetime.now(timezone.utc)}
+        )
+        status = db.session.execute(
+            text('SELECT * FROM status WHERE description = :description'),
+            {'description': 'Status Pagination'}
+        ).fetchone()
+
+        # Inserir 15 projetos e relacionar ao fiscal
+        for i in range(15):
+            db.session.execute(
+                insert_project_script,
+                {
+                    'status_id': status.id,
+                    'verba_disponivel': 1000 + i,
+                    'andamento_do_projeto': f'Projeto {i}',
+                    'start_date': datetime.now(timezone.utc),
+                    'expected_completion_date': datetime.now(timezone.utc),
+                    'end_date': datetime.now(timezone.utc)
+                }
+            )
+            db.session.commit()
+            
+            project = db.session.execute(
+                text('SELECT * FROM project WHERE andamento_do_projeto = :andamento'),
+                {'andamento': f'Projeto {i}'}
+            ).fetchone()
+
+            db.session.execute(
+                text('INSERT INTO project_fiscal (project_id, fiscal_id, created_at) VALUES (:project_id, :fiscal_id, :created_at)'),
+                {
+                    'project_id': project.id,
+                    'fiscal_id': fiscal.id,
+                    'created_at': datetime.now(timezone.utc)
+                }
+            )
+            db.session.commit()
+
+    # Testar paginação - página 1 com 5 itens
+    result = project_fiscal_repository.get_projects_by_fiscal_with_pagination(
+        fiscal_id=fiscal.id, 
+        page=1, 
+        page_size=5
+    )
+
+    assert result["page"] == 1
+    assert result["page_size"] == 5
+    assert result["total_items"] == 15
+    assert result["total_pages"] == 3
+    assert len(result["projects"]) == 5
+
+    # Testar paginação - página 2 com 5 itens
+    result = project_fiscal_repository.get_projects_by_fiscal_with_pagination(
+        fiscal_id=fiscal.id, 
+        page=2, 
+        page_size=5
+    )
+
+    assert result["page"] == 2
+    assert result["page_size"] == 5
+    assert result["total_items"] == 15
+    assert result["total_pages"] == 3
+    assert len(result["projects"]) == 5
+
+    # Testar paginação - página 3 com 5 itens (deve ter apenas 5 itens restantes)
+    result = project_fiscal_repository.get_projects_by_fiscal_with_pagination(
+        fiscal_id=fiscal.id, 
+        page=3, 
+        page_size=5
+    )
+
+    assert result["page"] == 3
+    assert result["page_size"] == 5
+    assert result["total_items"] == 15
+    assert result["total_pages"] == 3
+    assert len(result["projects"]) == 5
+
+    # Verificar se os projetos retornados são entidades válidas
+    for project_fiscal in result["projects"]:
+        assert hasattr(project_fiscal, 'project_id')
+        assert hasattr(project_fiscal, 'fiscal_id')
+        assert hasattr(project_fiscal, 'created_at')
+        assert project_fiscal.fiscal_id == fiscal.id
