@@ -3908,6 +3908,259 @@
         ]
       }
     },
+    "/work_project/create_with_fiscal_documents": {
+      "post": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Create Work Project With Fiscal Documents",
+        "operationId": "create_work_project_with_fiscal_documents_work_project_create_with_fiscal_documents_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_work_project_with_fiscal_documents_work_project_create_with_fiscal_documents_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkProjectWithFiscalDocumentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/work_project/add_documents": {
+      "post": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Add Documents To Work Project",
+        "description": "Endpoint para adicionar documentos a um work project.\nApenas administradores podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    files: Lista de arquivos para adicionar\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    AddDocumentsToWorkProjectResponse: Mensagem de sucesso e lista de documentos adicionados\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "add_documents_to_work_project_work_project_add_documents_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_documents_to_work_project_work_project_add_documents_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddDocumentsToWorkProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/work_project/{work_project_id}": {
+      "get": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Get Work Project",
+        "description": "Endpoint para buscar um work project específico.\nApenas administradores podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project a ser buscado\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetWorkProjectResponse: Dados do work project encontrado\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_project_work_project__work_project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWorkProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Delete Work Project",
+        "description": "Endpoint para deletar um work project e todos os seus documentos relacionados.\nApenas administradores podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project a ser deletado\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    DeleteWorkProjectResponse: Mensagem de sucesso e ID do work project deletado\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    DeleteWorkProjectError: Se houver erro na deleção\n    InternalServerError: Para outros erros internos",
+        "operationId": "delete_work_project_work_project__work_project_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteWorkProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/work_project/project/{project_id}/pagination/{page_size}/{page}": {
+      "get": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Get Work Projects By Project With Pagination",
+        "description": "Endpoint para buscar work projects de um projeto específico com paginação.\nApenas administradores podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto\n    page_size: Número de itens por página\n    page: Número da página\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetWorkProjectsByProjectWithPaginationResponse: Lista de work projects do projeto com informações de paginação\n    \nRaises:\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_projects_by_project_with_pagination_work_project_project__project_id__pagination__page_size___page__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWorkProjectsByProjectWithPaginationResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
     "/mobile/fiscal/login": {
       "post": {
         "tags": [
@@ -3950,14 +4203,564 @@
         }
       }
     },
-    "/mobile/fiscal/test": {
+    "/mobile/fiscal/add_documents_to_work_project": {
+      "post": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Add Documents To Work Project Mobile",
+        "description": "Endpoint para adicionar documentos a um work project via aplicativo mobile.\nApenas fiscais podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    files: Lista de arquivos para adicionar\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    AddDocumentsToWorkProjectMobileResponse: Mensagem de sucesso e lista de documentos adicionados\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "add_documents_to_work_project_mobile_mobile_fiscal_add_documents_to_work_project_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_documents_to_work_project_mobile_mobile_fiscal_add_documents_to_work_project_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddDocumentsToWorkProjectMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/mobile/fiscal/create_work_project": {
+      "post": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Create Work Project Mobile",
+        "description": "Endpoint para criar work project via aplicativo mobile.\nApenas fiscais vinculados ao projeto podem criar work projects.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto\n    title: Título do work project\n    description: Descrição do work project\n    files: Lista de arquivos para adicionar\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    CreateWorkProjectMobileResponse: Dados do work project criado\n    \nRaises:\n    FiscalNotAuthorizedError: Se o fiscal não estiver vinculado ao projeto\n    WorkProjectNotExists: Se o work project não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "create_work_project_mobile_mobile_fiscal_create_work_project_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_work_project_mobile_mobile_fiscal_create_work_project_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkProjectMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/mobile/fiscal/delete_work_project/{work_project_id}": {
+      "delete": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Delete Work Project Mobile",
+        "description": "Endpoint para deletar work project via aplicativo mobile.\nApenas o fiscal associado ao work project pode deletá-lo.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project a ser deletado\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    DeleteWorkProjectMobileResponse: Mensagem de sucesso e dados do work project deletado\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    FiscalNotAuthorizedError: Se o fiscal não estiver associado ao work project\n    InternalServerError: Para outros erros internos",
+        "operationId": "delete_work_project_mobile_mobile_fiscal_delete_work_project__work_project_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteWorkProjectMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/delete_document_from_work_project": {
+      "delete": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Delete Document From Work Project Mobile",
+        "description": "Endpoint para deletar um documento de um work project via aplicativo mobile.\nApenas o fiscal associado ao work project pode deletar documentos.\n\nArgs:\n    request: Objeto da requisição HTTP\n    body: Dados da requisição (work_project_id e document_name)\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    DeleteDocumentFromWorkProjectMobileResponse: Mensagem de sucesso e dados do documento deletado\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    UnauthorizedAccessError: Se o fiscal não estiver associado ao work project\n    DocumentNotFoundError: Se o documento não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "delete_document_from_work_project_mobile_mobile_fiscal_delete_document_from_work_project_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteDocumentFromWorkProjectFormat"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteDocumentFromWorkProjectMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/mobile/fiscal/work_project/{work_project_id}/thumbnail": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Work Project Thumbnail Mobile",
+        "description": "Endpoint para obter thumbnail do work project via aplicativo mobile.\nApenas fiscais associados ao work project podem acessar este endpoint.\nRetorna a última imagem enviada ou um SVG default se não houver imagens.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    Imagem: Thumbnail do work project (JPEG/PNG) ou SVG default\n    \nRaises:\n    UnauthorizedAccessError: Se o fiscal não estiver autorizado\n    WorkProjectNotFoundError: Se o work project não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_project_thumbnail_mobile_mobile_fiscal_work_project__work_project_id__thumbnail_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/work_project/{work_project_id}/document/{document_name}": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Work Project Document Mobile",
+        "description": "Endpoint para baixar/visualizar documento de um work project via aplicativo mobile.\nO fiscal precisa estar associado ao projeto do work project para acessar os documentos.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    document_name: Nome do documento a ser baixado\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    StreamingResponse: Documento em formato binário com Content-Type apropriado\n    \nRaises:\n    FiscalNotAuthorizedError: Se o fiscal não estiver associado ao projeto\n    WorkProjectNotFoundError: Se o work project não for encontrado\n    DocumentNotFoundError: Se o documento não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_project_document_mobile_mobile_fiscal_work_project__work_project_id__document__document_name__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          },
+          {
+            "name": "document_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/work_projects/pagination/{project_id}/{page_size}/{page}": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Work Projects By Fiscal Mobile",
+        "description": "Endpoint para buscar work projects do fiscal autenticado por projeto específico com paginação via aplicativo mobile.\nApenas fiscais podem acessar este endpoint e só veem seus próprios work projects.\nO fiscal só vê work projects de projetos onde ele está associado.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto para filtrar os work projects\n    page_size: Número de itens por página\n    page: Número da página\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    GetWorkProjectsByFiscalMobileResponse: Lista de work projects do fiscal para o projeto específico com informações de paginação\n    \nRaises:\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_projects_by_fiscal_mobile_mobile_fiscal_work_projects_pagination__project_id___page_size___page__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWorkProjectsByFiscalMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/latest_work_projects/pagination/{page_size}/{page}": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Latest Work Projects By Fiscal",
+        "description": "Endpoint para buscar os últimos work projects do fiscal autenticado com paginação e filtro de data.\nApenas fiscais podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    page_size: Tamanho da página\n    page: Número da página\n    start_date: Data de início para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)\n    end_date: Data de fim para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    GetLatestWorkProjectsByFiscalResponse: Lista de últimos work projects do fiscal ordenados por data de criação\n    \nRaises:\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_latest_work_projects_by_fiscal_mobile_fiscal_latest_work_projects_pagination__page_size___page__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetLatestWorkProjectsByFiscalResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/work_project/{work_project_id}": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Work Project By Fiscal Mobile",
+        "description": "Endpoint para buscar um work project específico verificando se o fiscal está associado.\nApenas fiscais podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    GetWorkProjectByFiscalMobileResponse: Dados do work project se o fiscal estiver associado\n    \nRaises:\n    WorkProjectNotExists: Se o work project não existir ou o fiscal não estiver associado\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_work_project_by_fiscal_mobile_mobile_fiscal_work_project__work_project_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWorkProjectByFiscalMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/projects/pagination/{page_size}/{page}": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Projects By Fiscal With Pagination Mobile",
+        "description": "Endpoint para buscar todos os projetos associados ao fiscal com paginação.\nApenas fiscais podem acessar este endpoint.\n\nArgs:\n    request: Objeto da requisição HTTP\n    page_size: Tamanho da página\n    page: Número da página\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectsByFiscalWithPaginationMobileResponse: Lista paginada de projetos associados ao fiscal\n    \nRaises:\n    ProjectFiscalNotExists: Se não existir projetos associados ao fiscal\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_projects_by_fiscal_with_pagination_mobile_mobile_fiscal_projects_pagination__page_size___page__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProjectsByFiscalWithPaginationMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/me": {
       "get": {
         "tags": [
           "Fiscal Mobile"
         ],
         "summary": "Test Fiscal Mobile",
         "description": "Endpoint de teste para verificar se o fiscal está autenticado.\n\nArgs:\n    request: Objeto da requisição HTTP\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    TestFiscalResponse: Dados do fiscal autenticado e timestamp\n    \nRaises:\n    HTTPException: Se o fiscal não estiver autenticado ou não tiver permissão",
-        "operationId": "test_fiscal_mobile_mobile_fiscal_test_get",
+        "operationId": "test_fiscal_mobile_mobile_fiscal_me_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4010,6 +4813,77 @@
   },
   "components": {
     "schemas": {
+      "AddDocumentsToWorkProjectContent": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "documents_added": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Documents Added"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "documents_added"
+        ],
+        "title": "AddDocumentsToWorkProjectContent"
+      },
+      "AddDocumentsToWorkProjectMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "documents_added": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Documents Added"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "documents_added"
+        ],
+        "title": "AddDocumentsToWorkProjectMobileResponse"
+      },
+      "AddDocumentsToWorkProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/AddDocumentsToWorkProjectContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "AddDocumentsToWorkProjectResponse"
+      },
       "AssociateVereadorWithAProjectFormat": {
         "properties": {
           "cpf": {
@@ -4086,6 +4960,115 @@
           "message"
         ],
         "title": "BaseMessageResponse"
+      },
+      "Body_add_documents_to_work_project_mobile_mobile_fiscal_add_documents_to_work_project_post": {
+        "properties": {
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "work_project_id"
+        ],
+        "title": "Body_add_documents_to_work_project_mobile_mobile_fiscal_add_documents_to_work_project_post"
+      },
+      "Body_add_documents_to_work_project_work_project_add_documents_post": {
+        "properties": {
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "work_project_id"
+        ],
+        "title": "Body_add_documents_to_work_project_work_project_add_documents_post"
+      },
+      "Body_create_work_project_mobile_mobile_fiscal_create_work_project_post": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "title",
+          "description"
+        ],
+        "title": "Body_create_work_project_mobile_mobile_fiscal_create_work_project_post"
+      },
+      "Body_create_work_project_with_fiscal_documents_work_project_create_with_fiscal_documents_post": {
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description"
+        ],
+        "title": "Body_create_work_project_with_fiscal_documents_work_project_create_with_fiscal_documents_post"
       },
       "Body_save_document_document_save_post": {
         "properties": {
@@ -4527,6 +5510,74 @@
         ],
         "title": "CreateUserFormat"
       },
+      "CreateWorkProjectMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "photo_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Name"
+          },
+          "documents_count": {
+            "type": "integer",
+            "title": "Documents Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "work_project_id",
+          "title",
+          "documents_count"
+        ],
+        "title": "CreateWorkProjectMobileResponse"
+      },
+      "CreateWorkProjectWithFiscalDocumentResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/WorkProjectContent"
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content",
+          "access_token"
+        ],
+        "title": "CreateWorkProjectWithFiscalDocumentResponse"
+      },
       "DeleAllDocumentsFormat": {
         "properties": {
           "project_id": {
@@ -4588,6 +5639,54 @@
           "document_name"
         ],
         "title": "DeleteDocumentFormat"
+      },
+      "DeleteDocumentFromWorkProjectFormat": {
+        "properties": {
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id",
+            "description": "ID do work project"
+          },
+          "document_name": {
+            "type": "string",
+            "title": "Document Name",
+            "description": "Nome do documento a ser deletado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "work_project_id",
+          "document_name"
+        ],
+        "title": "DeleteDocumentFromWorkProjectFormat"
+      },
+      "DeleteDocumentFromWorkProjectMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "document_name": {
+            "type": "string",
+            "title": "Document Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "work_project_id",
+          "fiscal_id",
+          "document_name"
+        ],
+        "title": "DeleteDocumentFromWorkProjectMobileResponse"
       },
       "DeleteEmpresaFormat": {
         "properties": {
@@ -4738,6 +5837,47 @@
           "cpf"
         ],
         "title": "DeleteUserFormat"
+      },
+      "DeleteWorkProjectMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "work_project_id",
+          "fiscal_id"
+        ],
+        "title": "DeleteWorkProjectMobileResponse"
+      },
+      "DeleteWorkProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "work_project_id": {
+            "type": "integer",
+            "title": "Work Project Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "work_project_id"
+        ],
+        "title": "DeleteWorkProjectResponse"
       },
       "Empresa": {
         "properties": {
@@ -5953,6 +7093,71 @@
         ],
         "title": "GetCountProjectsByUserResponse"
       },
+      "GetLatestWorkProjectsByFiscalResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/WorkProjectResponse"
+            },
+            "type": "array",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "total",
+          "page",
+          "page_size",
+          "fiscal_id",
+          "start_date",
+          "end_date",
+          "content"
+        ],
+        "title": "GetLatestWorkProjectsByFiscalResponse"
+      },
       "GetProjecCountsByBairroContent": {
         "properties": {
           "bairros": {
@@ -6177,6 +7382,47 @@
         ],
         "title": "GetProjectVerbaByBairroResponse"
       },
+      "GetProjectsByFiscalWithPaginationMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_items": {
+            "type": "integer",
+            "title": "Total Items"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_projects_by_fiscal_with_pagination_response__Project"
+            },
+            "type": "array",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "page",
+          "page_size",
+          "total_items",
+          "total_pages",
+          "content"
+        ],
+        "title": "GetProjectsByFiscalWithPaginationMobileResponse"
+      },
       "GetProjectsWithPaginationReponse": {
         "properties": {
           "message": {
@@ -6234,6 +7480,122 @@
           "access_token"
         ],
         "title": "GetUserResponse"
+      },
+      "GetWorkProjectByFiscalMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__WorkProjectContentResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content"
+        ],
+        "title": "GetWorkProjectByFiscalMobileResponse"
+      },
+      "GetWorkProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_project_response__WorkProjectContentResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "content"
+        ],
+        "title": "GetWorkProjectResponse"
+      },
+      "GetWorkProjectsByFiscalMobileResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__WorkProjectContentResponse"
+            },
+            "type": "array",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "total",
+          "page",
+          "page_size",
+          "fiscal_id",
+          "content"
+        ],
+        "title": "GetWorkProjectsByFiscalMobileResponse"
+      },
+      "GetWorkProjectsByProjectWithPaginationResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "content": {
+            "items": {
+              "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__WorkProjectContentResponse"
+            },
+            "type": "array",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "total",
+          "page",
+          "page_size",
+          "project_id",
+          "content"
+        ],
+        "title": "GetWorkProjectsByProjectWithPaginationResponse"
       },
       "HistoryContent": {
         "properties": {
@@ -7098,6 +8460,147 @@
         ],
         "title": "WhoAmIReponse"
       },
+      "WorkProjectContent": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "photo_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Name"
+          },
+          "documents_count": {
+            "type": "integer",
+            "title": "Documents Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "title",
+          "photo_name",
+          "documents_count"
+        ],
+        "title": "WorkProjectContent"
+      },
+      "WorkProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_latest_work_projects_by_fiscal_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_latest_work_projects_by_fiscal_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name",
+          "additional_documents",
+          "created_at",
+          "updated_at",
+          "fiscal",
+          "project"
+        ],
+        "title": "WorkProjectResponse"
+      },
       "src__main__routes__api__auth__request_format__login_fiscal_format__LoginFiscalFormat": {
         "properties": {
           "email": {
@@ -7571,6 +9074,420 @@
         ],
         "title": "User"
       },
+      "src__main__routes__api__work_project__work_project_response__get_work_project_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_work_project_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_work_project_response__WorkProjectContentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "type": "string",
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_project_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_project_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name"
+        ],
+        "title": "WorkProjectContentResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__WorkProjectContentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "type": "string",
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_work_projects_with_pagination_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name"
+        ],
+        "title": "WorkProjectContentResponse"
+      },
       "src__main__routes__mobile__fiscal__request_format__login_fiscal_format__LoginFiscalFormat": {
         "properties": {
           "email": {
@@ -7590,6 +9507,578 @@
         ],
         "title": "LoginFiscalFormat",
         "description": "Formato de requisição para login do fiscal via mobile.\n\nAttributes:\n    email: Email do fiscal\n    password: Senha do fiscal"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_latest_work_projects_by_fiscal_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_latest_work_projects_by_fiscal_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "name",
+          "andamento_do_projeto",
+          "verba_disponivel",
+          "start_date",
+          "expected_completion_date",
+          "end_date"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_projects_by_fiscal_with_pagination_response__Project": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "verba_disponivel",
+          "andamento_do_projeto",
+          "start_date",
+          "expected_completion_date",
+          "end_date",
+          "name"
+        ],
+        "title": "Project"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "type": "string",
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "type": "string",
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id",
+          "name",
+          "andamento_do_projeto",
+          "verba_disponivel"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__WorkProjectContentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "type": "string",
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_project_by_fiscal_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "WorkProjectContentResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__WorkProjectContentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "type": "string",
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__mobile__fiscal__response_format__get_work_projects_by_fiscal_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name"
+        ],
+        "title": "WorkProjectContentResponse"
       }
     },
     "securitySchemes": {
