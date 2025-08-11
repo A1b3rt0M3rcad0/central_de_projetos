@@ -436,6 +436,120 @@ class WorkProjectRepository(IWorkProjectRepository):
                     message=f'Error on get work_projects with pagination: {str(e)}'
                 ) from e
     
+    def get_work_projects_with_pagination_by_fiscal(self, fiscal_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
+        with self.__db_connection_handler as db:
+            try:
+                offset = (page - 1) * page_size
+                
+                # Count total work projects for this fiscal
+                total_count = db.session.query(WorkProject).where(
+                    WorkProject.fiscal_id == fiscal_id
+                ).count()
+                
+                # Get paginated work projects for this fiscal
+                work_projects = db.session.query(WorkProject).options(
+                    joinedload(WorkProject.project),
+                    joinedload(WorkProject.fiscal)
+                ).where(
+                    WorkProject.fiscal_id == fiscal_id
+                ).offset(offset).limit(page_size).all()
+                
+                work_project_entities = [
+                    WorkProjectEntity(
+                        id=wp.id,
+                        project_id=wp.project_id,
+                        fiscal_id=wp.fiscal_id,
+                        title=wp.title,
+                        description=wp.description,
+                        photo_name=wp.photo_name,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
+                        created_at=wp.created_at,
+                        updated_at=wp.updated_at,
+                        fiscal=FiscalEntity(
+                            fiscal_id=wp.fiscal.id,
+                            name=wp.fiscal.name,
+                            created_at=wp.fiscal.created_at
+                        ),
+                        project=ProjectEntity(
+                            project_id=wp.project.id,
+                            status_id=wp.project.status_id,
+                            name=wp.project.name,
+                            andamento_do_projeto=wp.project.andamento_do_projeto,
+                            verba_disponivel=MonetaryValue(wp.project.verba_disponivel),
+                            start_date=wp.project.start_date,
+                            expected_completion_date=wp.project.expected_completion_date,
+                            end_date=wp.project.end_date
+                        )
+                    ) for wp in work_projects
+                ]
+                
+                return {
+                    "total": total_count,
+                    "data": work_project_entities
+                }
+            except Exception as e:
+                raise ErrorOnFindWorkProject(
+                    message=f'Error on get work_projects with pagination by fiscal_id: {fiscal_id}: {str(e)}'
+                ) from e
+    
+    def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
+        with self.__db_connection_handler as db:
+            try:
+                offset = (page - 1) * page_size
+                
+                # Count total work projects for this fiscal and project
+                total_count = db.session.query(WorkProject).where(
+                    WorkProject.fiscal_id == fiscal_id,
+                    WorkProject.project_id == project_id
+                ).count()
+                
+                # Get paginated work projects for this fiscal and project
+                work_projects = db.session.query(WorkProject).options(
+                    joinedload(WorkProject.project),
+                    joinedload(WorkProject.fiscal)
+                ).where(
+                    WorkProject.fiscal_id == fiscal_id,
+                    WorkProject.project_id == project_id
+                ).offset(offset).limit(page_size).all()
+                
+                work_project_entities = [
+                    WorkProjectEntity(
+                        id=wp.id,
+                        project_id=wp.project_id,
+                        fiscal_id=wp.fiscal_id,
+                        title=wp.title,
+                        description=wp.description,
+                        photo_name=wp.photo_name,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
+                        created_at=wp.created_at,
+                        updated_at=wp.updated_at,
+                        fiscal=FiscalEntity(
+                            fiscal_id=wp.fiscal.id,
+                            name=wp.fiscal.name,
+                            created_at=wp.fiscal.created_at
+                        ),
+                        project=ProjectEntity(
+                            project_id=wp.project.id,
+                            status_id=wp.project.status_id,
+                            name=wp.project.name,
+                            andamento_do_projeto=wp.project.andamento_do_projeto,
+                            verba_disponivel=MonetaryValue(wp.project.verba_disponivel),
+                            start_date=wp.project.start_date,
+                            expected_completion_date=wp.project.expected_completion_date,
+                            end_date=wp.project.end_date
+                        )
+                    ) for wp in work_projects
+                ]
+                
+                return {
+                    "total": total_count,
+                    "data": work_project_entities
+                }
+            except Exception as e:
+                raise ErrorOnFindWorkProject(
+                    message=f'Error on get work_projects with pagination by fiscal_id: {fiscal_id} and project_id: {project_id}: {str(e)}'
+                ) from e
+    
     def update(self, work_project_id:int, update_params:Dict) -> None:
         with self.__db_connection_handler as db:
             try:

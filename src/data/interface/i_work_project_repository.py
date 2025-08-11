@@ -26,10 +26,19 @@ class IWorkProjectRepository(ABC):
     def find_by_title(self, title:str) -> WorkProjectEntity:pass
 
     @abstractmethod
+    def find_by_title_and_fiscal(self, title:str, fiscal_id:int) -> WorkProjectEntity:pass
+
+    @abstractmethod
     def count_work_projects(self) -> Dict[str, int]:pass
 
     @abstractmethod
     def get_work_projects_with_pagination(self, page:int, page_size:int) -> Dict[str, Union[int, WorkProjectEntity]]:pass
+
+    @abstractmethod
+    def get_work_projects_with_pagination_by_fiscal(self, fiscal_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:pass
+
+    @abstractmethod
+    def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:pass
 
     @abstractmethod
     def update(self, work_project_id:int, update_params:Dict) -> None:pass

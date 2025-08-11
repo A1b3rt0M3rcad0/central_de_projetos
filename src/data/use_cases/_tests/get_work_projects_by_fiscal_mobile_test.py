@@ -64,7 +64,10 @@ class TestGetWorkProjectsByFiscalMobile:
             work_projects.append(work_project)
         
         # Mock repository response
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = work_projects
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 3,
+            'data': work_projects
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -80,9 +83,11 @@ class TestGetWorkProjectsByFiscalMobile:
         assert result['data'] == work_projects
         
         # Verificar se o repository foi chamado corretamente
-        self.mock_work_project_repository.find_by_project_and_fiscal.assert_called_once_with(
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.assert_called_once_with(
+            fiscal_id=fiscal_id,
             project_id=project_id,
-            fiscal_id=fiscal_id
+            page=page,
+            page_size=page_size
         )
 
     def test_get_by_fiscal_mobile_empty_list(self):
@@ -94,7 +99,10 @@ class TestGetWorkProjectsByFiscalMobile:
         page_size = 10
         
         # Mock repository response vazio
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = []
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 0,
+            'data': []
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -136,7 +144,10 @@ class TestGetWorkProjectsByFiscalMobile:
             work_projects.append(work_project)
         
         # Mock repository response
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = work_projects
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 5,
+            'data': work_projects[:2]  # Primeira página
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -179,7 +190,10 @@ class TestGetWorkProjectsByFiscalMobile:
             work_projects.append(work_project)
         
         # Mock repository response
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = work_projects
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 5,
+            'data': work_projects[2:4]  # Segunda página
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -222,7 +236,10 @@ class TestGetWorkProjectsByFiscalMobile:
             work_projects.append(work_project)
         
         # Mock repository response
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = work_projects
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 5,
+            'data': work_projects[4:5]  # Última página
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -264,7 +281,10 @@ class TestGetWorkProjectsByFiscalMobile:
             work_projects.append(work_project)
         
         # Mock repository response
-        self.mock_work_project_repository.find_by_project_and_fiscal.return_value = work_projects
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.return_value = {
+            'total': 5,
+            'data': []  # Página fora do range
+        }
         
         # Act
         result = self.use_case.get_by_fiscal_mobile(
@@ -287,7 +307,7 @@ class TestGetWorkProjectsByFiscalMobile:
         page_size = 10
         
         # Mock repository para lançar exceção
-        self.mock_work_project_repository.find_by_project_and_fiscal.side_effect = Exception("Database error")
+        self.mock_work_project_repository.get_work_projects_with_pagination_by_fiscal_and_project.side_effect = Exception("Database error")
         
         # Act & Assert
         with pytest.raises(Exception) as exc_info:
