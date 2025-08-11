@@ -17,6 +17,7 @@ from src.main.composers.get_latest_work_projects_by_fiscal_composer import get_l
 from src.main.composers.get_work_project_by_fiscal_mobile_composer import get_work_project_by_fiscal_mobile_composer
 from src.main.composers.get_projects_by_fiscal_with_pagination_composer import get_projects_by_fiscal_with_pagination_composer
 from src.main.composers.delete_document_from_work_project_mobile_composer import delete_document_from_work_project_mobile_composer
+from src.main.composers.get_work_project_thumbnail_composer import get_work_project_thumbnail_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.request_format.delete_document_from_work_project_format import DeleteDocumentFromWorkProjectFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
@@ -303,6 +304,62 @@ async def delete_document_from_work_project_mobile(
         http_response = await request_adapter(
             request=request,
             controller=delete_document_from_work_project_mobile_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/work_project/{work_project_id}/thumbnail', 
+            responses=generate_error_responses())
+async def get_work_project_thumbnail_mobile(
+    request: Request,
+    work_project_id: int,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para obter thumbnail do work project via aplicativo mobile.
+    Apenas fiscais associados ao work project podem acessar este endpoint.
+    Retorna a última imagem enviada ou um SVG default se não houver imagens.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        Imagem: Thumbnail do work project (JPEG/PNG) ou SVG default
+        
+    Raises:
+        UnauthorizedAccessError: Se o fiscal não estiver autorizado
+        WorkProjectNotFoundError: Se o work project não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=get_work_project_thumbnail_composer()
         )
         
         log_http(
