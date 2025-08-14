@@ -466,7 +466,12 @@ pyopenssl==25.0.0 \
 pytest==8.3.5 \
     --hash=sha256:c69214aa47deac29fad6c2a4f590b9c4a9fdb16a403176fe154b79c0b4d4d820 \
     --hash=sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845
-    # via central-de-projetos
+    # via
+    #   central-de-projetos
+    #   pytest-asyncio
+pytest-asyncio==1.1.0 \
+    --hash=sha256:5fe2d69607b0bd75c656d1211f969cadba035030156745ee09e7d71740e58ecf \
+    --hash=sha256:796aa822981e01b68c12e4827b8697108f7205020f24b5793b3c41555dab68ea
 python-dotenv==1.1.0 \
     --hash=sha256:41f90bc6f5f177fb41f53e87666db362025010eb28f60a01c9143bfa33a2b2d5 \
     --hash=sha256:d7c01d9e2293916c18baf562d95698754b0dbbb5e74d457c45d4f6561fb9d55d
