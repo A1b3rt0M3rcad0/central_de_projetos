@@ -38,6 +38,23 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{fiscal_name}', response_model=FindFiscalByNameResponse, responses=generate_error_responses())
 async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar um fiscal específico pelo nome.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        fiscal_name: Nome do fiscal a ser buscado
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindFiscalByNameResponse: Dados do fiscal encontrado
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['fiscal_name'] = fiscal_name
         http_response = await request_adapter(request, find_fiscal_by_name_composer())
@@ -61,6 +78,21 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
 
 @routes.get('/fiscal/all', response_model=FindAllFiscalReponse, responses=generate_error_responses())
 async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os fiscais do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllFiscalResponse: Lista com todos os fiscais do sistema
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_all_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -83,6 +115,21 @@ async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN",
 
 @routes.get('/fiscal/count/all', response_model=CountFiscalReponse, responses=generate_error_responses())
 async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para contar o total de fiscais no sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        CountFiscalResponse: Número total de fiscais
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, count_fiscals_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -105,6 +152,23 @@ async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar um novo fiscal no sistema.
+    Apenas usuários ADMIN podem criar fiscais.
+    
+    Args:
+        body: Dados do fiscal a ser criado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        FiscalAlreadyExistsError: Se o fiscal já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -127,6 +191,24 @@ async def create_fiscal(body:CreateFiscalFormat, request:Request, user=Security(
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar um fiscal do sistema.
+    Apenas usuários ADMIN podem deletar fiscais.
+    
+    Args:
+        body: Dados do fiscal a ser deletado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        FiscalHasRelatedChildrenError: Se o fiscal possui relacionamentos que impedem a deleção
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -149,6 +231,24 @@ async def delete_fiscal(body:DeleteFiscalFormat, request:Request, user=Security(
 
 @routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_fiscal(body:UpdateFiscalNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o nome de um fiscal.
+    Apenas usuários ADMIN podem alterar nomes de fiscais.
+    
+    Args:
+        body: Dados para atualização (nome atual e novo nome do fiscal)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        FiscalAlreadyExistsError: Se já existir um fiscal com o novo nome
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, update_fiscal_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

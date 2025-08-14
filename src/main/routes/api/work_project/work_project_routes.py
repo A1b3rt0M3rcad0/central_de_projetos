@@ -44,6 +44,30 @@ async def create_work_project_with_fiscal_documents(
     files: List[UploadFile] = File(None),
     user: dict = Security(role_required(["ADMIN"]))
 ):
+    """
+    Endpoint para criar um work project com documentos fiscais.
+    Permite criar um projeto de trabalho e anexar documentos fiscais simultaneamente.
+    Apenas usuários ADMIN podem criar work projects.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto pai (via formulário)
+        fiscal_id: ID do fiscal responsável (via formulário)
+        title: Título do work project (via formulário)
+        description: Descrição do work project (via formulário)
+        files: Lista de arquivos fiscais para anexar (opcional)
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        CreateWorkProjectWithFiscalDocumentResponse: Dados do work project criado e documentos anexados
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto pai não for encontrado
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InvalidFileTypeError: Se algum arquivo não for suportado
+        InternalServerError: Para outros erros internos
+    """
     try:
         # Preparar dados do formulário
         form_data = {

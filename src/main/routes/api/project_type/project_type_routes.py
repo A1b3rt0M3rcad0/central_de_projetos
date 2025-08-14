@@ -33,6 +33,25 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{project_id}', response_model=FindTypeFromProjectResponse, responses=generate_error_responses())
 async def find_type_from_project(project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar o tipo de um projeto específico.
+    Retorna informações sobre o tipo/categoria do projeto.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        project_id: ID do projeto
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindTypeFromProjectResponse: Dados do tipo do projeto
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        TypeNotFoundError: Se o tipo não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_type_from_project_composer())
@@ -56,6 +75,22 @@ async def find_type_from_project(project_id:int, request:Request, user=Security(
 
 @routes.get('/project/types/count', response_model=GetProjectTypesCountByBairroResponse, responses=generate_error_responses())
 async def get_project_types_count_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de tipos de projetos agrupados por bairro.
+    Retorna estatísticas de tipos de projeto por bairro (infraestrutura, educação, etc.).
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectTypesCountByBairroResponse: Lista com contagem de tipos por bairro
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_project_types_count_by_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -78,6 +113,26 @@ async def get_project_types_count_by_bairro(request:Request, user=Security(role_
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_type(body:CreateProjectTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova associação entre projeto e tipo.
+    Vincula um projeto a um tipo/categoria específica.
+    Apenas usuários ADMIN podem criar associações.
+    
+    Args:
+        body: Dados da associação (project_id e type_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        TypeNotFoundError: Se o tipo não for encontrado
+        AssociationAlreadyExistsError: Se a associação já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response  = await request_adapter(request, create_project_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -100,6 +155,26 @@ async def create_project_type(body:CreateProjectTypeFormat, request:Request, use
     
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_type(body:DeleteProjectTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma associação entre projeto e tipo.
+    Remove o vínculo entre um projeto e um tipo/categoria.
+    Apenas usuários ADMIN podem deletar associações.
+    
+    Args:
+        body: Dados da associação a ser removida (project_id e type_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        TypeNotFoundError: Se o tipo não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_project_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

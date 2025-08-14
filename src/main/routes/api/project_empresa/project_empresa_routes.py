@@ -35,6 +35,26 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{empresa_id}/{project_id}', response_model=FindProjectEmpresaResponse, responses=generate_error_responses())
 async def find_project_empresa(empresa_id:int, project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar uma associação específica entre projeto e empresa.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        empresa_id: ID da empresa
+        project_id: ID do projeto
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindProjectEmpresaResponse: Dados da associação projeto-empresa
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['empresa_id'] = empresa_id
         request.path_params['project_id'] = project_id
@@ -59,6 +79,24 @@ async def find_project_empresa(empresa_id:int, project_id:int, request:Request, 
 
 @routes.get('/{empresa_id}', response_model=FindAllProjectsFromEmpresaResponse, responses=generate_error_responses())
 async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os projetos associados a uma empresa específica.
+    Retorna lista de todos os projetos que estão vinculados à empresa.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        empresa_id: ID da empresa
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllProjectsFromEmpresaResponse: Lista de projetos da empresa
+        
+    Raises:
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['empresa_id'] = empresa_id
         http_response = await request_adapter(request, find_all_projects_from_empresa_composer())
@@ -82,6 +120,22 @@ async def find_all_projects_from_empresa(empresa_id:int, request:Request, user=S
 
 @routes.get('/project/count/all', response_model=GetCountProjectsByEmpresaResponse, responses=generate_error_responses())
 async def get_count_projects_by_empresas(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de projetos agrupados por empresa.
+    Retorna estatísticas de quantos projetos cada empresa possui.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetCountProjectsByEmpresaResponse: Lista com contagem de projetos por empresa
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_count_projects_by_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -104,6 +158,26 @@ async def get_count_projects_by_empresas(request:Request, user=Security(role_req
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova associação entre projeto e empresa.
+    Vincula um projeto a uma empresa específica.
+    Apenas usuários ADMIN podem criar associações.
+    
+    Args:
+        body: Dados da associação (project_id e empresa_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        AssociationAlreadyExistsError: Se a associação já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_project_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -126,6 +200,26 @@ async def create_project_empresa(body:CreateProjectEmpresaFormat, request:Reques
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_empresa(body:DeleteProjectEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma associação entre projeto e empresa.
+    Remove o vínculo entre um projeto e uma empresa.
+    Apenas usuários ADMIN podem deletar associações.
+    
+    Args:
+        body: Dados da associação a ser removida (project_id e empresa_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_project_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

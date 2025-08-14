@@ -35,6 +35,23 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_type(body:CreateTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar um novo tipo de projeto no sistema.
+    Apenas usuários ADMIN podem criar tipos.
+    
+    Args:
+        body: Dados do tipo a ser criado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        TypeAlreadyExistsError: Se o tipo já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -57,6 +74,24 @@ async def create_type(body:CreateTypeFormat, request:Request, user=Security(role
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_type(body:DeleteTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar um tipo de projeto do sistema.
+    Apenas usuários ADMIN podem deletar tipos.
+    
+    Args:
+        body: Dados do tipo a ser deletado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        TypeNotFoundError: Se o tipo não for encontrado
+        TypeHasRelatedChildrenError: Se o tipo possui relacionamentos que impedem a deleção
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -79,6 +114,24 @@ async def delete_type(body:DeleteTypeFormat, request:Request, user=Security(role
 
 @routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_type(body:UpdateTypeFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o nome de um tipo de projeto.
+    Apenas usuários ADMIN podem alterar nomes de tipos.
+    
+    Args:
+        body: Dados para atualização (nome atual e novo nome do tipo)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        TypeNotFoundError: Se o tipo não for encontrado
+        TypeAlreadyExistsError: Se já existir um tipo com o novo nome
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, update_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -101,6 +154,23 @@ async def update_type(body:UpdateTypeFormat, request:Request, user=Security(role
 
 @routes.get('/find_by_name/{type_name}', response_model=FindTypeByExactNameReponse, responses=generate_error_responses())
 async def find_type_by_exact_name(type_name:str, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar um tipo de projeto específico pelo nome exato.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        type_name: Nome exato do tipo a ser buscado
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindTypeByExactNameResponse: Dados do tipo encontrado
+        
+    Raises:
+        TypeNotFoundError: Se o tipo não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['type_name'] = type_name
         http_response = await request_adapter(request, find_type_by_exact_name_composer())
@@ -124,6 +194,21 @@ async def find_type_by_exact_name(type_name:str, request:Request, user=Security(
 
 @routes.get('/all', response_model=FindAllTypesResponse, responses=generate_error_responses())
 async def find_all_types(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os tipos de projeto do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllTypesResponse: Lista com todos os tipos de projeto do sistema
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_all_types_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

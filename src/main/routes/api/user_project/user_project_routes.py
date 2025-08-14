@@ -35,6 +35,22 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/all', response_model=FindAllAssocitationFromProjectsResponse, responses=generate_error_responses())
 async def find_all_association_from_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todas as associações entre usuários e projetos.
+    Retorna lista completa de todos os vínculos usuário-projeto do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllAssocitationFromProjectsResponse: Lista de todas as associações
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_all_association_from_projects_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -57,6 +73,22 @@ async def find_all_association_from_projects(request:Request, user=Security(role
 
 @routes.get('/project/count/all', response_model=GetCountProjectsByUserResponse, responses=generate_error_responses())
 async def get_count_projets_by_user(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de projetos agrupados por usuário.
+    Retorna estatísticas de quantos projetos cada usuário (vereador/assessor) gerencia.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetCountProjectsByUserResponse: Lista com contagem de projetos por usuário
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_count_projets_by_user_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -79,6 +111,26 @@ async def get_count_projets_by_user(request:Request, user=Security(role_required
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def associate_vereador_with_a_project(body:AssociateVereadorWithAProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova associação entre vereador e projeto.
+    Vincula um vereador (ou assessor) como responsável por um projeto.
+    Apenas usuários ADMIN podem criar associações.
+    
+    Args:
+        body: Dados da associação (user_cpf e project_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        UserNotFoundError: Se o usuário não for encontrado
+        ProjectNotFoundError: Se o projeto não for encontrado
+        AssociationAlreadyExistsError: Se a associação já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, associate_vereador_with_a_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -101,6 +153,26 @@ async def associate_vereador_with_a_project(body:AssociateVereadorWithAProjectFo
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_association(body:DeleteAssociationFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma associação entre usuário e projeto.
+    Remove o vínculo entre um vereador/assessor e um projeto.
+    Apenas usuários ADMIN podem deletar associações.
+    
+    Args:
+        body: Dados da associação a ser removida (user_cpf e project_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        UserNotFoundError: Se o usuário não for encontrado
+        ProjectNotFoundError: Se o projeto não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_association_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -123,6 +195,26 @@ async def delete_association(body:DeleteAssociationFormat, request:Request, user
 
 @routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_association_from_project(body:UpdateAssociationFromProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar uma associação entre usuário e projeto.
+    Permite modificar detalhes da associação (como permissões ou nível de acesso).
+    Apenas usuários ADMIN podem atualizar associações.
+    
+    Args:
+        body: Dados da associação a ser atualizada
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        UserNotFoundError: Se o usuário não for encontrado
+        ProjectNotFoundError: Se o projeto não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, update_association_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
