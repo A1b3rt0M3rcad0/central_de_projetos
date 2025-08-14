@@ -38,6 +38,23 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{bairro_name}', response_model=FindBairroByNameResponse, responses=generate_error_responses())
 async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar um bairro específico pelo nome.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        bairro_name: Nome do bairro a ser buscado
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindBairroByNameResponse: Dados do bairro encontrado
+        
+    Raises:
+        BairroNotFoundError: Se o bairro não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_bairro_by_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -61,6 +78,21 @@ async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(ro
 
 @routes.get('/count/all', response_model=CountBairrosResponse, responses=generate_error_responses())
 async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para contar o total de bairros no sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        CountBairrosResponse: Número total de bairros
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, count_bairros_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -84,6 +116,21 @@ async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "
 
 @routes.get('/bairro/all', response_model=FindAllBairroResponse, responses=generate_error_responses())
 async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os bairros do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllBairroResponse: Lista com todos os bairros do sistema
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_all_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -107,6 +154,23 @@ async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN",
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_bairro(body:CreateBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar um novo bairro no sistema.
+    Apenas usuários ADMIN podem criar bairros.
+    
+    Args:
+        body: Dados do bairro a ser criado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        BairroAlreadyExistsError: Se o bairro já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -129,6 +193,24 @@ async def create_bairro(body:CreateBairroFormat, request:Request, user=Security(
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_bairro(body:DeleteBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar um bairro do sistema.
+    Apenas usuários ADMIN podem deletar bairros.
+    
+    Args:
+        body: Dados do bairro a ser deletado (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        BairroNotFoundError: Se o bairro não for encontrado
+        BairroHasRelatedChildrenError: Se o bairro possui relacionamentos que impedem a deleção
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -151,6 +233,24 @@ async def delete_bairro(body:DeleteBairroFormat, request:Request, user=Security(
 
 @routes.patch('/name', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_bairro_name(body:UpdateBairroNameFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o nome de um bairro.
+    Apenas usuários ADMIN podem alterar nomes de bairros.
+    
+    Args:
+        body: Dados para atualização (nome atual e novo nome do bairro)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        BairroNotFoundError: Se o bairro não for encontrado
+        BairroAlreadyExistsError: Se já existir um bairro com o novo nome
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, update_bairro_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

@@ -36,6 +36,23 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{empresa_name}', response_model=FindEmpresaResponse, responses=generate_error_responses())
 async def find_empresa(empresa_name, request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
+    """
+    Endpoint para buscar uma empresa específica pelo nome exato.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        empresa_name: Nome exato da empresa a ser buscada
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindEmpresaResponse: Dados da empresa encontrada
+        
+    Raises:
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_empresa_by_exact_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -58,6 +75,21 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
 
 @routes.get('/empresa/all', response_model=FindAllEmpresaResponse, responses=generate_error_responses())
 async def find_all_empresa(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todas as empresas do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllEmpresaResponse: Lista com todas as empresas do sistema
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -80,6 +112,21 @@ async def find_all_empresa(request:Request, user=Security(role_required(["VEREAD
 
 @routes.get('/empresa/count/all', response_model=CountEmpresasResponse, responses=generate_error_responses())
 async def count_empresas(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
+    """
+    Endpoint para contar o total de empresas no sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        CountEmpresasResponse: Número total de empresas
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, count_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -102,6 +149,23 @@ async def count_empresas(request:Request, user=Security(role_required(["VEREADOR
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_empresa(body:CreateEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova empresa no sistema.
+    Apenas usuários ADMIN podem criar empresas.
+    
+    Args:
+        body: Dados da empresa a ser criada (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        EmpresaAlreadyExistsError: Se a empresa já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -124,6 +188,24 @@ async def create_empresa(body:CreateEmpresaFormat, request:Request, user=Securit
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_empresa(body:DeleteEmpresaFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma empresa do sistema.
+    Apenas usuários ADMIN podem deletar empresas.
+    
+    Args:
+        body: Dados da empresa a ser deletada (nome)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        EmpresaHasRelatedChildrenError: Se a empresa possui relacionamentos que impedem a deleção
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_empresa_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -146,6 +228,24 @@ async def delete_empresa(body:DeleteEmpresaFormat, request:Request, user=Securit
 
 @routes.patch('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def update_empresa(body:UpdateEmpresasFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o nome de uma empresa.
+    Apenas usuários ADMIN podem alterar nomes de empresas.
+    
+    Args:
+        body: Dados para atualização (nome atual e novo nome da empresa)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        EmpresaNotFoundError: Se a empresa não for encontrada
+        EmpresaAlreadyExistsError: Se já existir uma empresa com o novo nome
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, update_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

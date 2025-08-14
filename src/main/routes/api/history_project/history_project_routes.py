@@ -29,6 +29,24 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/', response_model=FindAllHistoryFromProjectReponse, responses=generate_error_responses())
 async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todo o histórico de alterações de um projeto.
+    Retorna o log de todas as modificações feitas no projeto ao longo do tempo.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        body: Dados para busca (project_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllHistoryFromProjectResponse: Lista com todo o histórico do projeto
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, find_all_history_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -51,6 +69,24 @@ async def find_all_history_from_project(body:FindAllHistoryFromProjectFormat, re
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_history_project(body:CreateHistoryProjectFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova entrada no histórico de um projeto.
+    Registra alterações manuais ou eventos importantes no projeto.
+    Apenas usuários ADMIN podem criar entradas de histórico.
+    
+    Args:
+        body: Dados da entrada de histórico (project_id, description, etc.)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_history_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

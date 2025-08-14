@@ -38,6 +38,26 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.post('/save', response_model=SaveDocumentResponse, responses=generate_error_responses())
 async def save_document(request:Request, project_id:str=Form(...), file:UploadFile=File(...), user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para salvar/enviar documentos para um projeto.
+    Apenas usuários ADMIN podem enviar documentos.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto (via formulário)
+        file: Arquivo a ser enviado (PDF, Word, Excel, etc.)
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        SaveDocumentResponse: Dados do documento salvo e localização
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        InvalidFileTypeError: Se o tipo de arquivo não for suportado
+        FileTooLargeError: Se o arquivo exceder o tamanho máximo
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await file_adapter(file, save_document_composer(), project_id=project_id)
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -60,6 +80,25 @@ async def save_document(request:Request, project_id:str=Form(...), file:UploadFi
 
 @routes.get('/{project_id}/{document_name}', responses=generate_error_responses())
 async def get_document(project_id:int, document_name:str, request:Request, user=Security(role_required(["ADMIN", "ASSESOR", "VEREADOR"]))):
+    """
+    Endpoint para baixar/visualizar um documento específico de um projeto.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        project_id: ID do projeto
+        document_name: Nome do documento a ser baixado
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        StreamingResponse: Documento em formato binário com Content-Type apropriado
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        DocumentNotFoundError: Se o documento não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['project_id'] = project_id
         request.path_params['document_name'] = document_name
@@ -93,6 +132,24 @@ async def get_document(project_id:int, document_name:str, request:Request, user=
 
 @routes.get('/projects/{project_id}/documents', response_model=GetAllDocumentNamesResponse, responses=generate_error_responses())
 async def get_all_document_names(project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para listar todos os nomes de documentos de um projeto.
+    Retorna apenas os nomes dos arquivos, não o conteúdo.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        project_id: ID do projeto
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetAllDocumentNamesResponse: Lista com nomes de todos os documentos do projeto
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, get_document_names_composer())
@@ -116,6 +173,24 @@ async def get_all_document_names(project_id:int, request:Request, user=Security(
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_document(body:DeleteDocumentFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar um documento específico de um projeto.
+    Apenas usuários ADMIN podem deletar documentos.
+    
+    Args:
+        body: Dados do documento a ser deletado (project_id e document_name)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        DocumentNotFoundError: Se o documento não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_document_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -138,6 +213,24 @@ async def delete_document(body:DeleteDocumentFormat, request:Request, user=Secur
 
 @routes.delete('/all', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_all_documents_from_project(body:DeleAllDocumentsFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar todos os documentos de um projeto.
+    Remove todos os arquivos associados ao projeto especificado.
+    Apenas usuários ADMIN podem executar esta operação.
+    
+    Args:
+        body: Dados do projeto (project_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_all_documents_from_project_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)

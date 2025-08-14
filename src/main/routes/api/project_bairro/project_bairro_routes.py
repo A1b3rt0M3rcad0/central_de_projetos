@@ -39,6 +39,26 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.get('/{bairro_id}/{project_id}', response_model=FindProjectBairroResponse, responses=generate_error_responses())
 async def find_project_bairro(bairro_id:int, project_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar uma associação específica entre projeto e bairro.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        bairro_id: ID do bairro
+        project_id: ID do projeto
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindProjectBairroResponse: Dados da associação projeto-bairro
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        BairroNotFoundError: Se o bairro não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['project_id'] = project_id
         request.path_params['bairro_id'] = bairro_id
@@ -63,6 +83,22 @@ async def find_project_bairro(bairro_id:int, project_id:int, request:Request, us
 
 @routes.get('/project/count/', response_model=GetProjectCountByBairroResponse, responses=generate_error_responses())
 async def get_project_counts_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de projetos agrupados por bairro.
+    Retorna estatísticas de quantos projetos cada bairro possui.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectCountByBairroResponse: Lista com contagem de projetos por bairro
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_project_counts_by_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -85,6 +121,22 @@ async def get_project_counts_by_bairro(request:Request, user=Security(role_requi
 
 @routes.get('/project/verba/', response_model=GetProjectVerbaByBairroResponse, responses=generate_error_responses())
 async def get_project_verba_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter soma de verbas de projetos agrupados por bairro.
+    Retorna o valor total de investimento por bairro.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectVerbaByBairroResponse: Lista com soma de verbas por bairro
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_project_verba_by_bairro())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -107,6 +159,22 @@ async def get_project_verba_by_bairro_r(request:Request, user=Security(role_requ
 
 @routes.get('/project/status/', response_model=GetProjectStatusCountByBairroResponse, responses=generate_error_responses())
 async def get_project_status_count_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de projetos por status agrupados por bairro.
+    Retorna estatísticas de status de projetos (em andamento, concluído, etc.) por bairro.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectStatusCountByBairroResponse: Lista com contagem de status por bairro
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_project_status_count_by_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -129,6 +197,26 @@ async def get_project_status_count_by_bairro_r(request:Request, user=Security(ro
 
 @routes.post('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_bairro(body:CreateProjectBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova associação entre projeto e bairro.
+    Vincula um projeto a um bairro específico.
+    Apenas usuários ADMIN podem criar associações.
+    
+    Args:
+        body: Dados da associação (project_id e bairro_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        BairroNotFoundError: Se o bairro não for encontrado
+        AssociationAlreadyExistsError: Se a associação já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_project_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -151,6 +239,26 @@ async def create_project_bairro(body:CreateProjectBairroFormat, request:Request,
 
 @routes.delete('/', response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_bairro(body:DeleteProjectBairroFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma associação entre projeto e bairro.
+    Remove o vínculo entre um projeto e um bairro.
+    Apenas usuários ADMIN podem deletar associações.
+    
+    Args:
+        body: Dados da associação a ser removida (project_id e bairro_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        BairroNotFoundError: Se o bairro não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_project_bairro_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -173,6 +281,24 @@ async def delete_project_bairro(body:DeleteProjectBairroFormat, request:Request,
 
 @routes.get('/{bairro_id}', response_model=FindAllProjectsFromBairroResponse, responses=generate_error_responses())
 async def find_all_projects_from_bairro(bairro_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os projetos associados a um bairro específico.
+    Retorna lista de todos os projetos que estão vinculados ao bairro.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        bairro_id: ID do bairro
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllProjectsFromBairroResponse: Lista de projetos do bairro
+        
+    Raises:
+        BairroNotFoundError: Se o bairro não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         request.path_params['bairro_id'] = bairro_id
         http_response = await request_adapter(request, find_all_projects_from_bairro_composer())

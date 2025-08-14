@@ -27,6 +27,23 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 @routes.post('/login', response_model=LoginResponse, responses=generate_error_responses())
 @limiter.limit("5/minute")
 async def login(body:LoginFormat, request:Request):
+    """
+    Endpoint para login de usuários via API.
+    Rate limit: 5 tentativas por minuto por IP.
+    
+    Args:
+        body: Dados de login (CPF e senha)
+        request: Objeto da requisição HTTP
+        
+    Returns:
+        LoginResponse: Token JWT e mensagem de sucesso
+        
+    Raises:
+        UserNotFoundError: Se o usuário não for encontrado
+        InvalidPasswordError: Se a senha estiver incorreta
+        RateLimitExceededError: Se exceder o limite de tentativas
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, login_composer())
         LoginResponse(**http_response.body)
@@ -50,7 +67,8 @@ async def login(body:LoginFormat, request:Request):
 @limiter.limit("5/minute")
 async def login_fiscal(body:LoginFiscalFormat, request:Request):
     """
-    Endpoint para login do fiscal via API.
+    Endpoint para login de fiscais via API.
+    Rate limit: 5 tentativas por minuto por IP.
     
     Args:
         body: Dados de login (email e senha)
@@ -62,6 +80,7 @@ async def login_fiscal(body:LoginFiscalFormat, request:Request):
     Raises:
         FiscalNotFoundError: Se o fiscal não for encontrado
         InvalidPasswordError: Se a senha estiver incorreta
+        RateLimitExceededError: Se exceder o limite de tentativas
         InternalServerError: Para outros erros internos
     """
     try:

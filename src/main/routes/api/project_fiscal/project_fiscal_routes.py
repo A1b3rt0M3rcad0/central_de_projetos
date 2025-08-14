@@ -32,6 +32,26 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
 @routes.post("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def create_project_fiscal(body:CreateProjectFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para criar uma nova associação entre projeto e fiscal.
+    Vincula um projeto a um fiscal responsável.
+    Apenas usuários ADMIN podem criar associações.
+    
+    Args:
+        body: Dados da associação (project_id e fiscal_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na criação
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        AssociationAlreadyExistsError: Se a associação já existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, create_project_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -54,6 +74,22 @@ async def create_project_fiscal(body:CreateProjectFiscalFormat, request:Request,
 
 @routes.get("/project/count", response_model=GetCountProjectsByFiscalResponse, responses=generate_error_responses())
 async def get_count_projects_by_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para obter contagem de projetos agrupados por fiscal.
+    Retorna estatísticas de quantos projetos cada fiscal supervisiona.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetCountProjectsByFiscalResponse: Lista com contagem de projetos por fiscal
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, get_count_projects_by_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
@@ -76,6 +112,26 @@ async def get_count_projects_by_fiscal(request:Request, user=Security(role_requi
 
 @routes.delete("/", response_model=BaseMessageResponse, responses=generate_error_responses())
 async def delete_project_fiscal(body:DeleteProjectFiscalFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para deletar uma associação entre projeto e fiscal.
+    Remove o vínculo entre um projeto e um fiscal.
+    Apenas usuários ADMIN podem deletar associações.
+    
+    Args:
+        body: Dados da associação a ser removida (project_id e fiscal_id)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na deleção
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
     try:
         http_response = await request_adapter(request, delete_project_fiscal_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
