@@ -21,6 +21,7 @@ from src.main.composers.get_projects_by_fiscal_with_pagination_composer import g
 from src.main.composers.delete_document_from_work_project_mobile_composer import delete_document_from_work_project_mobile_composer
 from src.main.composers.get_work_project_thumbnail_composer import get_work_project_thumbnail_composer
 from src.main.composers.get_work_project_document_mobile_composer import get_work_project_document_mobile_composer
+from src.main.composers.get_fiscal_summary_composer import get_fiscal_summary_composer
 from src.main.routes.mobile.fiscal.request_format.login_fiscal_format import LoginFiscalFormat
 from src.main.routes.mobile.fiscal.request_format.delete_document_from_work_project_format import DeleteDocumentFromWorkProjectFormat
 from src.main.routes.mobile.fiscal.response_format.login_fiscal_response import LoginFiscalResponse
@@ -33,6 +34,7 @@ from src.main.routes.mobile.fiscal.response_format.get_work_projects_by_fiscal_r
 from src.main.routes.mobile.fiscal.response_format.get_latest_work_projects_by_fiscal_response import GetLatestWorkProjectsByFiscalResponse
 from src.main.routes.mobile.fiscal.response_format.get_work_project_by_fiscal_response import GetWorkProjectByFiscalMobileResponse
 from src.main.routes.mobile.fiscal.response_format.get_projects_by_fiscal_with_pagination_response import GetProjectsByFiscalWithPaginationMobileResponse
+from src.main.routes.mobile.fiscal.response_format.get_fiscal_summary_response import GetFiscalSummaryResponse
 from src.logs.log_http import log_http
 from src.presentation.http_types.http_response import HttpResponse
 
@@ -667,6 +669,74 @@ async def get_projects_by_fiscal_with_pagination_mobile(
         http_response = await request_adapter(
             request=request,
             controller=get_projects_by_fiscal_with_pagination_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/summary', 
+            response_model=GetFiscalSummaryResponse, 
+            responses=generate_error_responses())
+async def get_fiscal_summary_mobile(
+    request: Request,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: Optional[int] = 5,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para obter resumo completo do fiscal autenticado.
+    Retorna estatísticas, projetos vinculados e últimas fiscalizações.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        start_date: Data de início para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)
+        end_date: Data de fim para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)
+        limit: Número máximo de últimas fiscalizações a retornar (opcional, padrão: 5)
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetFiscalSummaryResponse: Resumo completo do fiscal com estatísticas
+        
+    Raises:
+        FiscalNotExists: Se o fiscal não for encontrado
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Modificar o request para incluir o fiscal_id no body
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        # Adicionar query params se fornecidos
+        request.state.query_params = {}
+        if start_date:
+            request.state.query_params['start_date'] = start_date
+        if end_date:
+            request.state.query_params['end_date'] = end_date
+        if limit:
+            request.state.query_params['limit'] = limit
+        
+        # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=get_fiscal_summary_composer()
         )
         
         log_http(
