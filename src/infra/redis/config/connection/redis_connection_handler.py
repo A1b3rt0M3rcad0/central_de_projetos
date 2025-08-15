@@ -2,14 +2,19 @@ from src.infra.redis.config.connection.redis_url_connection import RedisUrlConne
 from redis.asyncio import Redis
 from typing import Optional
 import asyncio
+import os
+from dotenv import load_dotenv
 
 class RedisConnectionHandler:
     def __init__(self, redis_url_connection: RedisUrlConnection) -> None:
+        load_dotenv()
         self.__redis_url_connection: RedisUrlConnection = redis_url_connection
         self.__redis: Optional[Redis] = None
+        self.NAMESPACE = os.getenv("REDIS_NAMESPACE", "default").upper()
 
     async def __aenter__(self) -> Redis:
         self.__redis = Redis(
+            client_name=self.NAMESPACE,
             host=self.__redis_url_connection.url,
             port=self.__redis_url_connection.port,
             username=self.__redis_url_connection.username,
