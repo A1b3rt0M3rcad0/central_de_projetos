@@ -11,7 +11,8 @@ class CacheRepository(ICacheRepository):
         load_dotenv()
         self.__redis_connection_handler = redis_connection_handler
         self.NAMESPACE = os.getenv("REDIS_NAMESPACE", "default").upper() + ':'
-    
+        self.TTL = int(os.getenv("REDIS_TTL", '3600'))
+
     def _ns_key(self, key: str) -> str:
         return f"{self.NAMESPACE}{key}"
 
@@ -20,6 +21,7 @@ class CacheRepository(ICacheRepository):
         async with self.__redis_connection_handler as redis:
             try:
                 await redis.hset(key, mapping=mapping)
+                await redis.expire(key, self.TTL)
                 return True
             except Exception as e:
                 raise e from e
