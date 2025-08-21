@@ -452,15 +452,17 @@ async with httpx.AsyncClient() as client:
 ### Exemplo de Implementação
 
 ```python
-from src.auth.config.auth_secret_key import SecretKey
+from src.auth.config.auth_algoritm import AuthAlgoritm
+from src.auth.config.auth_secret_key import AuthSecretKey
 from src.auth.encrypt.encrypt import Encrypt
+import datetime
 
-# Criptografar senha
-encrypt = Encrypt()
-hashed_password = encrypt.hash_password("senha123")
+# Retorna Token para o Payload
+encrypt = Encrypt(AuthAlgoritm(), AuthSecretKey())
+token = encrypt.encode({"user": "user", "exp": datetime.datetime.now()})
 
-# Verificar senha
-is_valid = encrypt.verify_password("senha123", hashed_password)
+# Retorna Payload
+payload = encrypt.decode(token)
 ```
 
 ---
