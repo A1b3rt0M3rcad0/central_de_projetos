@@ -9,8 +9,9 @@ class SetBairroByNameCachedController(AsyncControllerInterface):
 
     async def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
+            path_params = http_request.path_params
             body = http_request.body
-            name = body['name']
+            name = path_params['name']
             await self.set_cached_value.set(key=name, value=body)
             return HttpResponse(
                 status_code=200,
