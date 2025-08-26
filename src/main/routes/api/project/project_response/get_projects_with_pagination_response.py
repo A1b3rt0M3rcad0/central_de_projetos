@@ -16,7 +16,7 @@ class PaginationProjects(BaseModel):
     page_size:int
     total_items:int
     total_pages:int
-    project:List[Project]
+    projects:List[Project]
 
 class GetProjectsWithPaginationReponse(BaseResponse[PaginationProjects]):
     ...
