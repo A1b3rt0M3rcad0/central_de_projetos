@@ -1,7 +1,9 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
+from io import BytesIO
 from fastapi import APIRouter, UploadFile, File, Form
 from fastapi import Request
+from fastapi.responses import StreamingResponse
 from typing import List
 from src.main.adapters.multipart_adapter import multipart_adapter
 from src.main.adapters.response_adapter import response_adapter
@@ -14,6 +16,8 @@ from src.main.composers.add_documents_to_work_project_composer import add_docume
 from src.main.composers.delete_work_project_composer import delete_work_project_composer
 from src.main.composers.get_work_project_composer import get_work_project_composer
 from src.main.composers.get_work_projects_with_pagination_composer import get_work_projects_by_project_with_pagination_composer
+from src.main.composers.get_work_project_document_composer import get_work_project_document_composer
+from src.main.composers.download_work_project_document_composer import download_work_project_document_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 from src.main.routes.api.work_project.work_project_response.create_work_project_with_fiscal_document_response import CreateWorkProjectWithFiscalDocumentResponse
@@ -252,6 +256,122 @@ async def get_work_projects_by_project_with_pagination(
             logger_name=PREFIX,
             http_response=error_result,
             request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/{work_project_id}/document/{document_name}/view', responses=generate_error_responses())
+async def view_work_project_document(
+    request: Request,
+    work_project_id: int,
+    document_name: str,
+    user: dict = Security(role_required(["ADMIN", "ASSESOR", "VEREADOR"]))
+):
+    """
+    Endpoint para visualizar um documento específico de um work project.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project
+        document_name: Nome do documento a ser visualizado
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        StreamingResponse: Documento em formato binário com Content-Type apropriado para visualização inline
+        
+    Raises:
+        WorkProjectNotExists: Se o work project não for encontrado
+        DocumentNotFoundError: Se o documento não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['work_project_id'] = work_project_id
+        request.path_params['document_name'] = document_name
+        http_response = await request_adapter(request, get_work_project_document_composer())
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX,
+            message=f'View Document from Work Project: (Work Project: {work_project_id}, Document_Name: {document_name})'
+        )
+        return StreamingResponse(
+            BytesIO(http_response.body),
+            media_type=http_response.headers.get('Content-Type', 'application/octet-stream'),
+            headers={
+                "Content-Disposition": http_response.headers.get(
+                    'Content-Disposition', 
+                    f'inline; filename="{document_name}"'
+                )
+            }
+        )
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/{work_project_id}/document/{document_name}/download', responses=generate_error_responses())
+async def download_work_project_document(
+    request: Request,
+    work_project_id: int,
+    document_name: str,
+    user: dict = Security(role_required(["ADMIN", "ASSESOR", "VEREADOR"]))
+):
+    """
+    Endpoint para baixar um documento específico de um work project.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        work_project_id: ID do work project
+        document_name: Nome do documento a ser baixado
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        StreamingResponse: Documento em formato binário com Content-Type apropriado para download
+        
+    Raises:
+        WorkProjectNotExists: Se o work project não for encontrado
+        DocumentNotFoundError: Se o documento não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['work_project_id'] = work_project_id
+        request.path_params['document_name'] = document_name
+        http_response = await request_adapter(request, download_work_project_document_composer())
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            request=request,
+            logger_name=PREFIX,
+            message=f'Download Document from Work Project: (Work Project: {work_project_id}, Document_Name: {document_name})'
+        )
+        return StreamingResponse(
+            BytesIO(http_response.body),
+            media_type=http_response.headers.get('Content-Type', 'application/octet-stream'),
+            headers={
+                "Content-Disposition": http_response.headers.get(
+                    'Content-Disposition', 
+                    f'attachment; filename="{document_name}"'
+                )
+            }
+        )
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
         )
         return response_adapter(error_result)
 
