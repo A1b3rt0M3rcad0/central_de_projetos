@@ -1,9 +1,10 @@
-#pylint:disable=W0718
+#pylint:disable=W0718,W9016
 #pylint:disable=W0613
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
+from src.main.adapters.generic_cache_aside_adapter import simple_cache_aside_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.find_bairro_by_name_composer import find_bairro_by_name_composer
@@ -12,6 +13,10 @@ from src.main.composers.delete_bairro_composer import delete_bairro_composer
 from src.main.composers.update_bairro_name_composer import update_bairro_name_composer
 from src.main.composers.find_all_bairro_composer import find_all_bairro_composer
 from src.main.composers.count_bairros_composer import count_bairros_composer
+
+# Cache composers
+from src.main.composers.cache.bairro.get.get_bairro_by_name_cached_composer import get_bairro_by_name_cached_composer
+from src.main.composers.cache.bairro.set.set_bairro_by_name_cached_composer import set_bairro_by_name_cached_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 
@@ -40,6 +45,7 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar um bairro específico pelo nome.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -56,7 +62,15 @@ async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(ro
         InternalServerError: Para outros erros internos
     """
     try:
-        http_response = await request_adapter(request, find_bairro_by_name_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_bairro_by_name_cached_composer(),
+            db_controller=find_bairro_by_name_composer(),
+            cache_set_controller=set_bairro_by_name_cached_composer(),
+            cache_key='bairro_name'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             http_response=http_response,

@@ -2,6 +2,7 @@ from src.presentation.interface.async_controller_interface import AsyncControlle
 from src.domain.use_cases.i_set_cached_value import ISetCachedValue
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
+import json
 
 class SetBairroByNameCachedController(AsyncControllerInterface):
     def __init__(self, set_cached_value: ISetCachedValue):
@@ -11,8 +12,15 @@ class SetBairroByNameCachedController(AsyncControllerInterface):
         try:
             path_params = http_request.path_params
             body = http_request.body
-            name = path_params['name']
-            await self.set_cached_value.set(key=name, value=body)
+            name = path_params.get('bairro_name') or path_params.get('name')
+            
+            # Serializa os dados para armazenar no cache
+            if isinstance(body, (dict, list)):
+                value_to_cache = json.dumps(body)
+            else:
+                value_to_cache = str(body)
+            
+            await self.set_cached_value.set(key=name, value=value_to_cache)
             return HttpResponse(
                 status_code=200,
                 body={

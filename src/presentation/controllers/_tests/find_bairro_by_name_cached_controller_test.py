@@ -6,6 +6,7 @@ from src.presentation.controllers.cache.bairro.get.find_bairro_by_name_cached_co
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 from src.domain.use_cases.i_get_cached_value import IGetCachedValue
+import json
 
 class TestFindBairroByNameCachedController:
     
@@ -26,12 +27,10 @@ class TestFindBairroByNameCachedController:
         """Test successful handle operation"""
         # Arrange
         bairro_name = "Centro"
-        mock_bairro = Mock()
-        mock_bairro.bairro = 1
-        mock_bairro.name = "Centro"
-        mock_bairro.created_at = datetime(2024, 1, 15)
+        bairro_data = {'id': 1, 'name': 'Centro', 'created_at': '15/01/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -44,9 +43,7 @@ class TestFindBairroByNameCachedController:
         assert isinstance(result, HttpResponse)
         assert result.status_code == 200
         assert result.body['messsage'] == 'Bairro Founded'
-        assert result.body['content']['id'] == 1
-        assert result.body['content']['name'] == "Centro"
-        assert result.body['content']['created_at'] == "15/01/2024"
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio
@@ -54,12 +51,10 @@ class TestFindBairroByNameCachedController:
         """Test handle operation with different bairro name"""
         # Arrange
         bairro_name = "Vila Nova"
-        mock_bairro = Mock()
-        mock_bairro.bairro = 2
-        mock_bairro.name = "Vila Nova"
-        mock_bairro.created_at = datetime(2024, 3, 20)
+        bairro_data = {'id': 2, 'name': 'Vila Nova', 'created_at': '20/03/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -70,9 +65,7 @@ class TestFindBairroByNameCachedController:
         
         # Assert
         assert result.status_code == 200
-        assert result.body['content']['id'] == 2
-        assert result.body['content']['name'] == "Vila Nova"
-        assert result.body['content']['created_at'] == "20/03/2024"
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio
@@ -80,12 +73,10 @@ class TestFindBairroByNameCachedController:
         """Test handle operation with special characters in bairro name"""
         # Arrange
         bairro_name = "São João do Sul"
-        mock_bairro = Mock()
-        mock_bairro.bairro = 3
-        mock_bairro.name = "São João do Sul"
-        mock_bairro.created_at = datetime(2024, 6, 10)
+        bairro_data = {'id': 3, 'name': 'São João do Sul', 'created_at': '10/06/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -96,8 +87,7 @@ class TestFindBairroByNameCachedController:
         
         # Assert
         assert result.status_code == 200
-        assert result.body['content']['name'] == "São João do Sul"
-        assert result.body['content']['created_at'] == "10/06/2024"
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio
@@ -105,12 +95,10 @@ class TestFindBairroByNameCachedController:
         """Test handle operation with empty bairro name"""
         # Arrange
         bairro_name = ""
-        mock_bairro = Mock()
-        mock_bairro.bairro = 4
-        mock_bairro.name = ""
-        mock_bairro.created_at = datetime(2024, 12, 1)
+        bairro_data = {'id': 4, 'name': '', 'created_at': '01/12/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -121,8 +109,7 @@ class TestFindBairroByNameCachedController:
         
         # Assert
         assert result.status_code == 200
-        assert result.body['content']['name'] == ""
-        assert result.body['content']['created_at'] == "01/12/2024"
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio
@@ -130,12 +117,10 @@ class TestFindBairroByNameCachedController:
         """Test handle operation with long bairro name"""
         # Arrange
         bairro_name = "Bairro com nome muito longo para testar o comportamento"
-        mock_bairro = Mock()
-        mock_bairro.bairro = 5
-        mock_bairro.name = bairro_name
-        mock_bairro.created_at = datetime(2024, 8, 15)
+        bairro_data = {'id': 5, 'name': bairro_name, 'created_at': '15/08/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -146,8 +131,7 @@ class TestFindBairroByNameCachedController:
         
         # Assert
         assert result.status_code == 200
-        assert result.body['content']['name'] == bairro_name
-        assert result.body['content']['created_at'] == "15/08/2024"
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio
@@ -155,12 +139,10 @@ class TestFindBairroByNameCachedController:
         """Test handle operation with numeric bairro name"""
         # Arrange
         bairro_name = "12345"
-        mock_bairro = Mock()
-        mock_bairro.bairro = 6
-        mock_bairro.name = "12345"
-        mock_bairro.created_at = datetime(2024, 2, 29)
+        bairro_data = {'id': 6, 'name': '12345', 'created_at': '29/02/2024'}
+        cached_data = json.dumps(bairro_data)
         
-        mock_get_cached_value.get.return_value = mock_bairro
+        mock_get_cached_value.get.return_value = cached_data
         
         http_request = HttpRequest(
             path_params={'bairro_name': bairro_name}
@@ -171,8 +153,68 @@ class TestFindBairroByNameCachedController:
         
         # Assert
         assert result.status_code == 200
-        assert result.body['content']['name'] == "12345"
-        assert result.body['content']['created_at'] == "29/02/2024"
+        assert result.body['content'] == bairro_data
+        mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
+    
+    @pytest.mark.asyncio
+    async def test_handle_with_none_result(self, controller, mock_get_cached_value):
+        """Test handle operation when cache returns None"""
+        # Arrange
+        bairro_name = "Centro"
+        mock_get_cached_value.get.return_value = None
+        
+        http_request = HttpRequest(
+            path_params={'bairro_name': bairro_name}
+        )
+        
+        # Act
+        result = await controller.handle(http_request)
+        
+        # Assert
+        assert result.status_code == 200
+        assert result.body['content'] is None
+        mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
+    
+    @pytest.mark.asyncio
+    async def test_handle_with_invalid_json(self, controller, mock_get_cached_value):
+        """Test handle operation with invalid JSON in cache"""
+        # Arrange
+        bairro_name = "Centro"
+        invalid_json = "invalid json string"
+        
+        mock_get_cached_value.get.return_value = invalid_json
+        
+        http_request = HttpRequest(
+            path_params={'bairro_name': bairro_name}
+        )
+        
+        # Act
+        result = await controller.handle(http_request)
+        
+        # Assert
+        assert result.status_code == 200
+        assert result.body['content'] == invalid_json
+        mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
+    
+    @pytest.mark.asyncio
+    async def test_handle_with_dict_result(self, controller, mock_get_cached_value):
+        """Test handle operation when cache returns a dict directly"""
+        # Arrange
+        bairro_name = "Centro"
+        bairro_data = {'id': 1, 'name': 'Centro', 'created_at': '15/01/2024'}
+        
+        mock_get_cached_value.get.return_value = bairro_data
+        
+        http_request = HttpRequest(
+            path_params={'bairro_name': bairro_name}
+        )
+        
+        # Act
+        result = await controller.handle(http_request)
+        
+        # Assert
+        assert result.status_code == 200
+        assert result.body['content'] == bairro_data
         mock_get_cached_value.get.assert_called_once_with(key=bairro_name)
     
     @pytest.mark.asyncio

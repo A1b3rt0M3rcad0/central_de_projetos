@@ -11,7 +11,7 @@ class CacheRepository(ICacheRepository):
         load_dotenv()
         self.__redis_connection_handler = redis_connection_handler
         self.NAMESPACE = os.getenv("REDIS_NAMESPACE", "default").upper() + ':'
-        self.TTL = int(os.getenv("REDIS_TTL", '3600'))
+        self.TTL = int(os.getenv("REDIS_TTL", '360'))
 
     def _ns_key(self, key: str) -> str:
         return f"{self.NAMESPACE}{key}"
