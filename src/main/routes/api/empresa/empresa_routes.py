@@ -5,7 +5,6 @@ from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
-from src.main.adapters.generic_cache_aside_adapter import simple_cache_aside_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.find_empresa_by_exact_name_composer import find_empresa_by_exact_name_composer
@@ -14,14 +13,6 @@ from src.main.composers.create_empresa_composer import create_empresa_composer
 from src.main.composers.delete_empresa_composer import delete_empresa_composer
 from src.main.composers.update_empresa_composer import update_empresas_composer
 from src.main.composers.count_empresas_composer import count_empresas_composer
-
-# Cache composers
-from src.main.composers.cache.empresa.get.get_empresa_by_name_cached_composer import get_empresa_by_name_cached_composer
-from src.main.composers.cache.empresa.set.set_empresa_by_name_cached_composer import set_empresa_by_name_cached_composer
-from src.main.composers.cache.empresa.get.get_count_empresas_cached_composer import get_count_empresas_cached_composer
-from src.main.composers.cache.empresa.set.set_count_empresas_cached_composer import set_count_empresas_cached_composer
-from src.main.composers.cache.empresa.get.get_all_empresas_cached_composer import get_all_empresas_cached_composer
-from src.main.composers.cache.empresa.set.set_all_empresas_cached_composer import set_all_empresas_cached_composer
 
 from src.main.routes.api.empresa.request_format.create_empresa_format import CreateEmpresaFormat
 from src.main.routes.api.empresa.request_format.delete_empresa_format import DeleteEmpresaFormat
@@ -48,7 +39,6 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 async def find_empresa(empresa_name, request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     """
     Endpoint para buscar uma empresa específica pelo nome exato.
-    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -65,15 +55,8 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
         InternalServerError: Para outros erros internos
     """
     try:
-        # Usa o cache-aside adapter para implementar o padrão cache
-        http_response = await simple_cache_aside_adapter(
-            framework_request=request,
-            cache_get_controller=get_empresa_by_name_cached_composer(),
-            db_controller=find_empresa_by_exact_name_composer(),
-            cache_set_controller=await set_empresa_by_name_cached_composer(),
-            cache_key='empresa_name'
-        )
-        
+        request.path_params['empresa_name'] = empresa_name
+        http_response = await request_adapter(request, find_empresa_by_exact_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -96,7 +79,6 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
 async def find_all_empresa(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     """
     Endpoint para buscar todas as empresas do sistema.
-    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -111,15 +93,7 @@ async def find_all_empresa(request:Request, user=Security(role_required(["VEREAD
         InternalServerError: Para outros erros internos
     """
     try:
-        # Usa o cache-aside adapter para implementar o padrão cache
-        http_response = await simple_cache_aside_adapter(
-            framework_request=request,
-            cache_get_controller=get_all_empresas_cached_composer(),
-            db_controller=find_empresas_composer(),
-            cache_set_controller=await set_all_empresas_cached_composer(),
-            cache_key='all_empresas'
-        )
-        
+        http_response = await request_adapter(request, find_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -142,7 +116,6 @@ async def find_all_empresa(request:Request, user=Security(role_required(["VEREAD
 async def count_empresas(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     """
     Endpoint para contar o total de empresas no sistema.
-    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -157,15 +130,7 @@ async def count_empresas(request:Request, user=Security(role_required(["VEREADOR
         InternalServerError: Para outros erros internos
     """
     try:
-        # Usa o cache-aside adapter para implementar o padrão cache
-        http_response = await simple_cache_aside_adapter(
-            framework_request=request,
-            cache_get_controller=get_count_empresas_cached_composer(),
-            db_controller=count_empresas_composer(),
-            cache_set_controller=await set_count_empresas_cached_composer(),
-            cache_key='count_empresas'
-        )
-        
+        http_response = await request_adapter(request, count_empresas_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
