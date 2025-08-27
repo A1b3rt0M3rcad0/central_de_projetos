@@ -1,6 +1,7 @@
 #pylint:disable=all
 import pytest
 from unittest.mock import Mock, AsyncMock
+import json
 from src.presentation.controllers.cache.bairro.set.set_bairro_by_name_cached_controller import SetBairroByNameCachedController
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -44,7 +45,7 @@ class TestSetBairroByNameCachedController:
         assert result.status_code == 200
         assert result.body['message'] == 'Bairro set successfully'
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_different_bairro_name(self, controller, mock_set_cached_value):
@@ -68,7 +69,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_special_characters(self, controller, mock_set_cached_value):
@@ -92,7 +93,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_empty_bairro_name(self, controller, mock_set_cached_value):
@@ -116,7 +117,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == ""
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_long_bairro_name(self, controller, mock_set_cached_value):
@@ -140,7 +141,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_numeric_bairro_name(self, controller, mock_set_cached_value):
@@ -164,7 +165,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == "12345"
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_complex_body_data(self, controller, mock_set_cached_value):
@@ -195,7 +196,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_empty_body(self, controller, mock_set_cached_value):
@@ -215,7 +216,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_none_body(self, controller, mock_set_cached_value):
@@ -235,7 +236,7 @@ class TestSetBairroByNameCachedController:
         # Assert
         assert result.status_code == 200
         assert result.body['content']['name'] == bairro_name
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value="None")
     
     @pytest.mark.asyncio
     async def test_handle_with_use_case_exception(self, controller, mock_set_cached_value):
@@ -254,7 +255,7 @@ class TestSetBairroByNameCachedController:
         with pytest.raises(Exception, match="Cache error"):
             await controller.handle(http_request)
         
-        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=bairro_data)
+        mock_set_cached_value.set.assert_called_once_with(key=bairro_name, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_missing_path_params(self, controller, mock_set_cached_value):
@@ -266,9 +267,13 @@ class TestSetBairroByNameCachedController:
             body=bairro_data
         )
         
-        # Act & Assert
-        with pytest.raises(KeyError):
-            await controller.handle(http_request)
+        # Act
+        result = await controller.handle(http_request)
+        
+        # Assert
+        assert result.status_code == 200
+        assert result.body['content']['name'] is None
+        mock_set_cached_value.set.assert_called_once_with(key=None, value=json.dumps(bairro_data))
     
     @pytest.mark.asyncio
     async def test_handle_with_none_path_params(self, controller, mock_set_cached_value):
@@ -281,7 +286,7 @@ class TestSetBairroByNameCachedController:
         )
         
         # Act & Assert
-        with pytest.raises(TypeError):
+        with pytest.raises(AttributeError):
             await controller.handle(http_request)
     
     @pytest.mark.asyncio

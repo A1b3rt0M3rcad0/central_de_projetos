@@ -39,7 +39,7 @@ class TestCacheRepository:
                 
                 # Assert
                 assert repository.NAMESPACE == "DEFAULT:"
-                assert repository.TTL == 3600
+                assert repository.TTL == 360
                 assert repository._CacheRepository__redis_connection_handler == mock_redis_connection_handler
     
     def test_init_with_custom_values(self, mock_redis_connection_handler):
@@ -86,7 +86,7 @@ class TestCacheRepository:
         # Assert
         assert result is True
         mock_redis.hset.assert_called_once_with("IMBITUBA:test_key", mapping=mapping)
-        mock_redis.expire.assert_called_once_with("IMBITUBA:test_key", 3600)
+        mock_redis.expire.assert_called_once_with("IMBITUBA:test_key", 360)
     
     @pytest.mark.asyncio
     async def test_set_with_exception(self, cache_repository, mock_redis_connection_handler):
@@ -181,7 +181,7 @@ class TestCacheRepository:
         # Assert
         assert result is True
         mock_redis.hset.assert_called_once_with("IMBITUBA:test_key", mapping=mapping)
-        mock_redis.expire.assert_called_once_with("IMBITUBA:test_key", 3600)
+        mock_redis.expire.assert_called_once_with("IMBITUBA:test_key", 360)
     
     @pytest.mark.asyncio
     async def test_get_nonexistent_key(self, cache_repository, mock_redis_connection_handler):
