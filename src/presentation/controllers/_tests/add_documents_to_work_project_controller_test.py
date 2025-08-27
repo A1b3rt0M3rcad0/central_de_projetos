@@ -18,6 +18,7 @@ class TestAddDocumentsToWorkProjectController:
         
         # Mock work_project existente
         mock_work_project = Mock(spec=WorkProjectEntity)
+        mock_work_project.project_id = 456  # Adicionar project_id
         mock_get_work_project.get.return_value = mock_work_project
         
         controller = AddDocumentsToWorkProjectController(
@@ -112,6 +113,7 @@ class TestAddDocumentsToWorkProjectController:
         
         # Mock work_project existente
         mock_work_project = Mock(spec=WorkProjectEntity)
+        mock_work_project.project_id = 456  # Adicionar project_id
         mock_get_work_project.get.return_value = mock_work_project
         
         controller = AddDocumentsToWorkProjectController(
