@@ -75,6 +75,7 @@
           "users"
         ],
         "summary": "Get User",
+        "description": "Endpoint para buscar um usuário específico pelo CPF.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    user_cpf: CPF do usuário a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetUserResponse: Dados do usuário encontrado\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_user_users__user_cpf__get",
         "security": [
           {
@@ -122,6 +123,7 @@
           "users"
         ],
         "summary": "Get All Users",
+        "description": "Endpoint para buscar todos os usuários do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetAllUsersResponse: Lista com todos os usuários do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_all_users_users_users_all_get",
         "responses": {
           "200": {
@@ -158,6 +160,7 @@
           "users"
         ],
         "summary": "Get All Users By Role",
+        "description": "Endpoint para buscar todos os usuários filtrados por role (papel).\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    role: Role/papel dos usuários a serem buscados (ADMIN, VEREADOR, ASSESSOR)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetAllUsersByRoleResponse: Lista de usuários com o role especificado\n    \nRaises:\n    InvalidRoleError: Se o role fornecido for inválido\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_all_users_by_role_users_users_all__role__get",
         "security": [
           {
@@ -205,6 +208,7 @@
           "users"
         ],
         "summary": "Who Am I",
+        "description": "Endpoint para obter informações do usuário autenticado através do token JWT.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    token: Token JWT do usuário\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    WhoAmIResponse: Dados do usuário autenticado\n    \nRaises:\n    InvalidTokenError: Se o token for inválido ou expirado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "who_am_i_users_who_am_i__token__get",
         "security": [
           {
@@ -252,6 +256,7 @@
           "users"
         ],
         "summary": "Create User",
+        "description": "Endpoint para criar um novo usuário no sistema.\nApenas usuários ADMIN podem criar novos usuários.\n\nArgs:\n    body: Dados do usuário a ser criado (CPF, nome, email, senha, role)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    UserAlreadyExistsError: Se o usuário já existir (CPF ou email duplicado)\n    InvalidCPFError: Se o CPF for inválido\n    InvalidEmailError: Se o email for inválido\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_user_users__post",
         "requestBody": {
           "content": {
@@ -296,6 +301,7 @@
           "users"
         ],
         "summary": "Delete User",
+        "description": "Endpoint para deletar um usuário do sistema.\nApenas usuários ADMIN podem deletar usuários.\n\nArgs:\n    body: Dados do usuário a ser deletado (CPF)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    UserHasRelatedChildrenError: Se o usuário possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_user_users__delete",
         "requestBody": {
           "content": {
@@ -342,6 +348,7 @@
           "users"
         ],
         "summary": "Update Password",
+        "description": "Endpoint para atualizar a senha de um usuário.\nApenas usuários ADMIN podem alterar senhas.\n\nArgs:\n    body: Dados para atualização (CPF do usuário e nova senha)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    InvalidPasswordError: Se a nova senha não atender aos critérios\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_password_users_password_patch",
         "requestBody": {
           "content": {
@@ -388,6 +395,7 @@
           "users"
         ],
         "summary": "Update Email",
+        "description": "Endpoint para atualizar o email de um usuário.\nApenas usuários ADMIN podem alterar emails.\n\nArgs:\n    body: Dados para atualização (CPF do usuário e novo email)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    InvalidEmailError: Se o novo email for inválido\n    EmailAlreadyExistsError: Se o email já estiver em uso\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_email_users_email_patch",
         "requestBody": {
           "content": {
@@ -434,6 +442,7 @@
           "bairros"
         ],
         "summary": "Find Bairro By Name",
+        "description": "Endpoint para buscar um bairro específico pelo nome.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    bairro_name: Nome do bairro a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindBairroByNameResponse: Dados do bairro encontrado\n    \nRaises:\n    BairroNotFoundError: Se o bairro não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_bairro_by_name_bairro__bairro_name__get",
         "security": [
           {
@@ -481,6 +490,7 @@
           "bairros"
         ],
         "summary": "Count Bairros",
+        "description": "Endpoint para contar o total de bairros no sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    CountBairrosResponse: Número total de bairros\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "count_bairros_bairro_count_all_get",
         "responses": {
           "200": {
@@ -517,6 +527,7 @@
           "bairros"
         ],
         "summary": "Find All Bairro",
+        "description": "Endpoint para buscar todos os bairros do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllBairroResponse: Lista com todos os bairros do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_bairro_bairro_bairro_all_get",
         "responses": {
           "200": {
@@ -553,6 +564,7 @@
           "bairros"
         ],
         "summary": "Create Bairro",
+        "description": "Endpoint para criar um novo bairro no sistema.\nApenas usuários ADMIN podem criar bairros.\n\nArgs:\n    body: Dados do bairro a ser criado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    BairroAlreadyExistsError: Se o bairro já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_bairro_bairro__post",
         "requestBody": {
           "content": {
@@ -597,6 +609,7 @@
           "bairros"
         ],
         "summary": "Delete Bairro",
+        "description": "Endpoint para deletar um bairro do sistema.\nApenas usuários ADMIN podem deletar bairros.\n\nArgs:\n    body: Dados do bairro a ser deletado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    BairroNotFoundError: Se o bairro não for encontrado\n    BairroHasRelatedChildrenError: Se o bairro possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_bairro_bairro__delete",
         "requestBody": {
           "content": {
@@ -643,6 +656,7 @@
           "bairros"
         ],
         "summary": "Update Bairro Name",
+        "description": "Endpoint para atualizar o nome de um bairro.\nApenas usuários ADMIN podem alterar nomes de bairros.\n\nArgs:\n    body: Dados para atualização (nome atual e novo nome do bairro)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    BairroNotFoundError: Se o bairro não for encontrado\n    BairroAlreadyExistsError: Se já existir um bairro com o novo nome\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_bairro_name_bairro_name_patch",
         "requestBody": {
           "content": {
@@ -689,6 +703,7 @@
           "empresas"
         ],
         "summary": "Find Empresa",
+        "description": "Endpoint para buscar uma empresa específica pelo nome exato.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    empresa_name: Nome exato da empresa a ser buscada\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindEmpresaResponse: Dados da empresa encontrada\n    \nRaises:\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_empresa_empresa__empresa_name__get",
         "security": [
           {
@@ -735,6 +750,7 @@
           "empresas"
         ],
         "summary": "Find All Empresa",
+        "description": "Endpoint para buscar todas as empresas do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllEmpresaResponse: Lista com todas as empresas do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_empresa_empresa_empresa_all_get",
         "responses": {
           "200": {
@@ -771,6 +787,7 @@
           "empresas"
         ],
         "summary": "Count Empresas",
+        "description": "Endpoint para contar o total de empresas no sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    CountEmpresasResponse: Número total de empresas\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "count_empresas_empresa_empresa_count_all_get",
         "responses": {
           "200": {
@@ -807,6 +824,7 @@
           "empresas"
         ],
         "summary": "Create Empresa",
+        "description": "Endpoint para criar uma nova empresa no sistema.\nApenas usuários ADMIN podem criar empresas.\n\nArgs:\n    body: Dados da empresa a ser criada (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    EmpresaAlreadyExistsError: Se a empresa já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_empresa_empresa__post",
         "requestBody": {
           "content": {
@@ -851,6 +869,7 @@
           "empresas"
         ],
         "summary": "Delete Empresa",
+        "description": "Endpoint para deletar uma empresa do sistema.\nApenas usuários ADMIN podem deletar empresas.\n\nArgs:\n    body: Dados da empresa a ser deletada (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    EmpresaHasRelatedChildrenError: Se a empresa possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_empresa_empresa__delete",
         "requestBody": {
           "content": {
@@ -895,6 +914,7 @@
           "empresas"
         ],
         "summary": "Update Empresa",
+        "description": "Endpoint para atualizar o nome de uma empresa.\nApenas usuários ADMIN podem alterar nomes de empresas.\n\nArgs:\n    body: Dados para atualização (nome atual e novo nome da empresa)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    EmpresaAlreadyExistsError: Se já existir uma empresa com o novo nome\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_empresa_empresa__patch",
         "requestBody": {
           "content": {
@@ -941,6 +961,7 @@
           "fiscal"
         ],
         "summary": "Find Fiscal By Name",
+        "description": "Endpoint para buscar um fiscal específico pelo nome.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    fiscal_name: Nome do fiscal a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindFiscalByNameResponse: Dados do fiscal encontrado\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_fiscal_by_name_fiscal__fiscal_name__get",
         "security": [
           {
@@ -987,6 +1008,7 @@
           "fiscal"
         ],
         "summary": "Find All Fiscal",
+        "description": "Endpoint para buscar todos os fiscais do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllFiscalResponse: Lista com todos os fiscais do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_fiscal_fiscal_fiscal_all_get",
         "responses": {
           "200": {
@@ -1023,6 +1045,7 @@
           "fiscal"
         ],
         "summary": "Count Fiscals",
+        "description": "Endpoint para contar o total de fiscais no sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    CountFiscalResponse: Número total de fiscais\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "count_fiscals_fiscal_fiscal_count_all_get",
         "responses": {
           "200": {
@@ -1059,6 +1082,7 @@
           "fiscal"
         ],
         "summary": "Create Fiscal",
+        "description": "Endpoint para criar um novo fiscal no sistema.\nApenas usuários ADMIN podem criar fiscais.\n\nArgs:\n    body: Dados do fiscal a ser criado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    FiscalAlreadyExistsError: Se o fiscal já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_fiscal_fiscal__post",
         "requestBody": {
           "content": {
@@ -1103,6 +1127,7 @@
           "fiscal"
         ],
         "summary": "Delete Fiscal",
+        "description": "Endpoint para deletar um fiscal do sistema.\nApenas usuários ADMIN podem deletar fiscais.\n\nArgs:\n    body: Dados do fiscal a ser deletado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    FiscalHasRelatedChildrenError: Se o fiscal possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_fiscal_fiscal__delete",
         "requestBody": {
           "content": {
@@ -1147,6 +1172,7 @@
           "fiscal"
         ],
         "summary": "Update Fiscal",
+        "description": "Endpoint para atualizar o nome de um fiscal.\nApenas usuários ADMIN podem alterar nomes de fiscais.\n\nArgs:\n    body: Dados para atualização (nome atual e novo nome do fiscal)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    FiscalAlreadyExistsError: Se já existir um fiscal com o novo nome\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_fiscal_fiscal__patch",
         "requestBody": {
           "content": {
@@ -1241,6 +1267,7 @@
           "project"
         ],
         "summary": "Find All History From Project",
+        "description": "Endpoint para buscar todo o histórico de alterações de um projeto.\nRetorna o log de todas as modificações feitas no projeto ao longo do tempo.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    body: Dados para busca (project_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllHistoryFromProjectResponse: Lista com todo o histórico do projeto\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_history_from_project_history_project__get",
         "requestBody": {
           "content": {
@@ -1286,6 +1313,7 @@
           "project"
         ],
         "summary": "Create History Project",
+        "description": "Endpoint para criar uma nova entrada no histórico de um projeto.\nRegistra alterações manuais ou eventos importantes no projeto.\nApenas usuários ADMIN podem criar entradas de histórico.\n\nArgs:\n    body: Dados da entrada de histórico (project_id, description, etc.)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_history_project_history_project__post",
         "requestBody": {
           "content": {
@@ -1333,6 +1361,7 @@
           "login"
         ],
         "summary": "Login",
+        "description": "Endpoint para login de usuários via API.\nRate limit: 5 tentativas por minuto por IP.\n\nArgs:\n    body: Dados de login (CPF e senha)\n    request: Objeto da requisição HTTP\n    \nReturns:\n    LoginResponse: Token JWT e mensagem de sucesso\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    InvalidPasswordError: Se a senha estiver incorreta\n    RateLimitExceededError: Se exceder o limite de tentativas\n    InternalServerError: Para outros erros internos",
         "operationId": "login_auth_login_post",
         "requestBody": {
           "content": {
@@ -1375,7 +1404,7 @@
           "login"
         ],
         "summary": "Login Fiscal",
-        "description": "Endpoint para login do fiscal via API.\n\nArgs:\n    body: Dados de login (email e senha)\n    request: Objeto da requisição HTTP\n    \nReturns:\n    LoginResponse: Token JWT e mensagem de sucesso\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    InvalidPasswordError: Se a senha estiver incorreta\n    InternalServerError: Para outros erros internos",
+        "description": "Endpoint para login de fiscais via API.\nRate limit: 5 tentativas por minuto por IP.\n\nArgs:\n    body: Dados de login (email e senha)\n    request: Objeto da requisição HTTP\n    \nReturns:\n    LoginResponse: Token JWT e mensagem de sucesso\n    \nRaises:\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    InvalidPasswordError: Se a senha estiver incorreta\n    RateLimitExceededError: Se exceder o limite de tentativas\n    InternalServerError: Para outros erros internos",
         "operationId": "login_fiscal_auth_login_fiscal_post",
         "requestBody": {
           "content": {
@@ -1417,6 +1446,7 @@
           "project"
         ],
         "summary": "Find Project",
+        "description": "Endpoint para buscar um projeto específico pelo ID.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    project_id: ID do projeto a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindProjectResponse: Dados básicos do projeto encontrado\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_project_project__project_id__get",
         "security": [
           {
@@ -1463,6 +1493,7 @@
           "project"
         ],
         "summary": "Count Projects",
+        "description": "Endpoint para contar o total de projetos no sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    CountProjectResponse: Número total de projetos\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "count_projects_project_count_all_get",
         "responses": {
           "200": {
@@ -1499,6 +1530,7 @@
           "project"
         ],
         "summary": "Find All Projects",
+        "description": "Endpoint para buscar todos os projetos do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nDEPRECATED: Use o endpoint com paginação (/projects/pagination/{page_size}/{page}) ao invés deste.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllProjectsResponse: Lista com todos os projetos\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_projects_project_projects_all_get",
         "responses": {
           "200": {
@@ -1536,6 +1568,7 @@
           "project"
         ],
         "summary": "Find Associations Projects",
+        "description": "Endpoint para buscar todas as possibilidades de associação de projetos.\nRetorna dados para montagem de formulários de associação (bairros, empresas, fiscais, tipos, status).\nApenas usuários ADMIN podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAssociationProjectsResponse: Dados de todas as entidades disponíveis para associação\n    \nRaises:\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "find_associations_projects_project_projects_associations_all_get",
         "responses": {
           "200": {
@@ -1572,6 +1605,7 @@
           "project"
         ],
         "summary": "Find All Projects Details",
+        "description": "Endpoint para buscar todos os projetos com detalhes básicos.\nRetorna informações resumidas de todos os projetos incluindo status e datas.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllProjectWithBasicDetailsResponse: Lista de projetos com detalhes básicos\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_projects_details_project_projects_all_details_get",
         "responses": {
           "200": {
@@ -1608,6 +1642,7 @@
           "project"
         ],
         "summary": "Create Project",
+        "description": "Endpoint para criar um novo projeto no sistema.\nApenas usuários ADMIN podem criar projetos.\n\nArgs:\n    body: Dados do projeto a ser criado (nome, verba, datas, status, etc.)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    InvalidDateError: Se as datas fornecidas forem inválidas\n    InvalidMonetaryValueError: Se a verba for inválida\n    StatusNotFoundError: Se o status fornecido não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_project_project__post",
         "requestBody": {
           "content": {
@@ -1652,6 +1687,7 @@
           "project"
         ],
         "summary": "Delete Project",
+        "description": "Endpoint para deletar um projeto do sistema.\nApenas usuários ADMIN podem deletar projetos.\n\nArgs:\n    body: Dados do projeto a ser deletado (ID do projeto)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    ProjectHasRelatedChildrenError: Se o projeto possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_project_project__delete",
         "requestBody": {
           "content": {
@@ -1698,6 +1734,7 @@
           "project"
         ],
         "summary": "Update Project Name",
+        "description": "Endpoint para atualizar o nome de um projeto.\nApenas usuários ADMIN podem alterar nomes de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e novo nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_project_name_project_name_patch",
         "requestBody": {
           "content": {
@@ -1744,6 +1781,7 @@
           "project"
         ],
         "summary": "Update Project Andamento",
+        "description": "Endpoint para atualizar o andamento de um projeto.\nApenas usuários ADMIN podem alterar o andamento de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e novo andamento)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_project_andamento_project_andamento_do_projeto_patch",
         "requestBody": {
           "content": {
@@ -1790,6 +1828,7 @@
           "project"
         ],
         "summary": "Update End Date",
+        "description": "Endpoint para atualizar a data de fim de um projeto.\nApenas usuários ADMIN podem alterar datas de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e nova data de fim)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    InvalidDateError: Se a data fornecida for inválida\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_end_date_project_end_date_patch",
         "requestBody": {
           "content": {
@@ -1836,6 +1875,7 @@
           "project"
         ],
         "summary": "Update Expected Completion Date",
+        "description": "Endpoint para atualizar a data prevista de conclusão de um projeto.\nApenas usuários ADMIN podem alterar datas de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e nova data prevista de conclusão)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    InvalidDateError: Se a data fornecida for inválida\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_expected_completion_date_project_projet_expected_completion_date_patch",
         "requestBody": {
           "content": {
@@ -1882,6 +1922,7 @@
           "project"
         ],
         "summary": "Update Start Date",
+        "description": "Endpoint para atualizar a data de início de um projeto.\nApenas usuários ADMIN podem alterar datas de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e nova data de início)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    InvalidDateError: Se a data fornecida for inválida\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_start_date_project_start_date_patch",
         "requestBody": {
           "content": {
@@ -1928,6 +1969,7 @@
           "project"
         ],
         "summary": "Update Project Verba",
+        "description": "Endpoint para atualizar a verba disponível de um projeto.\nApenas usuários ADMIN podem alterar verbas de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e nova verba)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    InvalidMonetaryValueError: Se o valor da verba for inválido\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_project_verba_project_verba_patch",
         "requestBody": {
           "content": {
@@ -1974,6 +2016,7 @@
           "project"
         ],
         "summary": "Update Project Status",
+        "description": "Endpoint para atualizar o status de um projeto.\nApenas usuários ADMIN podem alterar status de projetos.\n\nArgs:\n    body: Dados para atualização (ID do projeto e novo status)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    StatusNotFoundError: Se o status fornecido não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_project_status_project_status_patch",
         "requestBody": {
           "content": {
@@ -2020,6 +2063,7 @@
           "project"
         ],
         "summary": "Project Detail",
+        "description": "Endpoint para buscar detalhes completos de um projeto.\nRetorna informações detalhadas incluindo associações com bairros, empresas, fiscais, etc.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    project_id: ID do projeto a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    ProjectDetailResponse: Detalhes completos do projeto incluindo todas as associações\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "project_detail_project_project_detail__project_id__get",
         "security": [
           {
@@ -2066,6 +2110,7 @@
           "project"
         ],
         "summary": "Get Projects With Pagination",
+        "description": "Endpoint para buscar projetos com paginação.\nRetorna uma lista paginada de projetos para otimizar performance em grandes volumes.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    page_size: Número de projetos por página\n    page: Número da página (começa em 1)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectsWithPaginationResponse: Lista paginada de projetos com metadados de paginação\n    \nRaises:\n    InvalidPaginationError: Se os parâmetros de paginação forem inválidos\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_projects_with_pagination_project_projects_pagination__page_size___page__get",
         "security": [
           {
@@ -2123,6 +2168,7 @@
           "bairro"
         ],
         "summary": "Find Project Bairro",
+        "description": "Endpoint para buscar uma associação específica entre projeto e bairro.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    bairro_id: ID do bairro\n    project_id: ID do projeto\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindProjectBairroResponse: Dados da associação projeto-bairro\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    BairroNotFoundError: Se o bairro não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_project_bairro_project_bairro__bairro_id___project_id__get",
         "security": [
           {
@@ -2180,6 +2226,7 @@
           "bairro"
         ],
         "summary": "Get Project Counts By Bairro",
+        "description": "Endpoint para obter contagem de projetos agrupados por bairro.\nRetorna estatísticas de quantos projetos cada bairro possui.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectCountByBairroResponse: Lista com contagem de projetos por bairro\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_project_counts_by_bairro_project_bairro_project_count__get",
         "responses": {
           "200": {
@@ -2217,6 +2264,7 @@
           "bairro"
         ],
         "summary": "Get Project Verba By Bairro R",
+        "description": "Endpoint para obter soma de verbas de projetos agrupados por bairro.\nRetorna o valor total de investimento por bairro.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectVerbaByBairroResponse: Lista com soma de verbas por bairro\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_project_verba_by_bairro_r_project_bairro_project_verba__get",
         "responses": {
           "200": {
@@ -2254,6 +2302,7 @@
           "bairro"
         ],
         "summary": "Get Project Status Count By Bairro R",
+        "description": "Endpoint para obter contagem de projetos por status agrupados por bairro.\nRetorna estatísticas de status de projetos (em andamento, concluído, etc.) por bairro.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectStatusCountByBairroResponse: Lista com contagem de status por bairro\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_project_status_count_by_bairro_r_project_bairro_project_status__get",
         "responses": {
           "200": {
@@ -2291,6 +2340,7 @@
           "bairro"
         ],
         "summary": "Create Project Bairro",
+        "description": "Endpoint para criar uma nova associação entre projeto e bairro.\nVincula um projeto a um bairro específico.\nApenas usuários ADMIN podem criar associações.\n\nArgs:\n    body: Dados da associação (project_id e bairro_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    BairroNotFoundError: Se o bairro não for encontrado\n    AssociationAlreadyExistsError: Se a associação já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_project_bairro_project_bairro__post",
         "requestBody": {
           "content": {
@@ -2336,6 +2386,7 @@
           "bairro"
         ],
         "summary": "Delete Project Bairro",
+        "description": "Endpoint para deletar uma associação entre projeto e bairro.\nRemove o vínculo entre um projeto e um bairro.\nApenas usuários ADMIN podem deletar associações.\n\nArgs:\n    body: Dados da associação a ser removida (project_id e bairro_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    BairroNotFoundError: Se o bairro não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_project_bairro_project_bairro__delete",
         "requestBody": {
           "content": {
@@ -2383,6 +2434,7 @@
           "bairro"
         ],
         "summary": "Find All Projects From Bairro",
+        "description": "Endpoint para buscar todos os projetos associados a um bairro específico.\nRetorna lista de todos os projetos que estão vinculados ao bairro.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    bairro_id: ID do bairro\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllProjectsFromBairroResponse: Lista de projetos do bairro\n    \nRaises:\n    BairroNotFoundError: Se o bairro não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_projects_from_bairro_project_bairro__bairro_id__get",
         "security": [
           {
@@ -2432,6 +2484,7 @@
           "project_empresa"
         ],
         "summary": "Find Project Empresa",
+        "description": "Endpoint para buscar uma associação específica entre projeto e empresa.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    empresa_id: ID da empresa\n    project_id: ID do projeto\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindProjectEmpresaResponse: Dados da associação projeto-empresa\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_project_empresa_project_empresa__empresa_id___project_id__get",
         "security": [
           {
@@ -2490,6 +2543,7 @@
           "project_empresa"
         ],
         "summary": "Find All Projects From Empresa",
+        "description": "Endpoint para buscar todos os projetos associados a uma empresa específica.\nRetorna lista de todos os projetos que estão vinculados à empresa.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    empresa_id: ID da empresa\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllProjectsFromEmpresaResponse: Lista de projetos da empresa\n    \nRaises:\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_projects_from_empresa_project_empresa__empresa_id__get",
         "security": [
           {
@@ -2539,6 +2593,7 @@
           "project_empresa"
         ],
         "summary": "Get Count Projects By Empresas",
+        "description": "Endpoint para obter contagem de projetos agrupados por empresa.\nRetorna estatísticas de quantos projetos cada empresa possui.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetCountProjectsByEmpresaResponse: Lista com contagem de projetos por empresa\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_count_projects_by_empresas_project_empresa_project_count_all_get",
         "responses": {
           "200": {
@@ -2577,6 +2632,7 @@
           "project_empresa"
         ],
         "summary": "Create Project Empresa",
+        "description": "Endpoint para criar uma nova associação entre projeto e empresa.\nVincula um projeto a uma empresa específica.\nApenas usuários ADMIN podem criar associações.\n\nArgs:\n    body: Dados da associação (project_id e empresa_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    AssociationAlreadyExistsError: Se a associação já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_project_empresa_project_empresa__post",
         "requestBody": {
           "content": {
@@ -2623,6 +2679,7 @@
           "project_empresa"
         ],
         "summary": "Delete Project Empresa",
+        "description": "Endpoint para deletar uma associação entre projeto e empresa.\nRemove o vínculo entre um projeto e uma empresa.\nApenas usuários ADMIN podem deletar associações.\n\nArgs:\n    body: Dados da associação a ser removida (project_id e empresa_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    EmpresaNotFoundError: Se a empresa não for encontrada\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_project_empresa_project_empresa__delete",
         "requestBody": {
           "content": {
@@ -2670,6 +2727,7 @@
           "type"
         ],
         "summary": "Find Type From Project",
+        "description": "Endpoint para buscar o tipo de um projeto específico.\nRetorna informações sobre o tipo/categoria do projeto.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    project_id: ID do projeto\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindTypeFromProjectResponse: Dados do tipo do projeto\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    TypeNotFoundError: Se o tipo não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_type_from_project_project_type__project_id__get",
         "security": [
           {
@@ -2718,6 +2776,7 @@
           "type"
         ],
         "summary": "Get Project Types Count By Bairro",
+        "description": "Endpoint para obter contagem de tipos de projetos agrupados por bairro.\nRetorna estatísticas de tipos de projeto por bairro (infraestrutura, educação, etc.).\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetProjectTypesCountByBairroResponse: Lista com contagem de tipos por bairro\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_project_types_count_by_bairro_project_type_project_types_count_get",
         "responses": {
           "200": {
@@ -2755,6 +2814,7 @@
           "type"
         ],
         "summary": "Create Project Type",
+        "description": "Endpoint para criar uma nova associação entre projeto e tipo.\nVincula um projeto a um tipo/categoria específica.\nApenas usuários ADMIN podem criar associações.\n\nArgs:\n    body: Dados da associação (project_id e type_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    TypeNotFoundError: Se o tipo não for encontrado\n    AssociationAlreadyExistsError: Se a associação já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_project_type_project_type__post",
         "requestBody": {
           "content": {
@@ -2800,6 +2860,7 @@
           "type"
         ],
         "summary": "Delete Project Type",
+        "description": "Endpoint para deletar uma associação entre projeto e tipo.\nRemove o vínculo entre um projeto e um tipo/categoria.\nApenas usuários ADMIN podem deletar associações.\n\nArgs:\n    body: Dados da associação a ser removida (project_id e type_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    TypeNotFoundError: Se o tipo não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_project_type_project_type__delete",
         "requestBody": {
           "content": {
@@ -2846,6 +2907,7 @@
           "status"
         ],
         "summary": "Find Status",
+        "description": "Endpoint para buscar um status específico pelo ID.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    status_id: ID do status a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindStatusResponse: Dados do status encontrado\n    \nRaises:\n    StatusNotFoundError: Se o status não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_status_status__status_id__get",
         "security": [
           {
@@ -2893,6 +2955,7 @@
           "status"
         ],
         "summary": "Create Status",
+        "description": "Endpoint para criar um novo status no sistema.\nApenas usuários ADMIN podem criar status.\n\nArgs:\n    body: Dados do status a ser criado (descrição)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    StatusAlreadyExistsError: Se o status já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_status_status__post",
         "requestBody": {
           "content": {
@@ -2937,6 +3000,7 @@
           "status"
         ],
         "summary": "Delete Status",
+        "description": "Endpoint para deletar um status do sistema.\nApenas usuários ADMIN podem deletar status.\n\nArgs:\n    body: Dados do status a ser deletado (ID)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    StatusNotFoundError: Se o status não for encontrado\n    StatusHasRelatedChildrenError: Se o status possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_status_status__delete",
         "requestBody": {
           "content": {
@@ -2981,6 +3045,7 @@
           "status"
         ],
         "summary": "Update Status Description",
+        "description": "Endpoint para atualizar a descrição de um status.\nApenas usuários ADMIN podem alterar descrições de status.\n\nArgs:\n    body: Dados para atualização (ID do status e nova descrição)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    StatusNotFoundError: Se o status não for encontrado\n    StatusAlreadyExistsError: Se já existir um status com a nova descrição\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_status_description_status__patch",
         "requestBody": {
           "content": {
@@ -3027,6 +3092,7 @@
           "status"
         ],
         "summary": "Find All Status",
+        "description": "Endpoint para buscar todos os status do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllStatusResponse: Lista com todos os status do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_status_status_status_all__get",
         "responses": {
           "200": {
@@ -3063,6 +3129,7 @@
           "status"
         ],
         "summary": "Find Project By Status",
+        "description": "Endpoint para buscar projetos filtrados por status.\nRetorna todos os projetos que possuem o status especificado.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    status_id: ID do status para filtrar os projetos\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindProjectByStatusResponse: Lista de projetos com o status especificado\n    \nRaises:\n    StatusNotFoundError: Se o status não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_project_by_status_status_projects__status_id__get",
         "security": [
           {
@@ -3112,6 +3179,7 @@
           "user_project"
         ],
         "summary": "Find All Association From Projects",
+        "description": "Endpoint para buscar todas as associações entre usuários e projetos.\nRetorna lista completa de todos os vínculos usuário-projeto do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllAssocitationFromProjectsResponse: Lista de todas as associações\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_association_from_projects_user_project_all_get",
         "responses": {
           "200": {
@@ -3150,6 +3218,7 @@
           "user_project"
         ],
         "summary": "Get Count Projets By User",
+        "description": "Endpoint para obter contagem de projetos agrupados por usuário.\nRetorna estatísticas de quantos projetos cada usuário (vereador/assessor) gerencia.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetCountProjectsByUserResponse: Lista com contagem de projetos por usuário\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_count_projets_by_user_user_project_project_count_all_get",
         "responses": {
           "200": {
@@ -3188,6 +3257,7 @@
           "user_project"
         ],
         "summary": "Associate Vereador With A Project",
+        "description": "Endpoint para criar uma nova associação entre vereador e projeto.\nVincula um vereador (ou assessor) como responsável por um projeto.\nApenas usuários ADMIN podem criar associações.\n\nArgs:\n    body: Dados da associação (user_cpf e project_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    ProjectNotFoundError: Se o projeto não for encontrado\n    AssociationAlreadyExistsError: Se a associação já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "associate_vereador_with_a_project_user_project__post",
         "requestBody": {
           "content": {
@@ -3234,6 +3304,7 @@
           "user_project"
         ],
         "summary": "Delete Association",
+        "description": "Endpoint para deletar uma associação entre usuário e projeto.\nRemove o vínculo entre um vereador/assessor e um projeto.\nApenas usuários ADMIN podem deletar associações.\n\nArgs:\n    body: Dados da associação a ser removida (user_cpf e project_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    ProjectNotFoundError: Se o projeto não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_association_user_project__delete",
         "requestBody": {
           "content": {
@@ -3280,6 +3351,7 @@
           "user_project"
         ],
         "summary": "Update Association From Project",
+        "description": "Endpoint para atualizar uma associação entre usuário e projeto.\nPermite modificar detalhes da associação (como permissões ou nível de acesso).\nApenas usuários ADMIN podem atualizar associações.\n\nArgs:\n    body: Dados da associação a ser atualizada\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    UserNotFoundError: Se o usuário não for encontrado\n    ProjectNotFoundError: Se o projeto não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_association_from_project_user_project__patch",
         "requestBody": {
           "content": {
@@ -3326,6 +3398,7 @@
           "document"
         ],
         "summary": "Save Document",
+        "description": "Endpoint para salvar/enviar documentos para um projeto.\nApenas usuários ADMIN podem enviar documentos.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto (via formulário)\n    file: Arquivo a ser enviado (PDF, Word, Excel, etc.)\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    SaveDocumentResponse: Dados do documento salvo e localização\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    InvalidFileTypeError: Se o tipo de arquivo não for suportado\n    FileTooLargeError: Se o arquivo exceder o tamanho máximo\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "save_document_document_save_post",
         "requestBody": {
           "content": {
@@ -3372,6 +3445,7 @@
           "document"
         ],
         "summary": "Get Document",
+        "description": "Endpoint para baixar/visualizar um documento específico de um projeto.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    project_id: ID do projeto\n    document_name: Nome do documento a ser baixado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    StreamingResponse: Documento em formato binário com Content-Type apropriado\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    DocumentNotFoundError: Se o documento não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_document_document__project_id___document_name__get",
         "security": [
           {
@@ -3426,6 +3500,7 @@
           "document"
         ],
         "summary": "Get All Document Names",
+        "description": "Endpoint para listar todos os nomes de documentos de um projeto.\nRetorna apenas os nomes dos arquivos, não o conteúdo.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    project_id: ID do projeto\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetAllDocumentNamesResponse: Lista com nomes de todos os documentos do projeto\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_all_document_names_document_projects__project_id__documents_get",
         "security": [
           {
@@ -3473,6 +3548,7 @@
           "document"
         ],
         "summary": "Delete Document",
+        "description": "Endpoint para deletar um documento específico de um projeto.\nApenas usuários ADMIN podem deletar documentos.\n\nArgs:\n    body: Dados do documento a ser deletado (project_id e document_name)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    DocumentNotFoundError: Se o documento não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_document_document__delete",
         "requestBody": {
           "content": {
@@ -3519,6 +3595,7 @@
           "document"
         ],
         "summary": "Delete All Documents From Project",
+        "description": "Endpoint para deletar todos os documentos de um projeto.\nRemove todos os arquivos associados ao projeto especificado.\nApenas usuários ADMIN podem executar esta operação.\n\nArgs:\n    body: Dados do projeto (project_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_all_documents_from_project_document_all_delete",
         "requestBody": {
           "content": {
@@ -3565,6 +3642,7 @@
           "type"
         ],
         "summary": "Create Type",
+        "description": "Endpoint para criar um novo tipo de projeto no sistema.\nApenas usuários ADMIN podem criar tipos.\n\nArgs:\n    body: Dados do tipo a ser criado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    TypeAlreadyExistsError: Se o tipo já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_type_types__post",
         "requestBody": {
           "content": {
@@ -3609,6 +3687,7 @@
           "type"
         ],
         "summary": "Delete Type",
+        "description": "Endpoint para deletar um tipo de projeto do sistema.\nApenas usuários ADMIN podem deletar tipos.\n\nArgs:\n    body: Dados do tipo a ser deletado (nome)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    TypeNotFoundError: Se o tipo não for encontrado\n    TypeHasRelatedChildrenError: Se o tipo possui relacionamentos que impedem a deleção\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_type_types__delete",
         "requestBody": {
           "content": {
@@ -3653,6 +3732,7 @@
           "type"
         ],
         "summary": "Update Type",
+        "description": "Endpoint para atualizar o nome de um tipo de projeto.\nApenas usuários ADMIN podem alterar nomes de tipos.\n\nArgs:\n    body: Dados para atualização (nome atual e novo nome do tipo)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na atualização\n    \nRaises:\n    TypeNotFoundError: Se o tipo não for encontrado\n    TypeAlreadyExistsError: Se já existir um tipo com o novo nome\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "update_type_types__patch",
         "requestBody": {
           "content": {
@@ -3699,6 +3779,7 @@
           "type"
         ],
         "summary": "Find Type By Exact Name",
+        "description": "Endpoint para buscar um tipo de projeto específico pelo nome exato.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    type_name: Nome exato do tipo a ser buscado\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindTypeByExactNameResponse: Dados do tipo encontrado\n    \nRaises:\n    TypeNotFoundError: Se o tipo não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_type_by_exact_name_types_find_by_name__type_name__get",
         "security": [
           {
@@ -3746,6 +3827,7 @@
           "type"
         ],
         "summary": "Find All Types",
+        "description": "Endpoint para buscar todos os tipos de projeto do sistema.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    FindAllTypesResponse: Lista com todos os tipos de projeto do sistema\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "find_all_types_types_all_get",
         "responses": {
           "200": {
@@ -3784,6 +3866,7 @@
           "project_fiscal"
         ],
         "summary": "Create Project Fiscal",
+        "description": "Endpoint para criar uma nova associação entre projeto e fiscal.\nVincula um projeto a um fiscal responsável.\nApenas usuários ADMIN podem criar associações.\n\nArgs:\n    body: Dados da associação (project_id e fiscal_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na criação\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    AssociationAlreadyExistsError: Se a associação já existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "create_project_fiscal_project_fiscal__post",
         "requestBody": {
           "content": {
@@ -3830,6 +3913,7 @@
           "project_fiscal"
         ],
         "summary": "Delete Project Fiscal",
+        "description": "Endpoint para deletar uma associação entre projeto e fiscal.\nRemove o vínculo entre um projeto e um fiscal.\nApenas usuários ADMIN podem deletar associações.\n\nArgs:\n    body: Dados da associação a ser removida (project_id e fiscal_id)\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    BaseMessageResponse: Mensagem de sucesso na deleção\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    AssociationNotFoundError: Se a associação não existir\n    UnauthorizedError: Se o usuário não for ADMIN\n    InternalServerError: Para outros erros internos",
         "operationId": "delete_project_fiscal_project_fiscal__delete",
         "requestBody": {
           "content": {
@@ -3878,6 +3962,7 @@
           "project_fiscal"
         ],
         "summary": "Get Count Projects By Fiscal",
+        "description": "Endpoint para obter contagem de projetos agrupados por fiscal.\nRetorna estatísticas de quantos projetos cada fiscal supervisiona.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetCountProjectsByFiscalResponse: Lista com contagem de projetos por fiscal\n    \nRaises:\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
         "operationId": "get_count_projects_by_fiscal_project_fiscal_project_count_get",
         "responses": {
           "200": {
@@ -3914,6 +3999,7 @@
           "work_project"
         ],
         "summary": "Create Work Project With Fiscal Documents",
+        "description": "Endpoint para criar um work project com documentos fiscais.\nPermite criar um projeto de trabalho e anexar documentos fiscais simultaneamente.\nApenas usuários ADMIN podem criar work projects.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto pai (via formulário)\n    fiscal_id: ID do fiscal responsável (via formulário)\n    title: Título do work project (via formulário)\n    description: Descrição do work project (via formulário)\n    files: Lista de arquivos fiscais para anexar (opcional)\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    CreateWorkProjectWithFiscalDocumentResponse: Dados do work project criado e documentos anexados\n    \nRaises:\n    ProjectNotFoundError: Se o projeto pai não for encontrado\n    FiscalNotFoundError: Se o fiscal não for encontrado\n    UnauthorizedError: Se o usuário não for ADMIN\n    InvalidFileTypeError: Se algum arquivo não for suportado\n    InternalServerError: Para outros erros internos",
         "operationId": "create_work_project_with_fiscal_documents_work_project_create_with_fiscal_documents_post",
         "requestBody": {
           "content": {
@@ -4736,6 +4822,94 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetProjectsByFiscalWithPaginationMobileResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/mobile/fiscal/summary": {
+      "get": {
+        "tags": [
+          "Fiscal Mobile"
+        ],
+        "summary": "Get Fiscal Summary Mobile",
+        "description": "Endpoint para obter resumo completo do fiscal autenticado.\nRetorna estatísticas, projetos vinculados e últimas fiscalizações.\n\nArgs:\n    request: Objeto da requisição HTTP\n    start_date: Data de início para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)\n    end_date: Data de fim para filtro (opcional, formato ISO: YYYY-MM-DDTHH:MM:SS)\n    limit: Número máximo de últimas fiscalizações a retornar (opcional, padrão: 5)\n    fiscal: Dados do fiscal autenticado (injetado pelo middleware)\n    \nReturns:\n    GetFiscalSummaryResponse: Resumo completo do fiscal com estatísticas\n    \nRaises:\n    FiscalNotExists: Se o fiscal não for encontrado\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_fiscal_summary_mobile_mobile_fiscal_summary_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": 5,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFiscalSummaryResponse"
                 }
               }
             }
@@ -6838,6 +7012,105 @@
         ],
         "title": "Fiscal"
       },
+      "FiscalInfo": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FiscalInfo"
+      },
+      "FiscalSummaryContent": {
+        "properties": {
+          "fiscal": {
+            "$ref": "#/components/schemas/FiscalInfo"
+          },
+          "total_projetos_vinculados": {
+            "type": "integer",
+            "title": "Total Projetos Vinculados"
+          },
+          "total_fiscalizacoes": {
+            "type": "integer",
+            "title": "Total Fiscalizacoes"
+          },
+          "fiscalizacoes_no_periodo": {
+            "type": "integer",
+            "title": "Fiscalizacoes No Periodo"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
+          "fiscalizacoes_por_projeto": {
+            "items": {
+              "$ref": "#/components/schemas/FiscalizacaoPorProjeto"
+            },
+            "type": "array",
+            "title": "Fiscalizacoes Por Projeto"
+          },
+          "ultimas_fiscalizacoes": {
+            "items": {
+              "$ref": "#/components/schemas/UltimaFiscalizacao"
+            },
+            "type": "array",
+            "title": "Ultimas Fiscalizacoes"
+          },
+          "documentos_enviados": {
+            "type": "integer",
+            "title": "Documentos Enviados"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal",
+          "total_projetos_vinculados",
+          "total_fiscalizacoes",
+          "fiscalizacoes_no_periodo",
+          "fiscalizacoes_por_projeto",
+          "ultimas_fiscalizacoes",
+          "documentos_enviados"
+        ],
+        "title": "FiscalSummaryContent"
+      },
       "FiscalTestResponse": {
         "properties": {
           "message": {
@@ -6871,6 +7144,41 @@
         ],
         "title": "FiscalTestResponse",
         "description": "Resposta para o endpoint de teste dos fiscais mobile."
+      },
+      "FiscalizacaoPorProjeto": {
+        "properties": {
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "project_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Name"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "title": "FiscalizacaoPorProjeto"
       },
       "GenericModel": {
         "properties": {
@@ -7092,6 +7400,50 @@
           "access_token"
         ],
         "title": "GetCountProjectsByUserResponse"
+      },
+      "GetFiscalSummaryResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FiscalSummaryContent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "fiscal_id",
+          "content"
+        ],
+        "title": "GetFiscalSummaryResponse"
       },
       "GetLatestWorkProjectsByFiscalResponse": {
         "properties": {
@@ -8119,6 +8471,57 @@
           "name"
         ],
         "title": "Type"
+      },
+      "UltimaFiscalizacao": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "project_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "UltimaFiscalizacao"
       },
       "UpdateAssociationFromProjectFormat": {
         "properties": {
