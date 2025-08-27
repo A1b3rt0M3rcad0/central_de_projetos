@@ -55,7 +55,7 @@ async def generic_cache_aside_adapter(
         cache_response = await execute_controller(cache_get_controller, http_request)
         
         # Se encontrou no cache, retorna diretamente
-        if cache_response.status_code == 200 and cache_response.body.get('content'):
+        if cache_response.status_code == 200 and cache_response.body.get('content') is not None:
             return cache_response
             
     except Exception:
@@ -67,7 +67,7 @@ async def generic_cache_aside_adapter(
         db_response = await execute_controller(db_controller, http_request)
         
         # Se encontrou no banco e foi bem-sucedido
-        if db_response.status_code == 200 and db_response.body.get('content'):
+        if db_response.status_code == 200 and db_response.body.get('content') is not None:
             try:
                 # 3. Prepara os parâmetros para o cache
                 cache_path_params = {}

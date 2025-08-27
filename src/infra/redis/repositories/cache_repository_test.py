@@ -110,6 +110,9 @@ class TestCacheRepository:
         key = "test_key"
         expected_data = {"field1": "value1", "field2": "value2"}
         mock_redis = AsyncMock()
+        # Primeiro tenta get (string) - retorna None
+        mock_redis.get = AsyncMock(return_value=None)
+        # Depois tenta hgetall (hash) - retorna os dados
         mock_redis.hgetall = AsyncMock(return_value=expected_data)
         mock_redis_connection_handler.__aenter__.return_value = mock_redis
         
@@ -118,6 +121,7 @@ class TestCacheRepository:
         
         # Assert
         assert result == expected_data
+        mock_redis.get.assert_called_once_with("IMBITUBA:test_key")
         mock_redis.hgetall.assert_called_once_with("IMBITUBA:test_key")
     
     @pytest.mark.asyncio
@@ -126,6 +130,9 @@ class TestCacheRepository:
         # Arrange
         key = "test_key"
         mock_redis = AsyncMock()
+        # Primeiro tenta get (string) - retorna None
+        mock_redis.get = AsyncMock(return_value=None)
+        # Depois tenta hgetall (hash) - levanta exceção
         mock_redis.hgetall = AsyncMock(side_effect=Exception("Redis error"))
         mock_redis_connection_handler.__aenter__.return_value = mock_redis
         mock_redis_connection_handler.__aexit__.return_value = None
@@ -184,11 +191,54 @@ class TestCacheRepository:
         mock_redis.expire.assert_called_once_with("IMBITUBA:test_key", 360)
     
     @pytest.mark.asyncio
+    async def test_get_string_value(self, cache_repository, mock_redis_connection_handler):
+        """Test get operation with string value"""
+        # Arrange
+        key = "test_key"
+        expected_data = "test_value"
+        mock_redis = AsyncMock()
+        # Primeiro tenta get (string) - retorna o valor
+        mock_redis.get = AsyncMock(return_value=expected_data.encode('utf-8'))
+        mock_redis_connection_handler.__aenter__.return_value = mock_redis
+        
+        # Act
+        result = await cache_repository.get(key)
+        
+        # Assert
+        assert result == expected_data
+        mock_redis.get.assert_called_once_with("IMBITUBA:test_key")
+        mock_redis.hgetall.assert_not_called()
+    
+    @pytest.mark.asyncio
+    async def test_get_with_get_exception_but_hgetall_success(self, cache_repository, mock_redis_connection_handler):
+        """Test get operation with get exception but hgetall success"""
+        # Arrange
+        key = "test_key"
+        expected_data = {"field1": "value1", "field2": "value2"}
+        mock_redis = AsyncMock()
+        # Primeiro tenta get (string) - levanta exceção
+        mock_redis.get = AsyncMock(side_effect=Exception("Get error"))
+        # Depois tenta hgetall (hash) - retorna os dados
+        mock_redis.hgetall = AsyncMock(return_value=expected_data)
+        mock_redis_connection_handler.__aenter__.return_value = mock_redis
+        
+        # Act
+        result = await cache_repository.get(key)
+        
+        # Assert
+        assert result == expected_data
+        mock_redis.get.assert_called_once_with("IMBITUBA:test_key")
+        mock_redis.hgetall.assert_called_once_with("IMBITUBA:test_key")
+    
+    @pytest.mark.asyncio
     async def test_get_nonexistent_key(self, cache_repository, mock_redis_connection_handler):
         """Test get operation with nonexistent key"""
         # Arrange
         key = "nonexistent_key"
         mock_redis = AsyncMock()
+        # Primeiro tenta get (string) - retorna None
+        mock_redis.get = AsyncMock(return_value=None)
+        # Depois tenta hgetall (hash) - retorna dicionário vazio
         mock_redis.hgetall = AsyncMock(return_value={})
         mock_redis_connection_handler.__aenter__.return_value = mock_redis
         
@@ -196,7 +246,7 @@ class TestCacheRepository:
         result = await cache_repository.get(key)
         
         # Assert
-        assert result == {}
+        assert result is None
     
     def test_namespace_with_special_characters(self, mock_redis_connection_handler):
         """Test namespace handling with special characters"""
