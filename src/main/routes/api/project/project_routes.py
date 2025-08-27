@@ -1,9 +1,11 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
+#pylint:disable=W9016
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
+from src.main.adapters.generic_cache_aside_adapter import simple_cache_aside_adapter, generic_cache_aside_adapter
 from src.errors.error_handle import error_handler
 
 from src.main.composers.find_project_composer import find_project_composer
@@ -22,6 +24,20 @@ from src.main.composers.update_status_from_project_composer import update_status
 from src.main.composers.find_all_associations_possibility_from_project_composer import find_all_associations_possibility_from_project_composer
 from src.main.composers.count_projects_composer import count_projects_composer
 from src.main.composers.get_projects_with_pagination_composer import get_projects_with_pagination_composer
+
+# Cache composers
+from src.main.composers.cache.project.get.get_count_projects_cached_composer import get_count_projects_cached_composer
+from src.main.composers.cache.project.set.set_count_projects_cached_composer import set_count_projects_cached_composer
+from src.main.composers.cache.project.get.find_project_by_id_cached_composer import find_project_by_id_cached_composer
+from src.main.composers.cache.project.set.set_project_by_id_cached_composer import set_project_by_id_cached_composer
+from src.main.composers.cache.project.get.get_all_projects_cached_composer import get_all_projects_cached_composer
+from src.main.composers.cache.project.set.set_all_projects_cached_composer import set_all_projects_cached_composer
+from src.main.composers.cache.project.get.get_all_projects_with_details_cached_composer import get_all_projects_with_details_cached_composer
+from src.main.composers.cache.project.set.set_all_projects_with_details_cached_composer import set_all_projects_with_details_cached_composer
+from src.main.composers.cache.project.get.get_project_detail_cached_composer import get_project_detail_cached_composer
+from src.main.composers.cache.project.set.set_project_detail_cached_composer import set_project_detail_cached_composer
+from src.main.composers.cache.project.get.get_projects_with_pagination_cached_composer import get_projects_with_pagination_cached_composer
+from src.main.composers.cache.project.set.set_projects_with_pagination_cached_composer import set_projects_with_pagination_cached_composer
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
@@ -59,6 +75,7 @@ routes = APIRouter(prefix=PREFIX, tags=TAGS)
 async def find_project(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar um projeto específico pelo ID.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -76,7 +93,15 @@ async def find_project(project_id, request:Request, user=Security(role_required(
     """
     try:
         request.path_params['project_id'] = project_id
-        http_response = await request_adapter(request, find_project_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=find_project_by_id_cached_composer(),
+            db_controller=find_project_composer(),
+            cache_set_controller=set_project_by_id_cached_composer(),
+            cache_key='project_id'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -99,6 +124,7 @@ async def find_project(project_id, request:Request, user=Security(role_required(
 async def count_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para contar o total de projetos no sistema.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
@@ -113,7 +139,15 @@ async def count_projects(request:Request, user=Security(role_required(["ADMIN", 
         InternalServerError: Para outros erros internos
     """
     try:
-        http_response = await request_adapter(request, count_projects_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_count_projects_cached_composer(),
+            db_controller=count_projects_composer(),
+            cache_set_controller=set_count_projects_cached_composer(),
+            cache_key='count_projects'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -136,6 +170,7 @@ async def count_projects(request:Request, user=Security(role_required(["ADMIN", 
 async def find_all_projects(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os projetos do sistema.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     DEPRECATED: Use o endpoint com paginação (/projects/pagination/{page_size}/{page}) ao invés deste.
@@ -152,7 +187,15 @@ async def find_all_projects(request:Request, user=Security(role_required(["ADMIN
         InternalServerError: Para outros erros internos
     """
     try:
-        http_response = await request_adapter(request, find_all_projects_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_all_projects_cached_composer(),
+            db_controller=find_all_projects_composer(),
+            cache_set_controller=set_all_projects_cached_composer(),
+            cache_key='all_projects'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -213,6 +256,7 @@ async def find_associations_projects(request:Request, user=Security(role_require
 async def find_all_projects_details(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os projetos com detalhes básicos.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Retorna informações resumidas de todos os projetos incluindo status e datas.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
@@ -228,7 +272,15 @@ async def find_all_projects_details(request:Request, user=Security(role_required
         InternalServerError: Para outros erros internos
     """
     try:
-        http_response = await request_adapter(request, find_all_projects_with_basic_details_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_all_projects_with_details_cached_composer(),
+            db_controller=find_all_projects_with_basic_details_composer(),
+            cache_set_controller=set_all_projects_with_details_cached_composer(),
+            cache_key='all_projects_with_details'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -610,6 +662,7 @@ async def update_project_status(body:UpdateStartStatusFormat, request:Request, u
 async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar detalhes completos de um projeto.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Retorna informações detalhadas incluindo associações com bairros, empresas, fiscais, etc.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
@@ -628,7 +681,15 @@ async def project_detail(project_id, request:Request, user=Security(role_require
     """
     try:
         request.path_params['project_id'] = project_id
-        http_response = await request_adapter(request, find_all_from_project_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await simple_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_project_detail_cached_composer(),
+            db_controller=find_all_from_project_composer(),
+            cache_set_controller=set_project_detail_cached_composer(),
+            cache_key='project_id'
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
@@ -651,6 +712,7 @@ async def project_detail(project_id, request:Request, user=Security(role_require
 async def get_projects_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar projetos com paginação.
+    Implementa cache-aside: primeiro busca no Redis, se não encontrar busca no banco.
     Retorna uma lista paginada de projetos para otimizar performance em grandes volumes.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
@@ -669,7 +731,16 @@ async def get_projects_with_pagination(page_size:int, page:int, request:Request,
         InternalServerError: Para outros erros internos
     """
     try:
-        http_response = await request_adapter(request, get_projects_with_pagination_composer())
+        # Usa o cache-aside adapter para implementar o padrão cache
+        http_response = await generic_cache_aside_adapter(
+            framework_request=request,
+            cache_get_controller=get_projects_with_pagination_cached_composer(),
+            db_controller=get_projects_with_pagination_composer(),
+            cache_set_controller=set_projects_with_pagination_cached_composer(),
+            cache_key_mapping={'page_size': 'page_size', 'page': 'page'},
+            cache_ttl=None
+        )
+        
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
