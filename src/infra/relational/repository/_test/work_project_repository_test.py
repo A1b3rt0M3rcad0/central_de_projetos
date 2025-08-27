@@ -1,3 +1,4 @@
+#pylint:disable=all
 from src.infra.relational.repository.work_project_repository import WorkProjectRepository
 from src.infra.relational.config.connection.db_connection_handler import DBConnectionHandler
 from src.infra.relational.config.connection.t_string_connection import TStringConnection as StringConnection
@@ -972,4 +973,109 @@ def test_delete_work_projects(datetime_fixture, insert_status_script, insert_pro
         
         # Verificar se foi deletado
         result = db.session.execute(text('SELECT * FROM work_projects')).first()
-        assert result is None 
+        assert result is None
+
+def test_find_latest_by_project(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script, insert_work_projects_script) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    work_projects_repository = WorkProjectRepository(db_connection_handler)
+    
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Em andamento',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(text('SELECT * FROM status')).first()
+        
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'name': 'Projeto Teste',
+            'verba_disponivel': 10000.0,
+            'andamento_do_projeto': 'Fase inicial',
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': None
+        })
+        db.session.commit()
+        project = db.session.execute(text('SELECT * FROM project')).first()
+        
+        # Inserir fiscal
+        db.session.execute(insert_fiscal_script, {
+            'name': 'Fiscal Teste',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        fiscal = db.session.execute(text('SELECT * FROM fiscal')).first()
+        
+        # Inserir work_projects em ordem cronológica (mais antigo primeiro)
+        db.session.execute(insert_work_projects_script, {
+            'project_id': project.id,
+            'fiscal_id': fiscal.id,
+            'title': 'Trabalho Antigo',
+            'description': 'Descrição do trabalho antigo',
+            'photo_name': 'foto_antiga.jpg',
+            'created_at': datetime_fixture,
+            'updated_at': datetime_fixture
+        })
+        db.session.commit()
+        
+        # Aguardar um pouco para garantir diferença de timestamp
+        import time
+        time.sleep(0.1)
+        
+        # Inserir work_project mais recente
+        db.session.execute(insert_work_projects_script, {
+            'project_id': project.id,
+            'fiscal_id': fiscal.id,
+            'title': 'Trabalho Mais Recente',
+            'description': 'Descrição do trabalho mais recente',
+            'photo_name': 'foto_recente.jpg',
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc)
+        })
+        db.session.commit()
+        
+        # Testar busca do último work project
+        latest_work_project = work_projects_repository.find_latest_by_project(project_id=project.id)
+        
+        # Verificar se retornou o work project mais recente
+        assert latest_work_project is not None
+        assert latest_work_project.title == 'Trabalho Mais Recente'
+        assert latest_work_project.description == 'Descrição do trabalho mais recente'
+        assert latest_work_project.photo_name == 'foto_recente.jpg'
+        assert latest_work_project.project_id == project.id
+        assert latest_work_project.fiscal_id == fiscal.id
+
+def test_find_latest_by_project_no_work_projects(datetime_fixture, insert_status_script, insert_project_script, insert_fiscal_script) -> None:
+    db_connection_handler = DBConnectionHandler(StringConnection())
+    work_projects_repository = WorkProjectRepository(db_connection_handler)
+    
+    with db_connection_handler as db:
+        # Inserir status
+        db.session.execute(insert_status_script, {
+            'description': 'Em andamento',
+            'created_at': datetime_fixture
+        })
+        db.session.commit()
+        status = db.session.execute(text('SELECT * FROM status')).first()
+        
+        # Inserir projeto
+        db.session.execute(insert_project_script, {
+            'status_id': status.id,
+            'name': 'Projeto Teste',
+            'verba_disponivel': 10000.0,
+            'andamento_do_projeto': 'Fase inicial',
+            'start_date': datetime_fixture,
+            'expected_completion_date': datetime_fixture,
+            'end_date': None
+        })
+        db.session.commit()
+        project = db.session.execute(text('SELECT * FROM project')).first()
+        
+        # Testar busca do último work project quando não há work projects
+        latest_work_project = work_projects_repository.find_latest_by_project(project_id=project.id)
+        
+        # Verificar se retornou None
+        assert latest_work_project is None 

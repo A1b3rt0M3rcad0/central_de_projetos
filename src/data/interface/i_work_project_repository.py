@@ -33,6 +33,9 @@ class IWorkProjectRepository(ABC):
     def find_by_title_and_fiscal(self, title:str, fiscal_id:int) -> WorkProjectEntity:pass
 
     @abstractmethod
+    def find_latest_by_project(self, project_id:int) -> Optional[WorkProjectEntity]:pass
+
+    @abstractmethod
     def count_work_projects(self) -> Dict[str, int]:pass
 
     @abstractmethod

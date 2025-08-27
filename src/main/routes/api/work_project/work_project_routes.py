@@ -18,6 +18,7 @@ from src.main.composers.get_work_project_composer import get_work_project_compos
 from src.main.composers.get_work_projects_with_pagination_composer import get_work_projects_by_project_with_pagination_composer
 from src.main.composers.get_work_project_document_composer import get_work_project_document_composer
 from src.main.composers.download_work_project_document_composer import download_work_project_document_composer
+from src.main.composers.get_latest_work_project_by_project_composer import get_latest_work_project_by_project_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 from src.main.routes.api.work_project.work_project_response.create_work_project_with_fiscal_document_response import CreateWorkProjectWithFiscalDocumentResponse
@@ -25,6 +26,7 @@ from src.main.routes.api.work_project.work_project_response.add_documents_to_wor
 from src.main.routes.api.work_project.work_project_response.delete_work_project_response import DeleteWorkProjectResponse
 from src.main.routes.api.work_project.work_project_response.get_work_project_response import GetWorkProjectResponse
 from src.main.routes.api.work_project.work_project_response.get_work_projects_with_pagination_response import GetWorkProjectsByProjectWithPaginationResponse
+from src.main.routes.api.work_project.work_project_response.get_latest_work_project_by_project_response import GetLatestWorkProjectByProjectResponse
 
 ## Auth
 from fastapi import Security
@@ -190,6 +192,53 @@ async def get_work_project(
     try:
         request.path_params['work_project_id'] = work_project_id
         http_response = await request_adapter(request, get_work_project_composer())
+        
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/project/{project_id}/latest', response_model=GetLatestWorkProjectByProjectResponse, responses=generate_error_responses())
+async def get_latest_work_project_by_project(
+    request: Request,
+    project_id: int,
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
+):
+    """
+    Endpoint para buscar o último work project criado para um projeto específico.
+    Retorna o work project mais recente baseado na data de criação.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto para buscar o último work project
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetLatestWorkProjectByProjectResponse: Dados do último work project criado para o projeto
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['project_id'] = project_id
+        http_response = await request_adapter(request, get_latest_work_project_by_project_composer())
         
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
