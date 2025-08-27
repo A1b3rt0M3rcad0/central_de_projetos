@@ -4247,6 +4247,116 @@
         }
       }
     },
+    "/work_project/{work_project_id}/document/{document_name}/view": {
+      "get": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "View Work Project Document",
+        "description": "Endpoint para visualizar um documento específico de um work project.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    document_name: Nome do documento a ser visualizado\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    StreamingResponse: Documento em formato binário com Content-Type apropriado para visualização inline\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    DocumentNotFoundError: Se o documento não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
+        "operationId": "view_work_project_document_work_project__work_project_id__document__document_name__view_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          },
+          {
+            "name": "document_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/work_project/{work_project_id}/document/{document_name}/download": {
+      "get": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Download Work Project Document",
+        "description": "Endpoint para baixar um documento específico de um work project.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    work_project_id: ID do work project\n    document_name: Nome do documento a ser baixado\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    StreamingResponse: Documento em formato binário com Content-Type apropriado para download\n    \nRaises:\n    WorkProjectNotExists: Se o work project não for encontrado\n    DocumentNotFoundError: Se o documento não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
+        "operationId": "download_work_project_document_work_project__work_project_id__document__document_name__download_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "work_project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Work Project Id"
+            }
+          },
+          {
+            "name": "document_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
     "/mobile/fiscal/login": {
       "post": {
         "tags": [
@@ -8113,12 +8223,12 @@
             "type": "integer",
             "title": "Total Pages"
           },
-          "project": {
+          "projects": {
             "items": {
               "$ref": "#/components/schemas/src__main__routes__api__project__project_response__get_projects_with_pagination_response__Project"
             },
             "type": "array",
-            "title": "Project"
+            "title": "Projects"
           }
         },
         "type": "object",
@@ -8127,7 +8237,7 @@
           "page_size",
           "total_items",
           "total_pages",
-          "project"
+          "projects"
         ],
         "title": "PaginationProjects"
       },
