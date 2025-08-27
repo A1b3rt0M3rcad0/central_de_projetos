@@ -4181,6 +4181,54 @@
         }
       }
     },
+    "/work_project/project/{project_id}/latest": {
+      "get": {
+        "tags": [
+          "work_project"
+        ],
+        "summary": "Get Latest Work Project By Project",
+        "description": "Endpoint para buscar o último work project criado para um projeto específico.\nRetorna o work project mais recente baseado na data de criação.\nApenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.\n\nArgs:\n    request: Objeto da requisição HTTP\n    project_id: ID do projeto para buscar o último work project\n    user: Dados do usuário autenticado (injetado pelo middleware)\n    \nReturns:\n    GetLatestWorkProjectByProjectResponse: Dados do último work project criado para o projeto\n    \nRaises:\n    ProjectNotFoundError: Se o projeto não for encontrado\n    UnauthorizedError: Se o usuário não tiver permissão\n    InternalServerError: Para outros erros internos",
+        "operationId": "get_latest_work_project_by_project_work_project_project__project_id__latest_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetLatestWorkProjectByProjectResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          }
+        }
+      }
+    },
     "/work_project/project/{project_id}/pagination/{page_size}/{page}": {
       "get": {
         "tags": [
@@ -7555,6 +7603,29 @@
         ],
         "title": "GetFiscalSummaryResponse"
       },
+      "GetLatestWorkProjectByProjectResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__WorkProjectContentResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "GetLatestWorkProjectByProjectResponse"
+      },
       "GetLatestWorkProjectsByFiscalResponse": {
         "properties": {
           "message": {
@@ -9586,6 +9657,211 @@
           "created_at"
         ],
         "title": "User"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__FiscalResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FiscalResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__ProjectResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status_id": {
+            "type": "integer",
+            "title": "Status Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "andamento_do_projeto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Andamento Do Projeto"
+          },
+          "verba_disponivel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verba Disponivel"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "expected_completion_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Completion Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status_id"
+        ],
+        "title": "ProjectResponse"
+      },
+      "src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__WorkProjectContentResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "integer",
+            "title": "Project Id"
+          },
+          "fiscal_id": {
+            "type": "integer",
+            "title": "Fiscal Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "photo_name": {
+            "type": "string",
+            "title": "Photo Name"
+          },
+          "additional_documents": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Additional Documents"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "fiscal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__FiscalResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/src__main__routes__api__work_project__work_project_response__get_latest_work_project_by_project_response__ProjectResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "fiscal_id",
+          "title",
+          "description",
+          "photo_name"
+        ],
+        "title": "WorkProjectContentResponse"
       },
       "src__main__routes__api__work_project__work_project_response__get_work_project_response__FiscalResponse": {
         "properties": {
