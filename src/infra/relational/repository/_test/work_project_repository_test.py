@@ -1010,20 +1010,19 @@ def test_find_latest_by_project(datetime_fixture, insert_status_script, insert_p
         fiscal = db.session.execute(text('SELECT * FROM fiscal')).first()
         
         # Inserir work_projects em ordem cronológica (mais antigo primeiro)
+        old_timestamp = datetime_fixture
+        new_timestamp = datetime_fixture.replace(second=datetime_fixture.second + 10)  # 10 segundos depois
+        
         db.session.execute(insert_work_projects_script, {
             'project_id': project.id,
             'fiscal_id': fiscal.id,
             'title': 'Trabalho Antigo',
             'description': 'Descrição do trabalho antigo',
             'photo_name': 'foto_antiga.jpg',
-            'created_at': datetime_fixture,
-            'updated_at': datetime_fixture
+            'created_at': old_timestamp,
+            'updated_at': old_timestamp
         })
         db.session.commit()
-        
-        # Aguardar um pouco para garantir diferença de timestamp
-        import time
-        time.sleep(0.1)
         
         # Inserir work_project mais recente
         db.session.execute(insert_work_projects_script, {
@@ -1032,8 +1031,8 @@ def test_find_latest_by_project(datetime_fixture, insert_status_script, insert_p
             'title': 'Trabalho Mais Recente',
             'description': 'Descrição do trabalho mais recente',
             'photo_name': 'foto_recente.jpg',
-            'created_at': datetime.now(timezone.utc),
-            'updated_at': datetime.now(timezone.utc)
+            'created_at': new_timestamp,
+            'updated_at': new_timestamp
         })
         db.session.commit()
         
