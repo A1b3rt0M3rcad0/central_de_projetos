@@ -95,8 +95,8 @@ class CreateWorkProjectMobileController(ControllerInterface):
             # Criar histórico do projeto
             self.__create_history_project_case.create(
                 project_id=project_id,
-                data_name='Work Project Mobile',
-                description=f'Work project "{title}" criado via mobile com {len(documents)} documento(s)'
+                data_name='Fiscalização Mobile',
+                description=f'Fiscalização "{title}" criado via mobile com {len(documents)} documento(s)'
             )
             
             return HttpResponse(

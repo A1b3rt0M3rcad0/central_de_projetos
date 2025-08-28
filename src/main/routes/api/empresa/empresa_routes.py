@@ -1,5 +1,6 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
+#pylint:disable=W9016
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
@@ -54,6 +55,7 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
         InternalServerError: Para outros erros internos
     """
     try:
+        request.path_params['empresa_name'] = empresa_name
         http_response = await request_adapter(request, find_empresa_by_exact_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(

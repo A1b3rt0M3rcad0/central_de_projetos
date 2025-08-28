@@ -211,10 +211,10 @@ class ProjectRepository(IProjectRepository):
                 if not project:
                     raise ProjectNotExists(message=f'Project with id: {project_id} does not exists')
                 
-                project_fiscal:ProjectFiscal = db.session.query(ProjectFiscal).where(ProjectFiscal.project_id == project_id ).first()
-                project_empresa:ProjectEmpresa = db.session.query(ProjectEmpresa).where(ProjectEmpresa.project_id == project_id ).first()
-                project_bairro:ProjectBairro = db.session.query(ProjectBairro).where(ProjectBairro.project_id == project_id ).first()
-                project_types:ProjectType = db.session.query(ProjectType).where(ProjectType.project_id == project_id ).first()
+                project_fiscals:List[ProjectFiscal] = db.session.query(ProjectFiscal).where(ProjectFiscal.project_id == project_id ).all()
+                project_empresas:List[ProjectEmpresa] = db.session.query(ProjectEmpresa).where(ProjectEmpresa.project_id == project_id ).all()
+                project_bairros:List[ProjectBairro] = db.session.query(ProjectBairro).where(ProjectBairro.project_id == project_id ).all()
+                project_types_list:List[ProjectType] = db.session.query(ProjectType).where(ProjectType.project_id == project_id ).all()
                 history_project:HistoryProject = db.session.query(HistoryProject).where(HistoryProject.project_id == project_id).all()
 
                 status_entity = None
@@ -231,37 +231,102 @@ class ProjectRepository(IProjectRepository):
                         description=status.description,
                         created_at=status.created_at
                     )
-                if project_fiscal is not None:
-                    fiscal:Fiscal = db.session.query(Fiscal).where(Fiscal.id == project_fiscal.fiscal_id).first()
-                    fiscal_entity = FiscalEntity(
-                        fiscal_id=fiscal.id,
-                        name=fiscal.name,
-                        created_at=fiscal.created_at
-                    )
                 
-                if project_empresa is not None:
-                    empresa:Empresa = db.session.query(Empresa).where(Empresa.id == project_empresa.empresa_id).first()
-                    empresa_entity = EmpresaEntity(
-                        empresa_id=empresa.id,
-                        name=empresa.name,
-                        created_at=empresa.created_at
-                    )
+                # Buscar fiscais associados ao projeto
+                if project_fiscals:
+                    if len(project_fiscals) == 1:
+                        # Se há apenas um fiscal, manter compatibilidade com código existente
+                        fiscal:Fiscal = db.session.query(Fiscal).where(Fiscal.id == project_fiscals[0].fiscal_id).first()
+                        if fiscal:
+                            fiscal_entity = FiscalEntity(
+                                fiscal_id=fiscal.id,
+                                name=fiscal.name,
+                                created_at=fiscal.created_at
+                            )
+                    else:
+                        # Se há múltiplos fiscais, criar lista
+                        fiscal_entities = []
+                        for project_fiscal in project_fiscals:
+                            fiscal:Fiscal = db.session.query(Fiscal).where(Fiscal.id == project_fiscal.fiscal_id).first()
+                            if fiscal:
+                                fiscal_entities.append(FiscalEntity(
+                                    fiscal_id=fiscal.id,
+                                    name=fiscal.name,
+                                    created_at=fiscal.created_at
+                                ))
+                        fiscal_entity = fiscal_entities
                 
-                if project_bairro is not None:
-                    bairro:Bairro = db.session.query(Bairro).where(Bairro.id == project_bairro.bairro_id).first()
-                    bairro_entity = BairroEntity(
-                        bairro_id=bairro.id,
-                        name=bairro.name,
-                        created_at=bairro.created_at
-                    )
+                # Buscar empresas associadas ao projeto
+                if project_empresas:
+                    if len(project_empresas) == 1:
+                        # Se há apenas uma empresa, manter compatibilidade com código existente
+                        empresa:Empresa = db.session.query(Empresa).where(Empresa.id == project_empresas[0].empresa_id).first()
+                        if empresa:
+                            empresa_entity = EmpresaEntity(
+                                empresa_id=empresa.id,
+                                name=empresa.name,
+                                created_at=empresa.created_at
+                            )
+                    else:
+                        # Se há múltiplas empresas, criar lista
+                        empresa_entities = []
+                        for project_empresa in project_empresas:
+                            empresa:Empresa = db.session.query(Empresa).where(Empresa.id == project_empresa.empresa_id).first()
+                            if empresa:
+                                empresa_entities.append(EmpresaEntity(
+                                    empresa_id=empresa.id,
+                                    name=empresa.name,
+                                    created_at=empresa.created_at
+                                ))
+                        empresa_entity = empresa_entities
                 
-                if project_types is not None:
-                    types:Types = db.session.query(Types).where(Types.id == project_types.type_id).first()
-                    types_entity = TypesEntity(
-                        types_id=types.id,
-                        name=types.name,
-                        created_at=types.created_at
-                    )
+                # Buscar bairros associados ao projeto
+                if project_bairros:
+                    if len(project_bairros) == 1:
+                        # Se há apenas um bairro, manter compatibilidade com código existente
+                        bairro:Bairro = db.session.query(Bairro).where(Bairro.id == project_bairros[0].bairro_id).first()
+                        if bairro:
+                            bairro_entity = BairroEntity(
+                                bairro_id=bairro.id,
+                                name=bairro.name,
+                                created_at=bairro.created_at
+                            )
+                    else:
+                        # Se há múltiplos bairros, criar lista
+                        bairro_entities = []
+                        for project_bairro in project_bairros:
+                            bairro:Bairro = db.session.query(Bairro).where(Bairro.id == project_bairro.bairro_id).first()
+                            if bairro:
+                                bairro_entities.append(BairroEntity(
+                                    bairro_id=bairro.id,
+                                    name=bairro.name,
+                                    created_at=bairro.created_at
+                                ))
+                        bairro_entity = bairro_entities
+                
+                # Buscar tipos associados ao projeto
+                if project_types_list:
+                    if len(project_types_list) == 1:
+                        # Se há apenas um tipo, manter compatibilidade com código existente
+                        types:Types = db.session.query(Types).where(Types.id == project_types_list[0].type_id).first()
+                        if types:
+                            types_entity = TypesEntity(
+                                types_id=types.id,
+                                name=types.name,
+                                created_at=types.created_at
+                            )
+                    else:
+                        # Se há múltiplos tipos, criar lista
+                        types_entities = []
+                        for project_type in project_types_list:
+                            types:Types = db.session.query(Types).where(Types.id == project_type.type_id).first()
+                            if types:
+                                types_entities.append(TypesEntity(
+                                    types_id=types.id,
+                                    name=types.name,
+                                    created_at=types.created_at
+                                ))
+                        types_entity = types_entities
                 
                 if history_project is not None:
                     history_project:HistoryProject = db.session.query(HistoryProject).where(HistoryProject.project_id == project.id).all()

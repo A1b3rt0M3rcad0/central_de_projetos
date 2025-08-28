@@ -443,7 +443,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                 work_projects = db.session.query(WorkProject).options(
                     joinedload(WorkProject.project),
                     joinedload(WorkProject.fiscal)
-                ).offset(offset).limit(page_size).all()
+                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
                 
                 work_project_entities = [
                     WorkProjectEntity(
@@ -499,7 +499,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                     joinedload(WorkProject.fiscal)
                 ).where(
                     WorkProject.fiscal_id == fiscal_id
-                ).offset(offset).limit(page_size).all()
+                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
                 
                 work_project_entities = [
                     WorkProjectEntity(
@@ -557,7 +557,7 @@ class WorkProjectRepository(IWorkProjectRepository):
                 ).where(
                     WorkProject.fiscal_id == fiscal_id,
                     WorkProject.project_id == project_id
-                ).offset(offset).limit(page_size).all()
+                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
                 
                 work_project_entities = [
                     WorkProjectEntity(
@@ -595,6 +595,62 @@ class WorkProjectRepository(IWorkProjectRepository):
             except Exception as e:
                 raise ErrorOnFindWorkProject(
                     message=f'Error on get work_projects with pagination by fiscal_id: {fiscal_id} and project_id: {project_id}: {str(e)}'
+                ) from e
+    
+    def get_work_projects_with_pagination_by_project(self, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
+        with self.__db_connection_handler as db:
+            try:
+                offset = (page - 1) * page_size
+                
+                # Count total work projects for this project
+                total_count = db.session.query(WorkProject).where(
+                    WorkProject.project_id == project_id
+                ).count()
+                
+                # Get paginated work projects for this project
+                work_projects = db.session.query(WorkProject).options(
+                    joinedload(WorkProject.project),
+                    joinedload(WorkProject.fiscal)
+                ).where(
+                    WorkProject.project_id == project_id
+                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
+                
+                work_project_entities = [
+                    WorkProjectEntity(
+                        id=wp.id,
+                        project_id=wp.project_id,
+                        fiscal_id=wp.fiscal_id,
+                        title=wp.title,
+                        description=wp.description,
+                        photo_name=wp.photo_name,
+                        additional_documents=self._convert_additional_documents(wp.additional_documents),
+                        created_at=wp.created_at,
+                        updated_at=wp.updated_at,
+                        fiscal=FiscalEntity(
+                            fiscal_id=wp.fiscal.id,
+                            name=wp.fiscal.name,
+                            created_at=wp.fiscal.created_at
+                        ),
+                        project=ProjectEntity(
+                            project_id=wp.project.id,
+                            status_id=wp.project.status_id,
+                            name=wp.project.name,
+                            andamento_do_projeto=wp.project.andamento_do_projeto,
+                            verba_disponivel=MonetaryValue(wp.project.verba_disponivel),
+                            start_date=wp.project.start_date,
+                            expected_completion_date=wp.project.expected_completion_date,
+                            end_date=wp.project.end_date
+                        )
+                    ) for wp in work_projects
+                ]
+                
+                return {
+                    "total": total_count,
+                    "data": work_project_entities
+                }
+            except Exception as e:
+                raise ErrorOnFindWorkProject(
+                    message=f'Error on get work_projects with pagination by project_id: {project_id}: {str(e)}'
                 ) from e
     
     def get_latest_work_projects_by_fiscal_with_date_filter(
@@ -676,6 +732,50 @@ class WorkProjectRepository(IWorkProjectRepository):
             except Exception as e:
                 raise ErrorOnFindWorkProject(
                     message=f'Error on get latest work_projects by fiscal_id: {fiscal_id} with date filter: {str(e)}'
+                ) from e
+    
+    def find_latest_by_project(self, project_id:int) -> Optional[WorkProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                work_project = db.session.query(WorkProject).options(
+                    joinedload(WorkProject.project),
+                    joinedload(WorkProject.fiscal)
+                ).where(
+                    WorkProject.project_id == project_id
+                ).order_by(WorkProject.created_at.desc()).first()
+                
+                if not work_project:
+                    return None
+                
+                return WorkProjectEntity(
+                    id=work_project.id,
+                    project_id=work_project.project_id,
+                    fiscal_id=work_project.fiscal_id,
+                    title=work_project.title,
+                    description=work_project.description,
+                    photo_name=work_project.photo_name,
+                    additional_documents=self._convert_additional_documents(work_project.additional_documents),
+                    created_at=work_project.created_at,
+                    updated_at=work_project.updated_at,
+                    fiscal=FiscalEntity(
+                        fiscal_id=work_project.fiscal.id,
+                        name=work_project.fiscal.name,
+                        created_at=work_project.fiscal.created_at
+                    ),
+                    project=ProjectEntity(
+                        project_id=work_project.project.id,
+                        status_id=work_project.project.status_id,
+                        name=work_project.project.name,
+                        andamento_do_projeto=work_project.project.andamento_do_projeto,
+                        verba_disponivel=MonetaryValue(work_project.project.verba_disponivel),
+                        start_date=work_project.project.start_date,
+                        expected_completion_date=work_project.project.expected_completion_date,
+                        end_date=work_project.project.end_date
+                    )
+                )
+            except Exception as e:
+                raise ErrorOnFindWorkProject(
+                    message=f'Error on find latest work_project by project_id: {project_id}: {str(e)}'
                 ) from e
     
     def update(self, work_project_id:int, update_params:Dict) -> None:

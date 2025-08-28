@@ -1,4 +1,4 @@
-#pylint:disable=W0718
+#pylint:disable=W0718,W9016
 #pylint:disable=W0613
 from fastapi import APIRouter
 from fastapi import Request
@@ -56,6 +56,7 @@ async def find_bairro_by_name(bairro_name:str, request:Request, user=Security(ro
         InternalServerError: Para outros erros internos
     """
     try:
+        request.path_params['bairro_name'] = bairro_name
         http_response = await request_adapter(request, find_bairro_by_name_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(

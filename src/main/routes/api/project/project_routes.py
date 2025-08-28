@@ -1,5 +1,6 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
+#pylint:disable=W9016
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
@@ -669,6 +670,8 @@ async def get_projects_with_pagination(page_size:int, page:int, request:Request,
         InternalServerError: Para outros erros internos
     """
     try:
+        request.path_params['page_size'] = page_size
+        request.path_params['page'] = page
         http_response = await request_adapter(request, get_projects_with_pagination_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(

@@ -49,9 +49,10 @@ class AddDocumentsToWorkProjectMobileController(ControllerInterface):
                     message=f"Fiscal não está autorizado a adicionar documentos a este work project. Work Project ID: {work_project_id}"
                 )
             
-            # Validação: Verificar se o work_project existe
+            # Validação: Verificar se o work_project existe e obter o project_id
             try:
-                self.__get_work_project_case.get(work_project_id=work_project_id)
+                work_project = self.__get_work_project_case.get(work_project_id=work_project_id)
+                project_id = work_project.project_id
             except Exception as e:
                 raise e from e
             
@@ -83,7 +84,7 @@ class AddDocumentsToWorkProjectMobileController(ControllerInterface):
             
             # Criar histórico do projeto
             self.__create_history_project_case.create(
-                project_id=work_project_id,
+                project_id=project_id,
                 data_name='Documentos Mobile',
                 description=f'{len(document_names)} documento(s) adicionado(s) via mobile'
             )

@@ -26,9 +26,10 @@ class AddDocumentsToWorkProjectController(ControllerInterface):
             work_project_id = body['work_project_id']
             documents_data = body.get('documents', body.get('additional_documents', []))  # Suporta ambos os formatos
             
-            # Validação: Verificar se o work_project existe
+            # Validação: Verificar se o work_project existe e obter o project_id
             try:
-                self.__get_work_project_case.get(work_project_id=work_project_id)
+                work_project = self.__get_work_project_case.get(work_project_id=work_project_id)
+                project_id = work_project.project_id
             except Exception as e:
                 raise e from e
             
@@ -58,11 +59,11 @@ class AddDocumentsToWorkProjectController(ControllerInterface):
                 additional_documents=json.dumps(document_names)
             )
             
-            # Criar histórico do projeto
+            # Criar histórico do projeto usando o project_id correto
             self.__create_history_project_case.create(
-                project_id=work_project_id,
+                project_id=project_id,
                 data_name='Documentos',
-                description=f'{len(document_names)} documento(s) adicionado(s) ao work project'
+                description=f'{len(document_names)} documento(s) adicionado(s) ao work project {work_project_id}'
             )
             
             return HttpResponse(
