@@ -48,6 +48,9 @@ class IWorkProjectRepository(ABC):
     def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:pass
 
     @abstractmethod
+    def get_work_projects_with_pagination_by_project(self, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:pass
+
+    @abstractmethod
     def get_latest_work_projects_by_fiscal_with_date_filter(
         self, 
         fiscal_id: int, 

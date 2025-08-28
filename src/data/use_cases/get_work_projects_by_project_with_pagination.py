@@ -9,18 +9,14 @@ class GetWorkProjectsByProjectWithPagination(IGetWorkProjectsByProjectWithPagina
         self.__work_project_repository = work_project_repository
     
     def get_by_project_with_pagination(self, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
-        # Buscar todos os work projects do projeto
-        all_work_projects = self.__work_project_repository.find_by_project(project_id=project_id)
-        
-        # Calcular paginação
-        total = len(all_work_projects)
-        start_index = (page - 1) * page_size
-        end_index = start_index + page_size
-        
-        # Aplicar paginação
-        paginated_work_projects = all_work_projects[start_index:end_index]
+        # Usar o método específico do repository para paginação por projeto
+        result = self.__work_project_repository.get_work_projects_with_pagination_by_project(
+            project_id=project_id,
+            page=page,
+            page_size=page_size
+        )
         
         return {
-            'total': total,
-            'data': paginated_work_projects
+            'total': result['total'],
+            'data': result['data']
         } 
