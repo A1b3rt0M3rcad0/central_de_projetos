@@ -79,8 +79,8 @@ class CreateWorkProjectWithFiscalDocumentController(ControllerInterface):
             # Criar histórico do projeto
             self.__create_history_project_case.create(
                 project_id=project_id,
-                data_name='Work Project',
-                description=f'Work project "{title}" criado com {len(documents)} documento(s)'
+                data_name='Fiscalização',
+                description=f'Fiscalização "{title}" criado com {len(documents)} documento(s)'
             )
             
             return HttpResponse(
