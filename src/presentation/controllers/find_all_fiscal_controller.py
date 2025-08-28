@@ -21,6 +21,8 @@ class FindAllFiscalController(ControllerInterface):
                         {
                             "id": fiscal.fiscal_id,
                             "name": fiscal.name,
+                            "email": fiscal.email,
+                            "phone": fiscal.phone,
                             "created_at": fiscal.created_at.strftime(r'%d/%m/%Y')
                         }
                         for fiscal in result
