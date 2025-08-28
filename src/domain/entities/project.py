@@ -1,5 +1,5 @@
 from src.domain.value_objects.monetary_value import MonetaryValue
-from typing import List
+from typing import List, Union
 from datetime import datetime
 from src.domain.entities.bairro import BairroEntity
 from src.domain.entities.fiscal import FiscalEntity
@@ -19,10 +19,10 @@ class ProjectEntity:
                  expected_completion_date:datetime, 
                  end_date:datetime,
                  name:str|None=None,
-                 bairro:BairroEntity|None=None,
-                 fiscal:FiscalEntity|None=None,
-                 empresa:EmpresaEntity|None=None,
-                 types:TypesEntity|None=None,
+                 bairro:Union[BairroEntity, List[BairroEntity]]|None=None,
+                 fiscal:Union[FiscalEntity, List[FiscalEntity]]|None=None,
+                 empresa:Union[EmpresaEntity, List[EmpresaEntity]]|None=None,
+                 types:Union[TypesEntity, List[TypesEntity]]|None=None,
                  status:StatusEntity|None=None,
                  history_project:List[HistoryProjectEntity]|None=None
                  ) -> None:
