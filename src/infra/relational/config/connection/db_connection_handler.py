@@ -18,7 +18,20 @@ class DBConnectionHandler(IDBConnectionHandler):
         return self.__session
     
     def __create_engine(self) -> Engine:
-        return create_engine(self.connection.get_connection())
+        return create_engine(
+            self.connection.get_connection(),
+            # Pool de conexões
+            pool_size=10,           # 10 conexões sempre ativas
+            max_overflow=20,        # +20 conexões se necessário
+            pool_pre_ping=True,     # Verifica se conexão ainda é válida
+            pool_recycle=3600,      # Recicla conexões a cada 1h
+            # Timeouts
+            pool_timeout=30,        # Espera 30s por conexão disponível
+            connect_args={
+                "connect_timeout": 10,
+                "read_timeout": 30
+            }
+        )
     
     def get_engine(self) -> Engine:
         return self.__engine
@@ -30,4 +43,3 @@ class DBConnectionHandler(IDBConnectionHandler):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.session.close()
-        self.__engine.dispose()
