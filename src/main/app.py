@@ -37,26 +37,26 @@ app.include_router(test_base_route)
 # Static Files
 app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
 
-# API Routes
-app.include_router(user_routes)
-app.include_router(bairro_routes)
-app.include_router(empresa_routes)
-app.include_router(fiscal_routes)
-app.include_router(history_project_routes)
-app.include_router(auth_routes)
-app.include_router(project_routes)
-app.include_router(project_bairro_routes)
-app.include_router(project_empresa_routes)
-app.include_router(project_type_routes)
-app.include_router(status_routes)
-app.include_router(user_project_routes)
-app.include_router(document_routes)
-app.include_router(types_routes)
-app.include_router(project_fiscal_routes)
-app.include_router(work_project_routes)
+# API Routes v1
+app.include_router(user_routes, prefix="/api/v1")
+app.include_router(bairro_routes, prefix="/api/v1")
+app.include_router(empresa_routes, prefix="/api/v1")
+app.include_router(fiscal_routes, prefix="/api/v1")
+app.include_router(history_project_routes, prefix="/api/v1")
+app.include_router(auth_routes, prefix="/api/v1")
+app.include_router(project_routes, prefix="/api/v1")
+app.include_router(project_bairro_routes, prefix="/api/v1")
+app.include_router(project_empresa_routes, prefix="/api/v1")
+app.include_router(project_type_routes, prefix="/api/v1")
+app.include_router(status_routes, prefix="/api/v1")
+app.include_router(user_project_routes, prefix="/api/v1")
+app.include_router(document_routes, prefix="/api/v1")
+app.include_router(types_routes, prefix="/api/v1")
+app.include_router(project_fiscal_routes, prefix="/api/v1")
+app.include_router(work_project_routes, prefix="/api/v1")
 
-# Mobile Routes
-app.include_router(fiscal_mobile_routes)
+# Mobile Routes v1
+app.include_router(fiscal_mobile_routes, prefix="/api/v1")
 
 # Web
 app.include_router(login_web)
