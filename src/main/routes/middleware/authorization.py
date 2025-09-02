@@ -1,3 +1,4 @@
+#pylint:disable=R0912,R0915
 import dotenv
 import os
 from datetime import datetime, timedelta, timezone
@@ -54,8 +55,26 @@ def get_current_user(
 
             return user_data
 
-        # Token expirado — tenta renovar com refresh token
+        # Token expirado — verificar se está dentro do deadline
         payload = decode_jwt.decode(token.credentials, verify_exp=False)
+        
+        # VALIDAÇÃO DO DEADLINE
+        deadline = payload.get("deadline")
+        if deadline:
+            # Converter deadline para datetime se for timestamp
+            if isinstance(deadline, (int, float)):
+                deadline_datetime = datetime.fromtimestamp(deadline, tz=timezone.utc)
+            else:
+                deadline_datetime = deadline
+            
+            # Verificar se passou do deadline
+            current_time = datetime.now(timezone.utc)
+            if current_time > deadline_datetime:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token expirou definitivamente. Deadline ultrapassado. Faça login novamente."
+                )
+        
         cpf_value = payload.get("cpf")
         if not cpf_value:
             raise HTTPException(
@@ -80,13 +99,22 @@ def get_current_user(
                 detail="Refresh token expirado. Faça login novamente."
             )
 
-        # Gera novo access token
+        # Gera novo access token com novo deadline
         dotenv.load_dotenv()
-        hours = float(os.getenv('EXPIRE_TIME_TOKEN'))
+        
+        # Configurações de tempo do token
+        access_token_hours = float(os.getenv('EXPIRE_TIME_TOKEN', '48'))
+        deadline_hours = float(os.getenv('EXPIRE_DEADLINE', '24'))
+        
+        current_time = datetime.now(timezone.utc)
+        new_expiry = current_time + timedelta(hours=access_token_hours)
+        new_deadline = current_time + timedelta(hours=deadline_hours)
+        
         new_access_token = encode_jwt.encode({
             "cpf": payload.get("cpf"),
             "role": payload.get("role"),
-            'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
+            'exp': int(new_expiry.timestamp()),
+            'deadline': int(new_deadline.timestamp())
         })
 
         new_payload = decode_jwt.decode(new_access_token)

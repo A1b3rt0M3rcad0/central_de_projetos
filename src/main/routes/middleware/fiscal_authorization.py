@@ -1,3 +1,4 @@
+#pylint:disable=R0912,R0915
 import dotenv
 import os
 from datetime import datetime, timedelta, timezone
@@ -98,14 +99,23 @@ def get_current_fiscal(
                 detail="Refresh token expirado. Faça login novamente."
             )
 
-        # Gera novo access token
+        # Gera novo access token com novo deadline
         dotenv.load_dotenv()
-        hours = float(os.getenv('EXPIRE_TIME_TOKEN'))
+        
+        # Configurações de tempo do token
+        access_token_hours = float(os.getenv('EXPIRE_TIME_TOKEN', '48'))
+        deadline_hours = float(os.getenv('EXPIRE_DEADLINE', '24'))
+        
+        current_time = datetime.now(timezone.utc)
+        new_expiry = current_time + timedelta(hours=access_token_hours)
+        new_deadline = current_time + timedelta(hours=deadline_hours)
+        
         new_access_token = encode_jwt.encode({
             "email": payload.get("email"),
             "role": payload.get("role"),
             "fiscal_id": fiscal_entity.fiscal_id,
-            'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
+            'exp': int(new_expiry.timestamp()),
+            'deadline': int(new_deadline.timestamp())
         })
 
         new_payload = decode_jwt.decode(new_access_token)

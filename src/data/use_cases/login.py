@@ -27,15 +27,21 @@ class Login(ILogin):
             if chk_result:
                 encrypt = auth_factory()
                 dotenv.load_dotenv()
-                hours = os.getenv('EXPIRE_TIME_TOKEN')
-                if hours is None or not hours.replace('.', '', 1).isdigit():
-                    raise ValueError(f'The EXPIRE_TIME_TOKEN value is invalid: {hours}')
-                hours = float(hours)
+                
+                # Configurações de tempo do token
+                access_token_hours = float(os.getenv('EXPIRE_TIME_TOKEN', '48'))
+                deadline_hours = float(os.getenv('EXPIRE_DEADLINE', '24'))
+                
+                current_time = datetime.now(timezone.utc)
+                expiry = current_time + timedelta(hours=access_token_hours)
+                deadline = current_time + timedelta(hours=deadline_hours)
+                
                 return encrypt.encode(
                     {
                         'cpf': result.cpf.value,
                         'role': result.role.value,
-                        'exp': datetime.now(timezone.utc) + timedelta(hours=hours)
+                        'exp': int(expiry.timestamp()),
+                        'deadline': int(deadline.timestamp())
                     }
                 )
             raise InvalidPasswordError(
