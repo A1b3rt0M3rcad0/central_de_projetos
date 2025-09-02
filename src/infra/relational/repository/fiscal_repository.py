@@ -166,6 +166,8 @@ class FiscalRepository(IFiscalRepository):
                     FiscalEntity(
                         fiscal_id=fiscal.id,
                         name=fiscal.name,
+                        email=Email(email=fiscal.email) if fiscal.email else None,
+                        phone=fiscal.phone,
                         created_at=fiscal.created_at
                     )
                      for fiscal in fiscais

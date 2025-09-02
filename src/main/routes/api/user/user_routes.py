@@ -1,5 +1,5 @@
 #pylint:disable=W0718
-#pylint:disable=W0613
+#pylint:disable=W0613, W9016
 from fastapi import APIRouter
 from fastapi import Request
 from src.main.adapters.request_adapter import request_adapter
@@ -18,6 +18,7 @@ from src.main.routes.api.user.request_format.create_user_format import CreateUse
 from src.main.routes.api.user.request_format.delete_user_format import DeleteUserFormat
 from src.main.routes.api.user.request_format.update_user_email_format import UpdateUserEmailFormat
 from src.main.routes.api.user.request_format.update_user_password_format import UpdateUserPasswordFormat
+from src.main.routes.api.user.request_format.who_am_i_format import WhoAmIFormat
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
@@ -154,14 +155,14 @@ async def get_all_users_by_role(role:str, request: Request, user=Security(role_r
         )
         return response_adapter(error_result)
 
-@routes.get("/who_am_i/{token}", response_model=WhoAmIReponse, responses=generate_error_responses())
-async def who_am_i(token: str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+@routes.post("/who_am_i", response_model=WhoAmIReponse, responses=generate_error_responses())
+async def who_am_i(body: WhoAmIFormat, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para obter informações do usuário autenticado através do token JWT.
     Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
     
     Args:
-        token: Token JWT do usuário
+        body: Dados contendo o token JWT do usuário
         request: Objeto da requisição HTTP
         user: Dados do usuário autenticado (injetado pelo middleware)
         
