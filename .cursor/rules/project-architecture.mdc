@@ -15,33 +15,95 @@ O **Central de Projetos** implementa uma **Clean Architecture** rigorosa com sep
 ### 🏛️ Estrutura Completa do Sistema
 
 ```
-src/
-├── domain/                    # 🧠 Camada de Domínio (Regras de Negócio)
-│   ├── entities/             # Entidades do domínio (21 entidades)
-│   ├── use_cases/            # Interfaces dos casos de uso (147+ interfaces)
-│   └── value_objects/        # Objetos de valor imutáveis (23 value objects)
-├── data/                     # 📊 Camada de Dados (Implementações)
-│   ├── interface/            # Interfaces dos repositórios (21 interfaces)
-│   └── use_cases/            # Implementações dos casos de uso (147+ implementações)
-├── presentation/             # 🎭 Camada de Apresentação (Controllers)
-│   ├── controllers/          # Controllers (114+ controllers)
-│   ├── http_types/           # Tipos HTTP (HttpRequest, HttpResponse)
-│   └── interface/            # Interfaces dos controllers
-├── main/                     # 🚀 Camada Principal (Composição e Roteamento)
-│   ├── composers/            # Composição de dependências (121+ composers)
-│   ├── routes/               # Definição de rotas FastAPI
-│   ├── adapters/             # Adaptadores para frameworks
-│   └── config/               # Configurações da aplicação
-├── infra/                    # 🏗️ Camada de Infraestrutura
-│   ├── relational/           # Repositórios SQLAlchemy
-│   ├── redis/                # Cache Redis
-│   ├── mongo/                # Logs MongoDB
-│   └── raven/                # Documentos RavenDB
-├── auth/                     # 🔐 Sistema de Autenticação
-├── security/                 # 🛡️ Sistema de Segurança
-├── errors/                   # ❌ Sistema de Tratamento de Erros
-├── logs/                     # 📝 Sistema de Logging
-└── utils/                    # 🔧 Utilitários e Decorators
+central_de_projetos/
+├── src/                      # 📁 Código Fonte Principal
+│   ├── domain/               # 🧠 Camada de Domínio (Regras de Negócio)
+│   │   ├── entities/         # Entidades do domínio
+│   │   ├── use_cases/        # Interfaces dos casos de uso
+│   │   └── value_objects/    # Objetos de valor imutáveis
+│   ├── data/                 # 📊 Camada de Dados (Implementações)
+│   │   ├── interface/        # Interfaces dos repositórios
+│   │   └── use_cases/        # Implementações dos casos de uso
+│   │       └── _tests/       # Testes dos casos de uso
+│   ├── presentation/         # 🎭 Camada de Apresentação (Controllers)
+│   │   ├── controllers/      # Controllers
+│   │   ├── http_types/       # Tipos HTTP
+│   │   ├── interface/        # Interfaces dos controllers
+│   │   ├── static/           # Arquivos estáticos
+│   │   └── templates/        # Templates
+│   ├── main/                 # 🚀 Camada Principal (Composição e Roteamento)
+│   │   ├── composers/        # Composição de dependências
+│   │   │   ├── auth/         # Composers de autenticação
+│   │   │   └── project/      # Composers de projeto
+│   │   ├── routes/           # Definição de rotas FastAPI
+│   │   │   └── api/          # Rotas da API
+│   │   │       ├── auth/     # Rotas de autenticação
+│   │   │       ├── bairro/   # Rotas de bairro
+│   │   │       ├── empresa/  # Rotas de empresa
+│   │   │       ├── fiscal/   # Rotas de fiscal
+│   │   │       ├── project/  # Rotas de projeto
+│   │   │       ├── status/   # Rotas de status
+│   │   │       ├── tipo/     # Rotas de tipo
+│   │   │       └── user/     # Rotas de usuário
+│   │   ├── adapters/         # Adaptadores para frameworks
+│   │   ├── config/           # Configurações da aplicação
+│   │   └── templates/        # Templates da aplicação
+│   ├── infra/                # 🏗️ Camada de Infraestrutura
+│   │   ├── relational/       # Repositórios SQLAlchemy
+│   │   │   ├── models/       # Modelos SQLAlchemy
+│   │   │   ├── repositories/ # Implementações dos repositórios
+│   │   │   └── connection/   # Conexões com banco
+│   │   ├── redis/            # Cache Redis
+│   │   │   ├── connection/   # Conexão Redis
+│   │   │   └── repositories/ # Repositórios Redis
+│   │   ├── mongo/            # Logs MongoDB
+│   │   │   ├── connection/   # Conexão MongoDB
+│   │   │   └── repositories/ # Repositórios MongoDB
+│   │   └── raven/            # Documentos RavenDB
+│   │       ├── connection/   # Conexão RavenDB
+│   │       └── repositories/ # Repositórios RavenDB
+│   ├── auth/                 # 🔐 Sistema de Autenticação
+│   │   ├── config/           # Configurações de autenticação
+│   │   │   └── interface/    # Interfaces de configuração
+│   │   └── encrypt/          # Criptografia
+│   │       └── interface/    # Interfaces de criptografia
+│   ├── security/             # 🛡️ Sistema de Segurança
+│   │   ├── cryptography/     # Criptografia
+│   │   │   ├── interface/    # Interfaces de criptografia
+│   │   │   └── utils/        # Utilitários de criptografia
+│   │   └── value_objects/    # Objetos de valor de segurança
+│   │       └── interface/    # Interfaces de value objects
+│   ├── errors/               # ❌ Sistema de Tratamento de Erros
+│   │   ├── http/             # Erros HTTP
+│   │   ├── repository/       # Erros de repositório
+│   │   │   ├── already_exists_error/ # Erros de duplicação
+│   │   │   ├── not_found_error/      # Erros de não encontrado
+│   │   │   ├── unauthorized_error/   # Erros de autorização
+│   │   │   ├── forbidden_error/      # Erros de proibido
+│   │   │   ├── bad_request_error/    # Erros de requisição
+│   │   │   ├── internal_server_error/ # Erros internos
+│   │   │   ├── conflict_error/       # Erros de conflito
+│   │   │   └── unprocessable_entity_error/ # Erros de entidade
+│   │   ├── use_cases/        # Erros de casos de uso
+│   │   │   └── interface/    # Interfaces de erros
+│   │   └── value_object/     # Erros de value objects
+│   │       └── interface/    # Interfaces de erros
+│   ├── logs/                 # 📝 Sistema de Logging
+│   │   ├── config/           # Configurações de logging
+│   │   └── logger/           # Implementações de logger
+│   └── utils/                # 🔧 Utilitários e Decorators
+│       └── decorators/       # Decorators personalizados
+├── migrations/               # 🗄️ Migrações do Banco de Dados
+│   └── versions/             # Versões das migrações
+├── docs/                     # 📚 Documentação
+├── .cursor/                  # ⚙️ Configurações do Cursor
+│   ├── rules/                # Regras do projeto
+│   └── memories/             # Memórias do sistema
+├── .vscode/                  # 🔧 Configurações do VS Code
+├── .pytest_cache/            # 🧪 Cache do Pytest
+├── .venv/                    # 🐍 Ambiente Virtual Python
+├── dist/                     # 📦 Distribuição
+└── __pycache__/              # 🐍 Cache Python
 ```
 
 ---
