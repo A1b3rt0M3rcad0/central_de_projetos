@@ -1,0 +1,61 @@
+---
+description: Regra de Ferramentas do Sistema – Central de Projetos
+alwaysApply: true
+---
+
+# 🛠️ Ferramentas Obrigatórias do Sistema
+
+## Essas ferramentas são para implementação do sistema e so deve ser associado a isso
+
+## 📑 Estrutura Analítica de Projetos (EAP)
+
+- Criar e organizar a **árvore hierárquica** de cada projeto
+- Permitir a **quebra em fases, entregas, atividades e tarefas**
+- Visualização em **modo árvore** e **gráfico de dependências**
+- Associação de **custos, prazos e responsáveis** a cada elemento da EAP
+- Exportação e integração com relatórios
+
+## 📅 Cronograma Interativo
+
+- Construção automática do cronograma a partir da EAP
+- Visualização em **linha do tempo** e **gráfico de Gantt**
+- Definição de **datas de início, fim e marcos** (milestones)
+- Cálculo de **caminho crítico**
+- Alertas de **atrasos e desvios de prazo**
+- Integração com agenda dos responsáveis
+
+## 📋 Kanban Dinâmico
+
+- Quadro Kanban para visualização rápida das tarefas
+- Colunas configuráveis por **status, etapa ou responsável**
+- Arrastar e soltar (drag & drop) para movimentar atividades
+- Indicadores visuais de **prazo, prioridade e bloqueios**
+- Integração com EAP e cronograma (uma atualização reflete em todas as visões)
+
+## 📂 Documentação e Histórico
+
+- Repositório central de documentos, imagens e anexos
+- Controle de versões e histórico de alterações
+- Associação de documentos a tarefas específicas da EAP ou Kanban
+- Assinatura digital e registro oficial
+
+## 📊 Relatórios e Indicadores
+
+- Relatórios automáticos de andamento (tempo, custo, execução física)
+- Dashboards visuais para vereadores, fiscais e população
+- Indicadores de eficiência: % concluído, prazos cumpridos, verba utilizada
+- Exportação em PDF, Excel e integração com portal da transparência
+
+## 📱 Aplicativo Móvel para Fiscais
+
+- Registro de **fotos, vídeos e anotações em campo**
+- Envio automático para o repositório documental
+- Funcionalidade offline com sincronização posterior
+
+## 🔔 Comunicação e Alertas
+
+- Notificações automáticas por e-mail/app sobre prazos e alterações
+- Canal interno de mensagens para equipe do projeto
+- Registro de comunicação para fins de auditoria
+
+---

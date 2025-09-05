@@ -1,0 +1,47 @@
+---
+description: Regra de Gestão de Projetos – Central de Projetos
+alwaysApply: true
+---
+
+# ⚙️ Ferramentas de Gestão de Projetos
+
+## 🏗️ Criação e Estruturação de Projetos
+
+- Cadastro de novos projetos com **tipo, descrição, responsável, verba, bairro/localidade e status inicial**
+- Possibilidade de criar **modelos/tipos de projetos** (legislativo, infraestrutura, social, ambiental, cultural, etc.)
+- Associação de projetos a **categorias, áreas temáticas ou programas municipais**
+
+## 🔗 Vínculos e Relações
+
+- Capacidade de **vincular projetos entre si** (ex: projetos complementares, dependentes, relacionados a um mesmo programa)
+- Associação de **empresas executoras, fiscais, vereadores e assessores** ao projeto
+- Vínculo de projetos com **documentos oficiais, leis ou decretos**
+
+## 🕑 Histórico e Rastreabilidade
+
+- Registro automático de **todas as alterações** (ex: mudança de prazo, orçamento, status)
+- Histórico acessível por linha do tempo do projeto
+- Comparação de versões de documentos ou planos de trabalho
+- Registro de quem fez cada alteração, com data e hora (log de auditoria)
+
+## 🗂️ Gestão de Informações
+
+- Organização de **atributos e metadados** por projeto (ex: fase, prioridade, verba, população impactada)
+- Filtros e buscas avançadas por tipo, status, localidade, responsável, período etc.
+- Visualização resumida (cards) e detalhada (relatórios completos)
+- Painel de **projetos em andamento, concluídos e arquivados**
+
+## 🛡️ Governança e Controle
+
+- Definição de **perfis de acesso** (vereador, assessor, fiscal, administrador, cidadão)
+- Fluxos de aprovação para mudanças críticas (ex: aumento de orçamento, extensão de prazo)
+- Controle de versões de cronograma, orçamento e documentos
+- Auditoria completa para fins de compliance e transparência
+
+## 🔄 Integração com Ferramentas de Execução
+
+- EAP, cronograma e Kanban sincronizados automaticamente com as informações centrais do projeto
+- Alterações feitas em qualquer uma dessas ferramentas atualizam o projeto global
+- Indicadores de execução calculados a partir das entregas registradas
+
+---
