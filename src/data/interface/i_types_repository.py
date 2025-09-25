@@ -24,3 +24,11 @@ class ITypesRepository(ABC):
     @abstractmethod
     def delete(self, name: str) -> None:
         """Deleta um tipo com base no nome."""
+    
+    @abstractmethod
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[TypesEntity]:
+        """Busca tipos com paginação."""
+    
+    @abstractmethod
+    def count_all(self) -> int:
+        """Conta o total de tipos no sistema."""
