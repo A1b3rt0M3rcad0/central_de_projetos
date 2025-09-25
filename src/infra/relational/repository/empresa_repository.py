@@ -117,3 +117,32 @@ class EmpresaRepository(IEmpresaRepository):
             raise EmpresaHasRelatedChildren(f'Empresas {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteEmpresa(message=f'Error on delete empresa {name}: {str(e)}') from e
+
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[EmpresaEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                empresas = db.session.query(Empresa).offset(offset).limit(page_size).all()
+                empresas_entities = [
+                    EmpresaEntity(
+                        empresa_id=empresa.id,
+                        name=empresa.name,
+                        created_at=empresa.created_at
+                    )
+                    for empresa in empresas
+                ]
+                return empresas_entities
+        except Exception as e:
+            raise ErrorOnFindEmpresa(
+                message=f'Error on find all empresas with pagination: {str(e)}'
+            ) from e
+
+    def count_all(self) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                count = db.session.query(Empresa).count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindEmpresa(
+                message=f'Error on count all empresas: {str(e)}'
+            ) from e

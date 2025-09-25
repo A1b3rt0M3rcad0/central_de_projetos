@@ -13,6 +13,7 @@ from src.main.composers.create_empresa_composer import create_empresa_composer
 from src.main.composers.delete_empresa_composer import delete_empresa_composer
 from src.main.composers.update_empresa_composer import update_empresas_composer
 from src.main.composers.count_empresas_composer import count_empresas_composer
+from src.main.composers.find_all_empresas_with_pagination_composer import find_all_empresas_with_pagination_composer
 
 from src.main.routes.api.empresa.request_format.create_empresa_format import CreateEmpresaFormat
 from src.main.routes.api.empresa.request_format.delete_empresa_format import DeleteEmpresaFormat
@@ -21,6 +22,7 @@ from src.main.routes.api.__base_response.base_message_response import BaseMessag
 from src.main.routes.api.empresa.empresa_response.find_empresa_response import FindEmpresaResponse
 from src.main.routes.api.empresa.empresa_response.find_all_empresa_response import FindAllEmpresaResponse
 from src.main.routes.api.empresa.empresa_response.count_empresas_response import CountEmpresasResponse
+from src.main.routes.api.empresas.empresas_response.find_all_empresas_with_pagination_response import FindAllEmpresasWithPaginationResponse
 from src.main.routes.api.__error.error_response import generate_error_responses
 
 ## Auth
@@ -264,6 +266,49 @@ async def update_empresa(body:UpdateEmpresasFormat, request:Request, user=Securi
             level='ERROR',
             logger_name=PREFIX,
             http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.get("/empresa/pagination/{page_size}/{page}", response_model=FindAllEmpresasWithPaginationResponse, responses=generate_error_responses())
+async def find_all_empresas_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todas as empresas com paginação.
+    Retorna uma lista paginada de empresas para otimizar performance em grandes volumes.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        page_size: Número de empresas por página
+        page: Número da página (começa em 1)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllEmpresasWithPaginationResponse: Lista paginada de empresas com metadados de paginação
+        
+    Raises:
+        InvalidPaginationError: Se os parâmetros de paginação forem inválidos
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params["page_size"] = page_size
+        request.path_params["page"] = page
+        http_response = await request_adapter(request, find_all_empresas_with_pagination_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level="INFO",
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level="ERROR",
+            http_response=error_result,
+            logger_name=PREFIX,
             request=request
         )
         return response_adapter(error_result)

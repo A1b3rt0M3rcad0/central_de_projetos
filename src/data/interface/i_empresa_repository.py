@@ -23,3 +23,11 @@ class IEmpresaRepository(ABC):
 
     @abstractmethod
     def delete(self, name: str) -> None: pass
+    
+    @abstractmethod
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[EmpresaEntity]:
+        """Busca empresas com paginação."""
+    
+    @abstractmethod
+    def count_all(self) -> int:
+        """Conta o total de empresas no sistema."""

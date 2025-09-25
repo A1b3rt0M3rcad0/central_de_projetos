@@ -13,6 +13,7 @@ from src.main.composers.update_fiscal_name_composer import update_fiscal_name_co
 from src.main.composers.find_all_fiscal_composer import find_all_fiscal_composer
 from src.main.composers.count_fiscals_composer import count_fiscals_composer
 from src.main.composers.insert_all_fiscal_from_user_composer import insert_all_fiscal_from_user_composer
+from src.main.composers.find_all_fiscais_with_pagination_composer import find_all_fiscais_with_pagination_composer
 
 from src.main.routes.api.fiscal.request_format.create_fiscal_format import CreateFiscalFormat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
@@ -22,6 +23,7 @@ from src.main.routes.api.fiscal.fiscal_response.find_fiscal_by_name_response imp
 from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
 from src.main.routes.api.fiscal.fiscal_response.find_all_fiscal_response import FindAllFiscalReponse
 from src.main.routes.api.fiscal.fiscal_response.count_fiscal_response import CountFiscalReponse
+from src.main.routes.api.fiscais.fiscais_response.find_all_fiscais_with_pagination_response import FindAllFiscaisWithPaginationResponse
 from src.main.routes.api.__error.error_response import generate_error_responses
 
 ## Auth
@@ -303,6 +305,49 @@ async def insert_all_fiscal_from_user(body:InsertAllFiscalFromUserFormat, reques
             level='ERROR',
             logger_name=PREFIX,
             http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.get("/fiscal/pagination/{page_size}/{page}", response_model=FindAllFiscaisWithPaginationResponse, responses=generate_error_responses())
+async def find_all_fiscais_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os fiscais com paginação.
+    Retorna uma lista paginada de fiscais para otimizar performance em grandes volumes.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        page_size: Número de fiscais por página
+        page: Número da página (começa em 1)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllFiscaisWithPaginationResponse: Lista paginada de fiscais com metadados de paginação
+        
+    Raises:
+        InvalidPaginationError: Se os parâmetros de paginação forem inválidos
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params["page_size"] = page_size
+        request.path_params["page"] = page
+        http_response = await request_adapter(request, find_all_fiscais_with_pagination_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level="INFO",
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level="ERROR",
+            http_response=error_result,
+            logger_name=PREFIX,
             request=request
         )
         return response_adapter(error_result)

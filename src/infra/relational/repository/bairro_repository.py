@@ -120,3 +120,32 @@ class BairroRepository(IBairroRepository):
             raise BairroHasRelatedChildren(message=f'Bairro {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteBairro(message=f'Error on delete bairro {name}: {str(e)}') from e
+
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[BairroEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                bairros = db.session.query(Bairro).offset(offset).limit(page_size).all()
+                bairros_entities = [
+                    BairroEntity(
+                        bairro_id=bairro.id,
+                        name=bairro.name,
+                        created_at=bairro.created_at
+                    )
+                    for bairro in bairros
+                ]
+                return bairros_entities
+        except Exception as e:
+            raise ErrorOnFindBairro(
+                message=f'Error on find all bairros with pagination: {str(e)}'
+            ) from e
+
+    def count_all(self) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                count = db.session.query(Bairro).count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindBairro(
+                message=f'Error on count all bairros: {str(e)}'
+            ) from e

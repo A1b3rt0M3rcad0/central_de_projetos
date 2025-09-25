@@ -221,3 +221,34 @@ class FiscalRepository(IFiscalRepository):
             raise FiscalHasRelatedChildren(f'Fiscal {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteFiscal(message=f'Error on delete fiscal {name}: {str(e)}') from e
+
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[FiscalEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                fiscais = db.session.query(Fiscal).offset(offset).limit(page_size).all()
+                fiscais_entities = [
+                    FiscalEntity(
+                        fiscal_id=fiscal.id,
+                        name=fiscal.name,
+                        email=Email(email=fiscal.email) if fiscal.email else None,
+                        phone=fiscal.phone,
+                        created_at=fiscal.created_at
+                    )
+                    for fiscal in fiscais
+                ]
+                return fiscais_entities
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on find all fiscais with pagination: {str(e)}'
+            ) from e
+
+    def count_all(self) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                count = db.session.query(Fiscal).count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on count all fiscais: {str(e)}'
+            ) from e

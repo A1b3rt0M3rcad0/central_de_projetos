@@ -12,6 +12,7 @@ from src.main.composers.delete_bairro_composer import delete_bairro_composer
 from src.main.composers.update_bairro_name_composer import update_bairro_name_composer
 from src.main.composers.find_all_bairro_composer import find_all_bairro_composer
 from src.main.composers.count_bairros_composer import count_bairros_composer
+from src.main.composers.find_all_bairros_with_pagination_composer import find_all_bairros_with_pagination_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
 
@@ -23,6 +24,7 @@ from src.main.routes.api.bairro.bairro_response.find_bairro_by_name_response imp
 from src.main.routes.api.bairro.bairro_response.count_bairros_response import CountBairrosResponse
 from src.main.routes.api.bairro.bairro_response.find_all_bairro_response import FindAllBairroResponse
 from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
+from src.main.routes.api.bairros.bairros_response.find_all_bairros_with_pagination_response import FindAllBairrosWithPaginationResponse
 
 ## Auth
 from fastapi import Security
@@ -269,5 +271,48 @@ async def update_bairro_name(body:UpdateBairroNameFormat, request:Request, user=
             logger_name=PREFIX,
             request=request,
             http_response=error_result
+        )
+        return response_adapter(error_result)
+
+@routes.get("/bairro/pagination/{page_size}/{page}", response_model=FindAllBairrosWithPaginationResponse, responses=generate_error_responses())
+async def find_all_bairros_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os bairros com paginação.
+    Retorna uma lista paginada de bairros para otimizar performance em grandes volumes.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        page_size: Número de bairros por página
+        page: Número da página (começa em 1)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllBairrosWithPaginationResponse: Lista paginada de bairros com metadados de paginação
+        
+    Raises:
+        InvalidPaginationError: Se os parâmetros de paginação forem inválidos
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params["page_size"] = page_size
+        request.path_params["page"] = page
+        http_response = await request_adapter(request, find_all_bairros_with_pagination_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level="INFO",
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level="ERROR",
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
         )
         return response_adapter(error_result)

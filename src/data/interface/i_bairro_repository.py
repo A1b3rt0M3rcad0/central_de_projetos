@@ -24,3 +24,11 @@ class IBairroRepository(ABC):
 
     @abstractmethod
     def delete(self, name: str) -> None:pass
+    
+    @abstractmethod
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[BairroEntity]:
+        """Busca bairros com paginação."""
+    
+    @abstractmethod
+    def count_all(self) -> int:
+        """Conta o total de bairros no sistema."""
