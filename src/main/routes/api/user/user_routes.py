@@ -13,6 +13,7 @@ from src.main.composers.update_user_password_composer import update_user_passwor
 from src.main.composers.who_am_i_composer import who_am_i_composer
 from src.main.composers.find_all_user_composer import find_all_user_composer
 from src.main.composers.find_all_user_by_role_composer import find_all_user_by_role_composer
+from src.main.composers.find_all_users_with_pagination_composer import find_all_users_with_pagination_composer
 
 from src.main.routes.api.user.request_format.create_user_format import CreateUserFormat
 from src.main.routes.api.user.request_format.delete_user_format import DeleteUserFormat
@@ -26,6 +27,7 @@ from src.main.routes.api.user.user_response.get_user_response import GetUserResp
 from src.main.routes.api.user.user_response.get_all_users_response import GetAllUsersResponse
 from src.main.routes.api.user.user_response.get_all_users_by_role import GetAllUsersByRoleResponse
 from src.main.routes.api.user.user_response.who_am_i_response import WhoAmIReponse
+from src.main.routes.api.users.users_response.find_all_users_with_pagination_response import FindAllUsersWithPaginationResponse
 
 ## Auth
 from fastapi import Security
@@ -353,5 +355,48 @@ async def update_email(body:UpdateUserEmailFormat, request:Request, user=Securit
             logger_name=PREFIX,
             request=request,
             http_response=error_result
+        )
+        return response_adapter(error_result)
+
+@routes.get("/users/pagination/{page_size}/{page}", response_model=FindAllUsersWithPaginationResponse, responses=generate_error_responses())
+async def find_all_users_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os usuários com paginação.
+    Retorna uma lista paginada de usuários para otimizar performance em grandes volumes.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        page_size: Número de usuários por página
+        page: Número da página (começa em 1)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllUsersWithPaginationResponse: Lista paginada de usuários com metadados de paginação
+        
+    Raises:
+        InvalidPaginationError: Se os parâmetros de paginação forem inválidos
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params["page_size"] = page_size
+        request.path_params["page"] = page
+        http_response = await request_adapter(request, find_all_users_with_pagination_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level="INFO",
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level="ERROR",
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
         )
         return response_adapter(error_result)

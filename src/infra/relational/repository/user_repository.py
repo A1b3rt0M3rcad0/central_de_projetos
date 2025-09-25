@@ -206,3 +206,36 @@ class UserRepository(IUserRepository):
             except SQLAlchemyError as e:
                 db.session.rollback()
                 raise ErrorOnDeleteUser(f"Erro ao deletar usuário com CPF {cpf.value}: {e}") from e
+
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[UserEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                users = db.session.query(User).offset(offset).limit(page_size).all()
+                users_entities = [
+                    UserEntity(
+                        cpf=CPF(user.cpf),
+                        password=user.password,
+                        salt=user.salt,
+                        role=Role(user.role),
+                        email=Email(user.email),
+                        created_at=user.created_at,
+                        name=user.name,
+                    )
+                    for user in users
+                ]
+                return users_entities
+        except Exception as e:
+            raise ErrorOnFindUser(
+                message=f'Error on find all users with pagination: {str(e)}'
+            ) from e
+
+    def count_all(self) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                count = db.session.query(User).count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindUser(
+                message=f'Error on count all users: {str(e)}'
+            ) from e

@@ -32,3 +32,11 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def delete(self, cpf:CPF) -> None:pass
+    
+    @abstractmethod
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[UserEntity]:
+        """Busca usuários com paginação."""
+    
+    @abstractmethod
+    def count_all(self) -> int:
+        """Conta o total de usuários no sistema."""
