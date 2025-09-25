@@ -14,6 +14,12 @@ class IStatusRepository(ABC):
     def find_all(self) -> List[StatusEntity]:pass
 
     @abstractmethod
+    def find_all_with_pagination(self, page_size: int, offset: int) -> List[StatusEntity]:pass
+
+    @abstractmethod
+    def count_all(self) -> int:pass
+
+    @abstractmethod
     def update(self, status_id: int, new_description: str) -> None:pass
 
     @abstractmethod

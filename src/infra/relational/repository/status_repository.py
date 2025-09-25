@@ -91,6 +91,34 @@ class StatusRepository(IStatusRepository):
                 raise ErrorOnFindStatus(
                     message=f'Error on find all status: {str(e)}'
                 ) from e
+
+    def find_all_with_pagination(self, page_size: int, offset: int) -> List[StatusEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                result = db.session.query(Status).offset(offset).limit(page_size).all()
+                status_entities = [
+                    StatusEntity(
+                        status_id=status.id,
+                        description=status.description,
+                        created_at=status.created_at
+                    ) for status in result
+                ]
+
+                return status_entities
+            except Exception as e:
+                raise ErrorOnFindStatus(
+                    message=f'Error on find all status with pagination: {str(e)}'
+                ) from e
+
+    def count_all(self) -> int:
+        with self.__db_connection_handler as db:
+            try:
+                count = db.session.query(Status).count()
+                return count
+            except Exception as e:
+                raise ErrorOnFindStatus(
+                    message=f'Error on count all status: {str(e)}'
+                ) from e
     
     def update(self, status_id: int, new_description: str) -> None:
         with self.__db_connection_handler as db:
