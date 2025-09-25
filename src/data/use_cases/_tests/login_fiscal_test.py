@@ -23,7 +23,7 @@ class TestLoginFiscal:
             m.setattr('src.data.use_cases.login_fiscal.hashedpassword_factory_chk', lambda pwd, salt, pwd_input: True)
             m.setattr('src.data.use_cases.login_fiscal.auth_factory', lambda: Mock(encode=lambda payload: 'jwt_token'))
             m.setattr('src.data.use_cases.login_fiscal.dotenv.load_dotenv', lambda: None)
-            m.setattr('src.data.use_cases.login_fiscal.os.getenv', lambda key: '24')
+            m.setattr('src.data.use_cases.login_fiscal.os.getenv', lambda key, default=None: '24' if key == 'EXPIRE_TIME_TOKEN' else '24' if key == 'EXPIRE_DEADLINE' else default)
             
             login_fiscal = LoginFiscal(mock_repository)
             email = Email('test@example.com')
