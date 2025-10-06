@@ -32,3 +32,11 @@ class ITypesRepository(ABC):
     @abstractmethod
     def count_all(self) -> int:
         """Conta o total de tipos no sistema."""
+    
+    @abstractmethod
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[TypesEntity]:
+        """Busca tipos com paginação e filtro global."""
+    
+    @abstractmethod
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        """Conta o total de tipos no sistema com filtro global."""

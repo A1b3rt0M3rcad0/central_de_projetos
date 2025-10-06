@@ -252,3 +252,51 @@ class FiscalRepository(IFiscalRepository):
             raise ErrorOnFindFiscal(
                 message=f'Error on count all fiscais: {str(e)}'
             ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[FiscalEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Fiscal)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Fiscal.name.ilike(search_filter))
+                
+                fiscais = query.offset(offset).limit(page_size).all()
+                fiscais_entities = [
+                    FiscalEntity(
+                        fiscal_id=fiscal.id,
+                        name=fiscal.name,
+                        created_at=fiscal.created_at,
+                        password=fiscal.password,
+                        salt=fiscal.salt,
+                        email=Email(fiscal.email) if fiscal.email else None,
+                        phone=fiscal.phone,
+                        refresh_token=fiscal.refresh_token
+                    )
+                    for fiscal in fiscais
+                ]
+                return fiscais_entities
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on find all fiscais with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Fiscal)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Fiscal.name.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on count all fiscais with filter: {str(e)}'
+            ) from e

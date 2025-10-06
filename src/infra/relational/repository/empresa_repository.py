@@ -146,3 +146,46 @@ class EmpresaRepository(IEmpresaRepository):
             raise ErrorOnFindEmpresa(
                 message=f'Error on count all empresas: {str(e)}'
             ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[EmpresaEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Empresa)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Empresa.name.ilike(search_filter))
+                
+                empresas = query.offset(offset).limit(page_size).all()
+                empresas_entities = [
+                    EmpresaEntity(
+                        empresa_id=empresa.id,
+                        name=empresa.name,
+                        created_at=empresa.created_at
+                    )
+                    for empresa in empresas
+                ]
+                return empresas_entities
+        except Exception as e:
+            raise ErrorOnFindEmpresa(
+                message=f'Error on find all empresas with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Empresa)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Empresa.name.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindEmpresa(
+                message=f'Error on count all empresas with filter: {str(e)}'
+            ) from e

@@ -132,3 +132,46 @@ class TypesRepository(ITypesRepository):
             raise ErrorOnFindType(
                 message=f'Error on count all types: {str(e)}'
             ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[TypesEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Types)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Types.name.ilike(search_filter))
+                
+                types = query.offset(offset).limit(page_size).all()
+                types_entities = [
+                    TypesEntity(
+                        types_id=types.id,
+                        name=types.name,
+                        created_at=types.created_at
+                    )
+                    for types in types
+                ]
+                return types_entities
+        except Exception as e:
+            raise ErrorOnFindType(
+                message=f'Error on find all types with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Types)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Types.name.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindType(
+                message=f'Error on count all types with filter: {str(e)}'
+            ) from e

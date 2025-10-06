@@ -149,3 +149,46 @@ class BairroRepository(IBairroRepository):
             raise ErrorOnFindBairro(
                 message=f'Error on count all bairros: {str(e)}'
             ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[BairroEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Bairro)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Bairro.name.ilike(search_filter))
+                
+                bairros = query.offset(offset).limit(page_size).all()
+                bairros_entities = [
+                    BairroEntity(
+                        bairro_id=bairro.id,
+                        name=bairro.name,
+                        created_at=bairro.created_at
+                    )
+                    for bairro in bairros
+                ]
+                return bairros_entities
+        except Exception as e:
+            raise ErrorOnFindBairro(
+                message=f'Error on find all bairros with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Bairro)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Bairro.name.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindBairro(
+                message=f'Error on count all bairros with filter: {str(e)}'
+            ) from e

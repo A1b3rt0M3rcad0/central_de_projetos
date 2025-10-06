@@ -8,6 +8,7 @@ from src.infra.relational.config.interface.i_db_connection_handler import IDBCon
 from src.domain.entities.user import UserEntity
 from src.infra.relational.models.user import User
 from typing import Optional, Dict
+from sqlalchemy import or_
 
 # Import models to ensure SQLAlchemy can resolve relationships
 # These imports are necessary for SQLAlchemy to properly configure relationships
@@ -238,4 +239,65 @@ class UserRepository(IUserRepository):
         except Exception as e:
             raise ErrorOnFindUser(
                 message=f'Error on count all users: {str(e)}'
+            ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[UserEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(User)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(
+                        or_(
+                            User.cpf.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            User.email.ilike(search_filter),
+                            User.role.ilike(search_filter)
+                        )
+                    )
+                
+                users = query.offset(offset).limit(page_size).all()
+                users_entities = [
+                    UserEntity(
+                        cpf=CPF(user.cpf),
+                        password=user.password,
+                        salt=user.salt,
+                        role=Role(user.role),
+                        email=Email(user.email),
+                        created_at=user.created_at,
+                        name=user.name,
+                    )
+                    for user in users
+                ]
+                return users_entities
+        except Exception as e:
+            raise ErrorOnFindUser(
+                message=f'Error on find all users with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(User)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(
+                        or_(
+                            User.cpf.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            User.email.ilike(search_filter),
+                            User.role.ilike(search_filter)
+                        )
+                    )
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindUser(
+                message=f'Error on count all users with filter: {str(e)}'
             ) from e

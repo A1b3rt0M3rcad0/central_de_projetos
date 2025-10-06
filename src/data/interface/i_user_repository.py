@@ -40,3 +40,11 @@ class IUserRepository(ABC):
     @abstractmethod
     def count_all(self) -> int:
         """Conta o total de usuários no sistema."""
+    
+    @abstractmethod
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[UserEntity]:
+        """Busca usuários com paginação e filtro global."""
+    
+    @abstractmethod
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        """Conta o total de usuários no sistema com filtro global."""
