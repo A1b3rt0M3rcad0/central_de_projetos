@@ -77,7 +77,7 @@ class UserRepository(IUserRepository):
                         cpf=CPF(result.cpf),
                         password=result.password, # bytes
                         salt=result.salt, # bytes
-                        role=Role(result.role),
+                        role=Role(str(result.role)),
                         email=Email(result.email),
                         created_at=result.created_at,
                         name = result.name
@@ -99,7 +99,7 @@ class UserRepository(IUserRepository):
                         cpf=CPF(result.cpf),
                         password=result.password, # bytes
                         salt=result.salt, # bytes
-                        role=Role(result.role),
+                        role=Role(str(result.role)),
                         email=Email(result.email),
                         created_at=result.created_at,
                         name=result.name
@@ -144,7 +144,7 @@ class UserRepository(IUserRepository):
                         cpf=CPF(user.cpf),
                         password=user.password, # bytes
                         salt=user.salt, # bytes
-                        role=Role(user.role),
+                        role=Role(str(user.role)),
                         email=Email(user.email),
                         created_at=user.created_at,
                         name=user.name

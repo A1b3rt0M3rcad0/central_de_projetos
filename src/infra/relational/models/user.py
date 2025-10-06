@@ -18,3 +18,4 @@ class User(BaseModel):
 
     user_projects:Mapped[List["UserProject"]] = relationship("UserProject", back_populates='user')
     refresh_token:Mapped["RefreshToken"] = relationship("RefreshToken", back_populates='user')
+    notifications:Mapped[List["Notification"]] = relationship("Notification", foreign_keys="Notification.recipient_cpf", back_populates='recipient')

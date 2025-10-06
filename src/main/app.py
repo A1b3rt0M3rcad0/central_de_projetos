@@ -19,6 +19,7 @@ from src.main.routes.api.document.document_routes import routes as document_rout
 from src.main.routes.api.types.types_routes import routes as types_routes
 from src.main.routes.api.project_fiscal.project_fiscal_routes import routes as project_fiscal_routes
 from src.main.routes.api.work_project.work_project_routes import routes as work_project_routes
+from src.main.routes.api.notification.notification_routes import routes as notification_routes
 
 # Mobile Routes
 from src.main.routes.mobile.fiscal.fiscal_mobile_routes import routes as fiscal_mobile_routes
@@ -54,6 +55,7 @@ app.include_router(document_routes, prefix="/api/v1")
 app.include_router(types_routes, prefix="/api/v1")
 app.include_router(project_fiscal_routes, prefix="/api/v1")
 app.include_router(work_project_routes, prefix="/api/v1")
+app.include_router(notification_routes, prefix="/api/v1")
 
 # Mobile Routes v1
 app.include_router(fiscal_mobile_routes, prefix="/api/v1")

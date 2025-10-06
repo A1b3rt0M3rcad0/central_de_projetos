@@ -14,6 +14,12 @@ from src.infra.raven.config.connection.db_connection_handler import DBConnection
 from src.infra.raven.config.connection.data_connection import DataConnection as RavenDataConnection
 from src.data.use_cases.create_history_project import CreateHistoryProject
 from src.infra.relational.repository.history_project_repository import HistoryProjectRepository
+from src.data.use_cases.create_work_project_notification import CreateWorkProjectNotification
+from src.data.use_cases.create_notification import CreateNotification
+from src.infra.relational.repository.notification_repository import NotificationRepository
+from src.infra.relational.repository.user_repository import UserRepository
+from src.infra.relational.repository.project_repository import ProjectRepository
+from src.infra.relational.repository.fiscal_repository import FiscalRepository
 
 def create_work_project_mobile_composer() -> Callable[[HttpRequest], HttpResponse]:
     # Configuração para work project (relational database)
@@ -38,11 +44,25 @@ def create_work_project_mobile_composer() -> Callable[[HttpRequest], HttpRespons
     history_project_repository = HistoryProjectRepository(db_connection_handler)
     create_history_project_use_case = CreateHistoryProject(history_project_repository)
     
+    # Configuração para notificações
+    notification_repository = NotificationRepository(db_connection_handler)
+    user_repository = UserRepository(db_connection_handler)
+    project_repository = ProjectRepository(db_connection_handler)
+    fiscal_repository = FiscalRepository(db_connection_handler)
+    create_notification_use_case = CreateNotification(notification_repository)
+    create_work_project_notification_use_case = CreateWorkProjectNotification(
+        create_notification_use_case, 
+        user_repository,
+        project_repository
+    )
+    
     # Controller
     controller = CreateWorkProjectMobileController(
         insert_work_project_case=insert_work_project_use_case,
         save_fiscal_document_case=save_fiscal_document_use_case,
         create_history_project_case=create_history_project_use_case,
-        find_project_fiscal_case=find_project_fiscal_use_case
+        find_project_fiscal_case=find_project_fiscal_use_case,
+        create_work_project_notification_case=create_work_project_notification_use_case,
+        fiscal_repository=fiscal_repository
     )
     return controller.handle 

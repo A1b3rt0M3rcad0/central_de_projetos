@@ -2,6 +2,8 @@ from src.domain.use_cases.i_insert_work_project import IInsertWorkProject
 from src.domain.use_cases.i_save_fiscal_document import ISaveFiscalDocument
 from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
 from src.domain.use_cases.i_find_project_fiscal import IFindProjectFiscal
+from src.domain.use_cases.i_create_work_project_notification import ICreateWorkProjectNotification
+from src.data.interface.i_fiscal_repository import IFiscalRepository
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -15,11 +17,15 @@ class CreateWorkProjectMobileController(ControllerInterface):
                  insert_work_project_case: IInsertWorkProject,
                  save_fiscal_document_case: ISaveFiscalDocument,
                  create_history_project_case: ICreateHistoryProject,
-                 find_project_fiscal_case: IFindProjectFiscal) -> None:
+                 find_project_fiscal_case: IFindProjectFiscal,
+                 create_work_project_notification_case: ICreateWorkProjectNotification,
+                 fiscal_repository: IFiscalRepository) -> None:
         self.__insert_work_project_case = insert_work_project_case
         self.__save_fiscal_document_case = save_fiscal_document_case
         self.__create_history_project_case = create_history_project_case
         self.__find_project_fiscal_case = find_project_fiscal_case
+        self.__create_work_project_notification_case = create_work_project_notification_case
+        self.__fiscal_repository = fiscal_repository
 
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
@@ -97,6 +103,21 @@ class CreateWorkProjectMobileController(ControllerInterface):
                 project_id=project_id,
                 data_name='Fiscalização Mobile',
                 description=f'Fiscalização "{title}" criado via mobile com {len(documents)} documento(s)'
+            )
+            
+            # Criar notificações para admins
+            # Buscar o nome do fiscal
+            try:
+                fiscal = self.__fiscal_repository.find_by_id(fiscal_id)
+                fiscal_name = fiscal.name if fiscal else f"Fiscal ID {fiscal_id}"
+            except Exception:
+                fiscal_name = f"Fiscal ID {fiscal_id}"
+            
+            self.__create_work_project_notification_case.create_for_admins(
+                work_project_id=work_project_id,
+                project_id=project_id,
+                fiscal_name=fiscal_name,
+                work_project_title=title
             )
             
             return HttpResponse(

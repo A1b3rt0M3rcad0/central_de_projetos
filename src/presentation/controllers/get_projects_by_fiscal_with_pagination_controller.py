@@ -27,10 +27,18 @@ class GetProjectsByFiscalWithPaginationController(ControllerInterface):
             projects_with_details = []
             for project_fiscal in result['projects']:
                 project = self.__find_project_case.find(project_id=project_fiscal.project_id)
+                # Tratar verba_disponivel que pode ser MonetaryValue ou float
+                verba_value = None
+                if project.verba_disponivel:
+                    if hasattr(project.verba_disponivel, 'value'):
+                        verba_value = float(project.verba_disponivel.value)
+                    else:
+                        verba_value = float(project.verba_disponivel)
+                
                 projects_with_details.append({
                     'id': project.project_id,
                     'status_id': project.status_id,
-                    'verba_disponivel': project.verba_disponivel.value if project.verba_disponivel else None,
+                    'verba_disponivel': verba_value,
                     'andamento_do_projeto': project.andamento_do_projeto,
                     'start_date': project.start_date.strftime(r'%d/%m/%Y') if project.start_date else None,
                     'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
