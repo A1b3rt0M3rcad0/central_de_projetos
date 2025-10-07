@@ -5,6 +5,8 @@ from fastapi import APIRouter, Request, Security, Query
 from src.main.adapters.response_adapter import response_adapter
 from src.errors.error_handle import error_handler
 from src.main.composers.get_dashboard_data_composer import get_dashboard_data_composer
+from src.main.composers.get_system_config_composer import get_system_config_composer
+from src.main.composers.update_system_config_composer import update_system_config_composer
 from src.main.routes.api.dashboard.dashboard_response.get_dashboard_data_response import DashboardDataResponse
 from src.main.routes.api.__error.error_response import generate_error_responses
 from src.main.routes.middleware.authorization import role_required
@@ -117,3 +119,85 @@ async def get_dashboard_data(
         )
         return response_adapter(error_result)
 
+
+
+@routes.get(
+    "/config",
+    responses=generate_error_responses(),
+    summary="Buscar configurações do sistema",
+    description="Endpoint para buscar configurações do sistema. Pode buscar uma configuração específica ou todas as ativas."
+)
+async def get_system_config(
+    request: Request,
+    config_key: str = Query(None, description="Chave específica da configuração"),
+    user=Security(role_required(["ADMIN"]))
+):
+    """
+    Busca configurações do sistema
+    
+    Args:
+        request: Objeto da requisição HTTP
+        config_key: Chave específica ou None para buscar todas
+        user: Dados do usuário autenticado (apenas ADMIN)
+    
+    Returns:
+        Configurações do sistema
+    """
+    try:
+        from src.presentation.http_types.http_request import HttpRequest
+        http_request = HttpRequest(
+            body={},
+            headers=dict(request.headers),
+            query_params={"config_key": config_key},
+            path_params={},
+            url=str(request.url)
+        )
+        
+        http_response = get_system_config_composer()(http_request)
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        
+        log_http(level="INFO", logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as exception:
+        error_result = error_handler(exception)
+        log_http(level="ERROR", logger_name=PREFIX, http_response=error_result, request=request)
+        return response_adapter(error_result)
+
+
+@routes.patch(
+    "/config",
+    responses=generate_error_responses(),
+    summary="Atualizar configuração do sistema",
+    description="Endpoint para atualizar uma configuração do sistema. Apenas ADMIN pode acessar."
+)
+async def update_system_config(
+    request: Request,
+    user=Security(role_required(["ADMIN"]))
+):
+    """
+    Atualiza uma configuração do sistema
+    
+    Args:
+        request: Objeto da requisição HTTP com body contendo config_key e config_value
+        user: Dados do usuário autenticado (apenas ADMIN)
+    
+    Body:
+        {
+            "config_key": "dashboard.excluded_status",
+            "config_value": "[13,14]"
+        }
+    
+    Returns:
+        Confirmação da atualização
+    """
+    try:
+        from src.main.adapters.request_adapter import request_adapter
+        http_response = await request_adapter(request, update_system_config_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        
+        log_http(level="INFO", logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as exception:
+        error_result = error_handler(exception)
+        log_http(level="ERROR", logger_name=PREFIX, http_response=error_result, request=request)
+        return response_adapter(error_result)

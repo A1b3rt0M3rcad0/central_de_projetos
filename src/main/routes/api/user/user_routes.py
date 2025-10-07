@@ -10,6 +10,7 @@ from src.main.composers.create_user_composer import create_user_composer
 from src.main.composers.delete_user_composer import delete_user_composer
 from src.main.composers.update_user_email_composer import update_user_email_composer
 from src.main.composers.update_user_password_composer import update_user_password_composer
+from src.main.composers.update_user_personal_data_composer import update_user_personal_data_composer
 from src.main.composers.who_am_i_composer import who_am_i_composer
 from src.main.composers.find_all_user_composer import find_all_user_composer
 from src.main.composers.find_all_user_by_role_composer import find_all_user_by_role_composer
@@ -20,6 +21,7 @@ from src.main.routes.api.user.request_format.create_user_format import CreateUse
 from src.main.routes.api.user.request_format.delete_user_format import DeleteUserFormat
 from src.main.routes.api.user.request_format.update_user_email_format import UpdateUserEmailFormat
 from src.main.routes.api.user.request_format.update_user_password_format import UpdateUserPasswordFormat
+from src.main.routes.api.user.request_format.update_user_personal_data_format import UpdateUserPersonalDataFormat
 from src.main.routes.api.user.request_format.who_am_i_format import WhoAmIFormat
 
 from src.main.routes.api.__error.error_response import generate_error_responses
@@ -341,6 +343,48 @@ async def update_email(body:UpdateUserEmailFormat, request:Request, user=Securit
     """
     try:
         http_response = await request_adapter(request, update_user_email_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            request=request,
+            http_response=http_response
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            request=request,
+            http_response=error_result
+        )
+        return response_adapter(error_result)
+
+@routes.patch("/personal-data", response_model=BaseMessageResponse, responses=generate_error_responses())
+async def update_personal_data(body: UpdateUserPersonalDataFormat, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para atualizar dados pessoais do usuário.
+    Permite atualizar nome, email e/ou senha de forma flexível.
+    
+    Args:
+        body: Dados para atualização (cpf obrigatório, nome/email/senha opcionais)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso com campos atualizados
+        
+    Raises:
+        UserNotFoundError: Se o usuário não for encontrado
+        InvalidEmailError: Se o novo email for inválido
+        EmailAlreadyExistsError: Se o email já estiver em uso
+        InvalidPasswordError: Se a nova senha for inválida
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        http_response = await request_adapter(request, update_user_personal_data_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
