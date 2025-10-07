@@ -1,0 +1,2 @@
+"""Dashboard response module"""
+
