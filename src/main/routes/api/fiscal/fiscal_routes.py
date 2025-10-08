@@ -10,6 +10,9 @@ from src.main.composers.find_fiscal_by_name_composer import find_fiscal_by_name_
 from src.main.composers.create_fiscal_composer import create_fiscal_composer
 from src.main.composers.delete_fiscal_composer import delete_fiscal_composer
 from src.main.composers.update_fiscal_name_composer import update_fiscal_name_composer
+from src.main.composers.update_fiscal_email_composer import update_fiscal_email_composer
+from src.main.composers.update_fiscal_password_composer import update_fiscal_password_composer
+from src.main.composers.update_fiscal_phone_composer import update_fiscal_phone_composer
 from src.main.composers.find_all_fiscal_composer import find_all_fiscal_composer
 from src.main.composers.count_fiscals_composer import count_fiscals_composer
 from src.main.composers.insert_all_fiscal_from_user_composer import insert_all_fiscal_from_user_composer
@@ -19,6 +22,9 @@ from src.main.composers.find_all_fiscais_with_pagination_and_filter_composer imp
 from src.main.routes.api.fiscal.request_format.create_fiscal_format import CreateFiscalFormat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
 from src.main.routes.api.fiscal.request_format.update_fiscal_name_format import UpdateFiscalNameFormat
+from src.main.routes.api.fiscal.request_format.update_fiscal_email_format import UpdateFiscalEmailFormat
+from src.main.routes.api.fiscal.request_format.update_fiscal_password_format import UpdateFiscalPasswordFormat
+from src.main.routes.api.fiscal.request_format.update_fiscal_phone_format import UpdateFiscalPhoneFormat
 from src.main.routes.api.fiscal.request_format.insert_all_fiscal_from_user_format import InsertAllFiscalFromUserFormat
 from src.main.routes.api.fiscal.fiscal_response.find_fiscal_by_name_response import FindFiscalByNameResponse
 from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
@@ -405,6 +411,124 @@ async def find_all_fiscais_with_pagination_and_filter(page_size:int, page:int, r
         error_result = error_handler(e)
         log_http(
             level="ERROR",
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.patch('/update-email', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def update_fiscal_email(body:UpdateFiscalEmailFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o email de um fiscal.
+    Apenas usuários ADMIN podem alterar emails de fiscais.
+    
+    Args:
+        body: Dados para atualização (nome do fiscal e novo email)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        InvalidEmailError: Se o email for inválido
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        http_response = await request_adapter(request, update_fiscal_email_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.patch('/update-password', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def update_fiscal_password(body:UpdateFiscalPasswordFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar a senha de um fiscal.
+    Apenas usuários ADMIN podem alterar senhas de fiscais.
+    
+    Args:
+        body: Dados para atualização (nome do fiscal e nova senha)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        http_response = await request_adapter(request, update_fiscal_password_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.patch('/update-phone', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def update_fiscal_phone(body:UpdateFiscalPhoneFormat, request:Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o telefone de um fiscal.
+    Apenas usuários ADMIN podem alterar telefones de fiscais.
+    
+    Args:
+        body: Dados para atualização (nome do fiscal e novo telefone)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso na atualização
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        UnauthorizedError: Se o usuário não for ADMIN
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        http_response = await request_adapter(request, update_fiscal_phone_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
             logger_name=PREFIX,
             http_response=error_result,
             request=request

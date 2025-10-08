@@ -34,6 +34,15 @@ class IFiscalRepository(ABC):
     def update(self, name:str, new_name:str) -> None:pass
 
     @abstractmethod
+    def update_email(self, name:str, email:Email) -> None:pass
+
+    @abstractmethod
+    def update_password(self, name:str, password:HashedPassword) -> None:pass
+
+    @abstractmethod
+    def update_phone(self, name:str, phone:str) -> None:pass
+
+    @abstractmethod
     def delete(self, name:str) -> None:pass
     
     @abstractmethod

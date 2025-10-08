@@ -78,14 +78,6 @@ class FiscalRepository(IFiscalRepository):
                 db.session.commit()
             except Exception as e:
                 raise ErrorOnInsertRefreshToken(message=f'Error on insert refresh token: {str(e)}') from e
-    
-    def update_email(self, fiscal_id:int, email:Email) -> None:
-        with self.__db_connection_handler as db:
-            try:
-                db.session.query(Fiscal).where(Fiscal.id == fiscal_id).update({'email':email.email})
-                db.session.commit()
-            except Exception as e:
-                raise ErroronUpdateFiscal(message=f'Error on update email: {str(e)}') from e 
 
     def find_by_name(self, name:str) -> FiscalEntity:
         try:
@@ -204,6 +196,55 @@ class FiscalRepository(IFiscalRepository):
             raise FiscalAlreadyExists(message=f'Fiscal with name {new_name} already exists: {str(e)}') from e
         except Exception as e:
             raise ErroronUpdateFiscal(message=f'Error on update fiscal {name} -> {new_name}: {str(e)}') from e
+
+    def update_email(self, name:str, email:Email) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar o campo diretamente no objeto
+                fiscal.email = email.email
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update email for fiscal {name}: {str(e)}') from e
+
+    def update_password(self, name:str, password:HashedPassword) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar os campos diretamente no objeto
+                fiscal.password = password.hashed_password
+                fiscal.salt = password.salt
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update password for fiscal {name}: {str(e)}') from e
+
+    def update_phone(self, name:str, phone:str) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar o campo diretamente no objeto
+                fiscal.phone = phone
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update phone for fiscal {name}: {str(e)}') from e
     
     def delete(self, name:str) -> None:
         try:
