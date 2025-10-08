@@ -12,8 +12,8 @@ class FindAllProjectsFromFiscalController(ControllerInterface):
 
     def handle(self, http_request:HttpRequest) -> HttpResponse:
         try:
-            query_params = http_request['body']
-            fiscal_id = query_params['fiscal_id']
+            path_params = http_request.path_params
+            fiscal_id = path_params.get('fiscal_id') or http_request.body.get('fiscal_id')
             project_fiscal_results = self.__find_all_projects_from_fiscal_case.find(fiscal_id=fiscal_id)
             projects = [self.__find_project_case.find(project_id=project_bairro.project_id)
                         for project_bairro in project_fiscal_results
@@ -27,9 +27,9 @@ class FindAllProjectsFromFiscalController(ControllerInterface):
                          'status_id': project.status_id,
                          'verba_disponivel': project.verba_disponivel,
                          'andamento_do_projeto': project.andamento_do_projeto,
-                         'start_date': project.start_date.strftime(r'%d/%m/%Y'),
-                         'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y'),
-                         'end_date': project.end_date.strftime(r'%d/%m/%Y'),
+                         'start_date': project.start_date.strftime(r'%d/%m/%Y') if project.start_date else None,
+                         'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
+                         'end_date': project.end_date.strftime(r'%d/%m/%Y') if project.end_date else None,
                          'name': project.name}
                         for project in projects
                     ]
