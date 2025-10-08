@@ -173,11 +173,11 @@ async def add_documents_to_work_project(
 async def get_work_project(
     request: Request,
     work_project_id: int,
-    user: dict = Security(role_required(["ADMIN"]))
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
 ):
     """
     Endpoint para buscar um work project específico.
-    Apenas administradores podem acessar este endpoint.
+    Todos os usuários autenticados (ADMIN, VEREADOR, ASSESSOR) podem visualizar fiscalizações.
     
     Args:
         request: Objeto da requisição HTTP
@@ -267,11 +267,11 @@ async def get_work_projects_by_project_with_pagination(
     project_id: int,
     page_size: int,
     page: int,
-    user: dict = Security(role_required(["ADMIN"]))
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
 ):
     """
     Endpoint para buscar work projects de um projeto específico com paginação.
-    Apenas administradores podem acessar este endpoint.
+    Todos os usuários autenticados (ADMIN, VEREADOR, ASSESSOR) podem visualizar fiscalizações.
     
     Args:
         request: Objeto da requisição HTTP
