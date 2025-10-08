@@ -13,15 +13,19 @@ class GetAllWorkProjectsByFiscalMobileController(ControllerInterface):
         try:
             body = http_request.body or {}
             path_params = http_request.path_params or {}
+            query_params = http_request.query_params or {}
 
             fiscal_id = int(body.get('fiscal_id'))
             page = int(path_params.get('page'))
             page_size = int(path_params.get('page_size'))
+            search_term = query_params.get('search')  # Opcional para filtro
 
+            # Buscar work projects com filtro aplicado no repository
             result = self.__get_work_projects_by_fiscal_with_pagination_case.get_by_fiscal_with_pagination(
                 fiscal_id=fiscal_id,
                 page=page,
-                page_size=page_size
+                page_size=page_size,
+                search_term=search_term
             )
 
             work_projects_data = []

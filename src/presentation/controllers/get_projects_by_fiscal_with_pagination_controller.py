@@ -15,17 +15,22 @@ class GetProjectsByFiscalWithPaginationController(ControllerInterface):
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         try:
             body = http_request.body
+            query_params = http_request.query_params or {}
+            
             fiscal_id = body['fiscal_id']
             page = body['page']
             page_size = body['page_size']
+            search_term = query_params.get('search')  # Opcional para filtro
             
+            # Buscar projetos do fiscal com filtro aplicado no repository
             result = self.__get_projects_by_fiscal_with_pagination.get(
                 fiscal_id=fiscal_id, 
                 page=int(page), 
-                page_size=int(page_size)
+                page_size=int(page_size),
+                search_term=search_term
             )
             
-            # Buscar detalhes completos dos projetos
+            # Buscar detalhes completos dos projetos (já filtrados)
             projects_with_details = []
             for project_fiscal in result['projects']:
                 project = self.__find_project_case.find(project_id=project_fiscal.project_id)

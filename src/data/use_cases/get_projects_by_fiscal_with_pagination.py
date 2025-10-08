@@ -8,12 +8,13 @@ class GetProjectsByFiscalWithPagination(IGetProjectsByFiscalWithPagination):
     def __init__(self, project_fiscal_repository: IProjectFiscalRepository) -> None:
         self.__project_fiscal_repository = project_fiscal_repository
     
-    def get(self, fiscal_id: int, page: int, page_size: int = 10) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
+    def get(self, fiscal_id: int, page: int, page_size: int = 10, search_term: str = None) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
         try:
             result = self.__project_fiscal_repository.get_projects_by_fiscal_with_pagination(
                 fiscal_id=fiscal_id, 
                 page=page, 
-                page_size=page_size
+                page_size=page_size,
+                search_term=search_term
             )
             return result
         except Exception as e:

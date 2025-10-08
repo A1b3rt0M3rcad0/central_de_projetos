@@ -18,11 +18,13 @@ class GetWorkProjectsByFiscalMobileController(ControllerInterface):
             # Obter dados do path_params e body
             path_params = http_request.path_params or {}
             body = http_request.body or {}
+            query_params = http_request.query_params or {}
             
             # Dados da paginação e projeto
             page = int(path_params.get('page'))
             page_size = int(path_params.get('page_size'))
             project_id = path_params.get('project_id')
+            search_term = query_params.get('search')  # Opcional para filtro
             
             # Obter fiscal_id do body (injetado pela rota)
             fiscal_id = body.get('fiscal_id')
@@ -58,7 +60,8 @@ class GetWorkProjectsByFiscalMobileController(ControllerInterface):
                 fiscal_id=fiscal_id,
                 project_id=project_id,
                 page=page,
-                page_size=page_size
+                page_size=page_size,
+                search_term=search_term
             )
             
             work_projects_data = []

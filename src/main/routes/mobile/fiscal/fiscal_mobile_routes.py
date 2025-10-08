@@ -515,6 +515,55 @@ async def get_work_projects_by_fiscal_mobile(
             request=request
         )
         return response_adapter(error_result)
+
+
+@routes.get('/work_projects/pagination-filter/{project_id}/{page_size}/{page}', 
+            response_model=GetWorkProjectsByFiscalMobileResponse, 
+            responses=generate_error_responses())
+async def get_work_projects_by_fiscal_with_filter_mobile(
+    request: Request,
+    project_id: int,
+    page_size: int,
+    page: int,
+    search: str = None,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para buscar work projects do fiscal por projeto com paginação e filtro de busca.
+    """
+    try:
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        
+        request.path_params['page'] = page
+        request.path_params['page_size'] = page_size
+        request.state.query_params = {
+            'search': search
+        }
+        
+        http_response = await request_adapter(
+            request=request,
+            controller=get_work_projects_by_fiscal_mobile_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
 @routes.get('/work_projects/all/pagination/{page_size}/{page}', 
             response_model=GetWorkProjectsByFiscalMobileResponse, 
             responses=generate_error_responses())
@@ -533,6 +582,52 @@ async def get_all_work_projects_by_fiscal_mobile(
         }
         request.path_params['page'] = page
         request.path_params['page_size'] = page_size
+
+        http_response = await request_adapter(
+            request=request,
+            controller=get_all_work_projects_by_fiscal_mobile_composer()
+        )
+
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/work_projects/all/pagination-filter/{page_size}/{page}', 
+            response_model=GetWorkProjectsByFiscalMobileResponse, 
+            responses=generate_error_responses())
+async def get_all_work_projects_by_fiscal_with_filter_mobile(
+    request: Request,
+    page_size: int,
+    page: int,
+    search: str = None,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Lista todos os work projects do fiscal com paginação e filtro de busca.
+    """
+    try:
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id')
+        }
+        request.path_params['page'] = page
+        request.path_params['page_size'] = page_size
+        request.state.query_params = {
+            'search': search
+        }
 
         http_response = await request_adapter(
             request=request,
@@ -709,6 +804,65 @@ async def get_projects_by_fiscal_with_pagination_mobile(
         }
         
         # Usar request_adapter para processar a requisição
+        http_response = await request_adapter(
+            request=request,
+            controller=get_projects_by_fiscal_with_pagination_composer()
+        )
+        
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@routes.get('/projects/pagination-filter/{page_size}/{page}', 
+            response_model=GetProjectsByFiscalWithPaginationMobileResponse, 
+            responses=generate_error_responses())
+async def get_projects_by_fiscal_with_pagination_and_filter_mobile(
+    request: Request,
+    page_size: int,
+    page: int,
+    search: str = None,
+    fiscal: dict = Security(fiscal_required())
+):
+    """
+    Endpoint para buscar projetos do fiscal com paginação e filtro de busca.
+    Apenas fiscais podem acessar este endpoint.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        page_size: Tamanho da página
+        page: Número da página
+        search: Termo de busca opcional para filtrar projetos
+        fiscal: Dados do fiscal autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectsByFiscalWithPaginationMobileResponse: Lista paginada e filtrada de projetos do fiscal
+    """
+    try:
+        request.state.body = {
+            'fiscal_id': fiscal.get('fiscal_id'),
+            'page': page,
+            'page_size': page_size
+        }
+        
+        request.state.query_params = {
+            'search': search
+        }
+        
         http_response = await request_adapter(
             request=request,
             controller=get_projects_by_fiscal_with_pagination_composer()
