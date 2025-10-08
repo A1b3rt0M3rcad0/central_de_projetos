@@ -40,8 +40,8 @@ class CreateWorkProjectNotification(ICreateWorkProjectNotification):
                 self.__create_notification_case.create(
                     recipient_cpf=admin.cpf.value,
                     notification_type=NotificationType.WORK_PROJECT_CREATED,
-                    title="Novo Work Project Criado",
-                    message=f"O fiscal {fiscal_name} criou um novo work project: '{work_project_title}' no projeto '{project_name}'",
+                    title="Nova Fiscalização Criada",
+                    message=f"O fiscal {fiscal_name} realizou uma nova fiscalização: '{work_project_title}' no projeto '{project_name}'",
                     related_entity_id=work_project_id,
                     related_entity_type="work_project"
                 )
