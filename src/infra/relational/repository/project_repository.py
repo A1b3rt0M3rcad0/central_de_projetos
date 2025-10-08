@@ -95,20 +95,40 @@ class ProjectRepository(IProjectRepository):
     def find(self, project_id:int) -> ProjectEntity:
         with self.__db_connection_handler as db:
             try:
-                project = db.session.query(Project).where(
+                project = db.session.query(Project).options(
+                    joinedload(Project.status),
+                    joinedload(Project.project_bairros).joinedload(ProjectBairro.bairro),
+                    joinedload(Project.project_empresas).joinedload(ProjectEmpresa.empresa)
+                ).where(
                     Project.id == project_id
                 ).first()
                 if not project:
                     raise ProjectNotExists(message=f'Project with id: {project_id} does not exists')
+                
                 return ProjectEntity(
                     project_id=project.id,
                     andamento_do_projeto=project.andamento_do_projeto,
                     start_date=project.start_date,
                     expected_completion_date=project.expected_completion_date,
-                    verba_disponivel=project.verba_disponivel,
+                    verba_disponivel=MonetaryValue(project.verba_disponivel),
                     status_id=project.status_id,
                     end_date=project.end_date,
-                    name=project.name
+                    name=project.name,
+                    status=StatusEntity(
+                        status_id=project.status.id,
+                        description=project.status.description,
+                        created_at=project.status.created_at
+                    ) if project.status else None,
+                    bairro=BairroEntity(
+                        bairro_id=project.project_bairros[0].bairro.id,
+                        name=project.project_bairros[0].bairro.name,
+                        created_at=project.project_bairros[0].bairro.created_at
+                    ) if project.project_bairros and len(project.project_bairros) > 0 else None,
+                    empresa=EmpresaEntity(
+                        empresa_id=project.project_empresas[0].empresa.id,
+                        name=project.project_empresas[0].empresa.name,
+                        created_at=project.project_empresas[0].empresa.created_at
+                    ) if project.project_empresas and len(project.project_empresas) > 0 else None
                 )
             except ProjectNotExists as e:
                 raise e from e

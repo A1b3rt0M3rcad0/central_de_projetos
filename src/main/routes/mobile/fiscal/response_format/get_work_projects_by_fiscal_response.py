@@ -34,5 +34,6 @@ class GetWorkProjectsByFiscalMobileResponse(BaseModel):
     total: int
     page: int
     page_size: int
+    project_id: int
     fiscal_id: int
     content: List[WorkProjectContentResponse] 
