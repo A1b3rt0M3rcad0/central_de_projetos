@@ -24,9 +24,9 @@ class FindProjectByStatusController(ControllerInterface):
                          'status_id': project.status_id,
                          'verba_disponivel': project.verba_disponivel,
                          'andamento_do_projeto': project.andamento_do_projeto,
-                         'start_date': project.start_date.strftime(r'%d/%m/%Y'),
-                         'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y'),
-                         'end_date': project.end_date.strftime(r'%d/%m/%Y'),
+                         'start_date': project.start_date.strftime(r'%d/%m/%Y') if project.start_date else None,
+                         'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
+                         'end_date': project.end_date.strftime(r'%d/%m/%Y') if project.end_date else None,
                          'name': project.name}
                         for project in projects
                     ]
