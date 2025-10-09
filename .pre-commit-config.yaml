@@ -3,11 +3,10 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: .venv/bin/pylint
+        entry: uv run pylint
         language: system
         types: [python]
-        args:
-          [
+        args: [
             "-rn", # Only display messages
             "-sn", # Don't display the score
             "--rcfile=.pylintrc",
@@ -15,7 +14,7 @@ repos:
           ]
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.4                          # alinhe com a versão do uv que você usa
+    rev: 0.7.4 # alinhe com a versão do uv que você usa
     hooks:
       # 1. Garante que o uv.lock esteja sempre atualizado
       - id: uv-lock

@@ -60,3 +60,7 @@ class IFiscalRepository(ABC):
     @abstractmethod
     def count_all_with_filter(self, search_term: str = None) -> int:
         """Conta o total de fiscais no sistema com filtro global."""
+    
+    @abstractmethod
+    def update_status(self, fiscal_id: int, is_active: int) -> None:
+        """Atualiza o status (ativo/inativo) de um fiscal."""

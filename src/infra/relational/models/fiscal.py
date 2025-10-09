@@ -1,9 +1,9 @@
-from sqlalchemy import String, DateTime, LargeBinary
+from sqlalchemy import String, DateTime, LargeBinary, Integer
 from src.infra.relational.config.base.base_model import BaseModel
 from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Mapped, mapped_column
-from typing import List
+from typing import List, Optional
 
 class Fiscal(BaseModel):
 
@@ -16,6 +16,7 @@ class Fiscal(BaseModel):
     password:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=True)
     salt:Mapped[bytes] = mapped_column(LargeBinary(255), nullable=True)
     refresh_token:Mapped[str] = mapped_column(String(255), nullable=True)
+    is_active:Mapped[Optional[int]] = mapped_column(Integer, nullable=True, server_default='1')
     created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
     project_fiscals:Mapped[List["ProjectFiscal"]] = relationship("ProjectFiscal", back_populates='fiscal', lazy="selectin")

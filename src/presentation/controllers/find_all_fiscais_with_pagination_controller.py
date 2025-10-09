@@ -23,7 +23,8 @@ class FindAllFiscaisWithPaginationController(ControllerInterface):
                     'name': fiscal.name,
                     'email': fiscal.email.email if fiscal.email else None,
                     'phone': fiscal.phone,
-                    'created_at': fiscal.created_at.strftime(r'%d/%m/%Y') if fiscal.created_at else None
+                    'created_at': fiscal.created_at.strftime(r'%d/%m/%Y') if fiscal.created_at else None,
+                    'is_active': fiscal.is_active
                 }
                 for fiscal in result['fiscais']
             ]

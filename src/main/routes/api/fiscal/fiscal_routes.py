@@ -18,6 +18,7 @@ from src.main.composers.count_fiscals_composer import count_fiscals_composer
 from src.main.composers.insert_all_fiscal_from_user_composer import insert_all_fiscal_from_user_composer
 from src.main.composers.find_all_fiscais_with_pagination_composer import find_all_fiscais_with_pagination_composer
 from src.main.composers.find_all_fiscais_with_pagination_and_filter_composer import find_all_fiscais_with_pagination_and_filter_composer
+from src.main.composers.update_fiscal_status_composer import update_fiscal_status_composer
 
 from src.main.routes.api.fiscal.request_format.create_fiscal_format import CreateFiscalFormat
 from src.main.routes.api.fiscal.request_format.delete_fiscal_format import DeleteFiscalFormat
@@ -26,6 +27,7 @@ from src.main.routes.api.fiscal.request_format.update_fiscal_email_format import
 from src.main.routes.api.fiscal.request_format.update_fiscal_password_format import UpdateFiscalPasswordFormat
 from src.main.routes.api.fiscal.request_format.update_fiscal_phone_format import UpdateFiscalPhoneFormat
 from src.main.routes.api.fiscal.request_format.insert_all_fiscal_from_user_format import InsertAllFiscalFromUserFormat
+from src.main.routes.api.fiscal.request_format.update_fiscal_status_format import UpdateFiscalStatusFormat
 from src.main.routes.api.fiscal.fiscal_response.find_fiscal_by_name_response import FindFiscalByNameResponse
 from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
 from src.main.routes.api.fiscal.fiscal_response.find_all_fiscal_response import FindAllFiscalReponse
@@ -517,6 +519,48 @@ async def update_fiscal_phone(body:UpdateFiscalPhoneFormat, request:Request, use
     """
     try:
         http_response = await request_adapter(request, update_fiscal_phone_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.patch('/{fiscal_id}/status', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def update_fiscal_status(fiscal_id: int, body: UpdateFiscalStatusFormat, request: Request, user=Security(role_required(["ADMIN"]))):
+    """
+    Endpoint para atualizar o status (ativo/inativo) de um fiscal.
+    Apenas usuários com permissão de ADMIN podem acessar.
+    
+    Args:
+        fiscal_id: ID do fiscal a ser atualizado
+        body: Dados do status (is_active: 0 ou 1)
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        BaseMessageResponse: Mensagem de sucesso
+        
+    Raises:
+        FiscalNotFoundError: Se o fiscal não for encontrado
+        InvalidParameterError: Se o valor de is_active for inválido
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['fiscal_id'] = fiscal_id
+        http_response = await request_adapter(request, update_fiscal_status_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',

@@ -7,6 +7,7 @@ from src.domain.use_cases.i_login_fiscal import ILoginFiscal
 from datetime import datetime, timezone, timedelta
 from src.errors.use_cases.fiscal_not_found_error import FiscalNotFoundError
 from src.errors.use_cases.invalid_password_error import InvalidPasswordError
+from src.errors.use_cases.fiscal_inactive_error import FiscalInactiveError
 from src.errors.repository.not_exists_error.fiscal_not_exists import FiscalNotExists
 import dotenv
 import os
@@ -22,6 +23,13 @@ class LoginFiscal(ILoginFiscal):
             result = self.__fiscal_repository.find_by_email(
                 email=email
             )
+            
+            # Verificar se o fiscal está ativo (NULL ou 1 = ativo, 0 = inativo)
+            if result.is_active is not None and result.is_active == 0:
+                raise FiscalInactiveError(
+                    message='Sua conta de fiscal está inativa. Entre em contato com o administrador do sistema para reativá-la.'
+                )
+            
             fiscal_password = result.password
             fiscal_salt = result.salt
             chk_result = hashedpassword_factory_chk(fiscal_password, fiscal_salt, password)
@@ -47,16 +55,16 @@ class LoginFiscal(ILoginFiscal):
                     }
                 )
             raise InvalidPasswordError(
-                message=f'The password {password} is incorrect'
+                message='Email ou senha incorretos. Verifique suas credenciais e tente novamente.'
             )
         except FiscalNotExists as e:
             raise FiscalNotFoundError(
-                message=f'The fiscal with this email: {email.email} does not exists'
+                message='Email ou senha incorretos. Verifique suas credenciais e tente novamente.'
             ) from e
         except AttributeError as e:
             # This might happen if the fiscal exists but doesn't have required fields
             raise FiscalNotFoundError(
-                message=f'The fiscal with this email: {email.email} does not exists or has invalid data'
+                message='Email ou senha incorretos. Verifique suas credenciais e tente novamente.'
             ) from e
         except Exception as e:
             raise e from e 

@@ -8,10 +8,15 @@ from src.errors.repository.has_related_children.__base_has_related_children impo
 
 # 404 errors
 from src.errors.repository.not_exists_error.__base_not_exists_error import BaseNotExistsError
+from src.errors.use_cases.fiscal_not_found_error import FiscalNotFoundError
 
 # 403 errors
 from src.errors.value_object.cpf_format_error import CPFFormatError
 from src.errors.value_object.password_format_error import PasswordFormatError
+
+# 401 errors
+from src.errors.use_cases.fiscal_inactive_error import FiscalInactiveError
+from src.errors.use_cases.invalid_password_error import InvalidPasswordError
 
 # 500 errors
 from src.errors.repository.error_on_delete.__base_error_on_delete import BaseErrorOnDelete
@@ -45,6 +50,9 @@ def error_handler(error: Exception) -> HttpResponse:
         BaseAlreadyExistsError: 409,
         BaseHasRelatedChildren: 409,
         BaseNotExistsError: 404,
+        FiscalNotFoundError: 404,
+        FiscalInactiveError: 401,
+        InvalidPasswordError: 401,
         BaseUseCaseError: 500,
         BaseErrorOnInsert: 500,
         BaseErrorOnFind: 500,

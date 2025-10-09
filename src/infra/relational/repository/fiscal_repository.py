@@ -95,7 +95,8 @@ class FiscalRepository(IFiscalRepository):
                     phone=fiscal.phone,
                     password=fiscal.password,
                     salt=fiscal.salt,
-                    refresh_token=fiscal.refresh_token
+                    refresh_token=fiscal.refresh_token,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -118,7 +119,8 @@ class FiscalRepository(IFiscalRepository):
                     phone=fiscal.phone,
                     password=fiscal.password,
                     salt=fiscal.salt,
-                    refresh_token=fiscal.refresh_token
+                    refresh_token=fiscal.refresh_token,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -141,7 +143,8 @@ class FiscalRepository(IFiscalRepository):
                     password=fiscal.password,
                     salt=fiscal.salt,
                     refresh_token=fiscal.refresh_token,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -160,7 +163,8 @@ class FiscalRepository(IFiscalRepository):
                         name=fiscal.name,
                         email=Email(email=fiscal.email) if fiscal.email else None,
                         phone=fiscal.phone,
-                        created_at=fiscal.created_at
+                        created_at=fiscal.created_at,
+                        is_active=fiscal.is_active
                     )
                      for fiscal in fiscais
                 ]
@@ -274,7 +278,8 @@ class FiscalRepository(IFiscalRepository):
                         name=fiscal.name,
                         email=Email(email=fiscal.email) if fiscal.email else None,
                         phone=fiscal.phone,
-                        created_at=fiscal.created_at
+                        created_at=fiscal.created_at,
+                        is_active=fiscal.is_active
                     )
                     for fiscal in fiscais
                 ]
@@ -315,7 +320,8 @@ class FiscalRepository(IFiscalRepository):
                         salt=fiscal.salt,
                         email=Email(fiscal.email) if fiscal.email else None,
                         phone=fiscal.phone,
-                        refresh_token=fiscal.refresh_token
+                        refresh_token=fiscal.refresh_token,
+                        is_active=fiscal.is_active
                     )
                     for fiscal in fiscais
                 ]
@@ -340,4 +346,20 @@ class FiscalRepository(IFiscalRepository):
         except Exception as e:
             raise ErrorOnFindFiscal(
                 message=f'Error on count all fiscais with filter: {str(e)}'
+            ) from e
+
+    def update_status(self, fiscal_id: int, is_active: int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).filter(Fiscal.id == fiscal_id).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with id {fiscal_id} not found')
+                
+                fiscal.is_active = is_active
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e
+        except Exception as e:
+            raise ErroronUpdateFiscal(
+                message=f'Error on update status for fiscal {fiscal_id}: {str(e)}'
             ) from e
