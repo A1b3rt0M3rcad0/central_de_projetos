@@ -28,7 +28,7 @@ class FindAllProjectsWithBasicDetailsController(ControllerInterface):
                     "expected_completion_date": project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
                     "start_date": project.start_date.strftime(r'%d/%m/%Y')  if project.start_date else None,
                     "end_date": project.end_date.strftime(r'%d/%m/%Y')  if project.end_date else None,
-                    "verba_disponivel": project.verba_disponivel,
+                    "verba_disponivel": float(project.verba_disponivel.value) if project.verba_disponivel else None,
                     "types": project.types.name if project.types else project.types
                 }
                 response.append(project)
