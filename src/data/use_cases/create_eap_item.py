@@ -15,6 +15,18 @@ from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_eap_code_error import InvalidEAPCodeError
 from src.errors.eap.duplicate_eap_code_error import DuplicateEAPCodeError
 from src.errors.eap.budget_exceeded_error import BudgetExceededError
+from src.errors.eap.invalid_date_range_error import InvalidDateRangeError
+
+
+def _normalize_datetime(dt: datetime) -> datetime:
+    """Remove timezone information from datetime for comparison"""
+    if dt is None:
+        return None
+    # Converte para date (apenas dia/mês/ano, sem hora) para comparação
+    # Isso resolve problemas de timezone
+    if hasattr(dt, 'date'):
+        return dt.date()
+    return dt
 
 
 class CreateEAPItem(ICreateEAPItem):
@@ -84,6 +96,23 @@ class CreateEAPItem(ICreateEAPItem):
             if not str(code).startswith(expected_parent_code + '.'):
                 raise InvalidEAPCodeError(str(code), "Código não é consistente com a hierarquia")
             
+            # Validação de datas: verifica se as datas do filho estão dentro do período do pai
+            # Normaliza as datas para comparação (remove timezone)
+            child_start = _normalize_datetime(start_date)
+            child_end = _normalize_datetime(end_date)
+            parent_start = _normalize_datetime(parent_item.start_date)
+            parent_end = _normalize_datetime(parent_item.end_date)
+            
+            if child_start < parent_start or child_end > parent_end:
+                raise InvalidDateRangeError(
+                    child_name=name,
+                    parent_name=parent_item.name,
+                    child_start=start_date,
+                    child_end=end_date,
+                    parent_start=parent_item.start_date,
+                    parent_end=parent_item.end_date
+                )
+            
             # Validação de orçamento: verifica se o orçamento dos filhos não excede o do pai
             current_children_budget = self.__eap_item_repository.get_children_budget_total(parent_id)
             new_total_budget = current_children_budget + float(budget.value)
@@ -104,7 +133,7 @@ class CreateEAPItem(ICreateEAPItem):
             raise ValueError("Progresso deve estar entre 0 e 100")
         
         # Valida as datas
-        if start_date > end_date:
+        if _normalize_datetime(start_date) > _normalize_datetime(end_date):
             raise ValueError("Data de início não pode ser posterior à data de fim")
         
         # Cria o novo item

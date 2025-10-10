@@ -11,6 +11,7 @@ from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_eap_code_error import InvalidEAPCodeError
 from src.errors.eap.duplicate_eap_code_error import DuplicateEAPCodeError
 from src.errors.eap.budget_exceeded_error import BudgetExceededError
+from src.errors.eap.invalid_date_range_error import InvalidDateRangeError
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -22,7 +23,7 @@ class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
     def __init__(self, create_eap_item_case: ICreateEAPItem):
         self.__create_eap_item_case = create_eap_item_case
     
-    def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements
+    def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements,too-many-branches
         """
         Manipula a requisição de criação de item da EAP
         
@@ -52,8 +53,22 @@ class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
             eap_type = EAPType.from_string(body["type"])
             parent_id = body.get("parent_id")
             responsible = body["responsible"]
-            start_date = datetime.fromisoformat(body["start_date"])
-            end_date = datetime.fromisoformat(body["end_date"])
+            
+            # Parseia as datas no formato YYYY-MM-DD ou ISO format
+            start_date_str = body["start_date"]
+            end_date_str = body["end_date"]
+            
+            # Se vier no formato YYYY-MM-DD, converte para datetime sem timezone
+            if len(start_date_str) == 10:  # Formato: YYYY-MM-DD
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            else:
+                start_date = datetime.fromisoformat(start_date_str.replace('Z', '+00:00'))
+            
+            if len(end_date_str) == 10:  # Formato: YYYY-MM-DD
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            else:
+                end_date = datetime.fromisoformat(end_date_str.replace('Z', '+00:00'))
+            
             budget = MonetaryValue(body["budget"])
             status = EAPStatus.from_string(body.get("status", "nao_iniciado"))
             progress = body.get("progress", 0)
@@ -103,6 +118,11 @@ class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
                 body={"error": e.message}
             )
         except BudgetExceededError as e:
+            return HttpResponse(
+                status_code=e.status_code,
+                body={"error": e.message}
+            )
+        except InvalidDateRangeError as e:
             return HttpResponse(
                 status_code=e.status_code,
                 body={"error": e.message}

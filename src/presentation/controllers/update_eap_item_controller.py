@@ -7,18 +7,19 @@ from src.domain.value_objects.monetary_value import MonetaryValue
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_status_transition_error import InvalidStatusTransitionError
 from src.errors.eap.budget_exceeded_error import BudgetExceededError
+from src.errors.eap.invalid_date_range_error import InvalidDateRangeError
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
 
 
-class UpdateEAPItemController(ControllerInterface):
+class UpdateEAPItemController(ControllerInterface):  # pylint: disable=too-few-public-methods
     """Controller para atualização de item da EAP"""
     
     def __init__(self, update_eap_item_case: IUpdateEAPItem):
         self.__update_eap_item_case = update_eap_item_case
     
-    def handle(self, http_request: HttpRequest) -> HttpResponse:
+    def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements
         """
         Manipula a requisição de atualização de item da EAP
         
@@ -39,17 +40,29 @@ class UpdateEAPItemController(ControllerInterface):
             name = body.get("name")
             description = body.get("description")
             responsible = body.get("responsible")
-            start_date = body.get("start_date")
-            end_date = body.get("end_date")
+            start_date_str = body.get("start_date")
+            end_date_str = body.get("end_date")
             budget_value = body.get("budget")
             status_value = body.get("status")
             progress = body.get("progress")
             
             # Converte datas se fornecidas
-            if start_date:
-                start_date = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
-            if end_date:
-                end_date = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            start_date = None
+            end_date = None
+            
+            if start_date_str:
+                # Se vier no formato YYYY-MM-DD, converte para datetime sem timezone
+                if len(start_date_str) == 10:  # Formato: YYYY-MM-DD
+                    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+                else:
+                    start_date = datetime.fromisoformat(start_date_str.replace('Z', '+00:00'))
+            
+            if end_date_str:
+                # Se vier no formato YYYY-MM-DD, converte para datetime sem timezone
+                if len(end_date_str) == 10:  # Formato: YYYY-MM-DD
+                    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+                else:
+                    end_date = datetime.fromisoformat(end_date_str.replace('Z', '+00:00'))
             
             # Converte budget para MonetaryValue se fornecido
             budget = MonetaryValue(float(budget_value)) if budget_value is not None else None
@@ -89,6 +102,11 @@ class UpdateEAPItemController(ControllerInterface):
                 body={"error": e.message}
             )
         except BudgetExceededError as e:
+            return HttpResponse(
+                status_code=e.status_code,
+                body={"error": e.message}
+            )
+        except InvalidDateRangeError as e:
             return HttpResponse(
                 status_code=e.status_code,
                 body={"error": e.message}
