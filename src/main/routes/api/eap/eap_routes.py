@@ -11,6 +11,8 @@ from src.main.composers.find_eap_composer import find_eap_composer
 from src.main.composers.create_eap_item_composer import create_eap_item_composer
 from src.main.composers.update_eap_composer import update_eap_composer
 from src.main.composers.update_eap_item_composer import update_eap_item_composer
+from src.main.composers.delete_eap_composer import delete_eap_composer
+from src.main.composers.delete_eap_item_composer import delete_eap_item_composer
 
 # Auth
 from src.main.routes.middleware.authorization import role_required
@@ -184,6 +186,72 @@ async def update_eap_item(request: Request, item_id: int, user=Security(role_req
         request.path_params['item_id'] = item_id
         
         http_response = await request_adapter(request, update_eap_item_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@router.delete("/{eap_id}")
+async def delete_eap(request: Request, eap_id: int, user=Security(role_required(["ADMIN"]))):
+    """
+    Exclui uma EAP existente
+    
+    Apenas usuários ADMIN podem excluir EAPs.
+    
+    - **eap_id**: ID da EAP a ser excluída
+    """
+    try:
+        # Adiciona o eap_id aos path params
+        request.path_params['eap_id'] = eap_id
+        
+        http_response = await request_adapter(request, delete_eap_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@router.delete("/items/{item_id}")
+async def delete_eap_item(request: Request, item_id: int, user=Security(role_required(["ADMIN"]))):
+    """
+    Exclui um item da EAP existente
+    
+    Apenas usuários ADMIN podem excluir itens da EAP.
+    
+    - **item_id**: ID do item a ser excluído
+    """
+    try:
+        # Adiciona o item_id aos path params
+        request.path_params['item_id'] = item_id
+        
+        http_response = await request_adapter(request, delete_eap_item_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',

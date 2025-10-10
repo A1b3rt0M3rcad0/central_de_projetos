@@ -7,14 +7,12 @@ class IDeleteEAPItem(ABC):
     @abstractmethod
     def delete(self, item_id: int) -> None:
         """
-        Exclui um item da EAP
+        Exclui um item da EAP e todos os seus filhos (exclusão em cascata)
         
         Args:
             item_id: ID do item a ser excluído
             
         Raises:
             EAPItemNotFoundError: Se o item não existir
-            EAPItemHasChildrenError: Se o item tiver filhos
-            EAPItemInProgressError: Se o item estiver em andamento
         """
         pass

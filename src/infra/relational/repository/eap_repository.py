@@ -185,7 +185,7 @@ class EAPRepository(IEAPRepository):
     
     def delete(self, eap_id: int) -> None:
         """
-        Exclui uma EAP
+        Exclui uma EAP e todos os seus itens (exclusão em cascata)
         
         Args:
             eap_id: ID da EAP a ser excluída
@@ -196,6 +196,15 @@ class EAPRepository(IEAPRepository):
             if not eap_model:
                 raise ValueError(f"EAP com ID {eap_id} não encontrada")
             
+            # Primeiro, excluir todos os itens da EAP usando o repositório de itens
+            # Buscar todos os itens da EAP
+            eap_items = db.session.query(EAPItem).filter(EAPItem.eap_id == eap_id).all()
+            
+            # Excluir todos os itens (a exclusão em cascata dos filhos já está implementada)
+            for item in eap_items:
+                db.session.delete(item)
+            
+            # Excluir a EAP
             db.session.delete(eap_model)
             db.session.commit()
     

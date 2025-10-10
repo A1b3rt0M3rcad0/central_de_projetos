@@ -213,7 +213,7 @@ class EAPItemRepository(IEAPItemRepository):
     
     def delete(self, item_id: int) -> None:
         """
-        Exclui um item da EAP
+        Exclui um item da EAP e todos os seus filhos (exclusão em cascata)
         
         Args:
             item_id: ID do item a ser excluído
@@ -224,6 +224,19 @@ class EAPItemRepository(IEAPItemRepository):
             if not item_model:
                 raise ValueError(f"Item da EAP com ID {item_id} não encontrado")
             
+            # Função recursiva para excluir todos os filhos
+            def delete_children(parent_id: int):
+                children = db.session.query(EAPItem).filter(EAPItem.parent_id == parent_id).all()
+                for child in children:
+                    # Excluir recursivamente os filhos do filho
+                    delete_children(child.id)
+                    # Excluir o filho
+                    db.session.delete(child)
+            
+            # Excluir todos os filhos primeiro
+            delete_children(item_id)
+            
+            # Excluir o item principal
             db.session.delete(item_model)
             db.session.commit()
     
