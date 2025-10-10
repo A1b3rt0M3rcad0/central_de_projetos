@@ -38,6 +38,7 @@ from src.infra.relational.models.user import User
 # pylint: disable=unused-import
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.eap import EAP, EAPItem
 
 # Errors
 from src.errors.repository.not_exists_error.projects_does_not_exists import ProjectNotExists

@@ -1,6 +1,7 @@
 #pylint:disable=all
 from src.infra.relational.config.base.base_model import BaseModel
 from .bairro import Bairro
+from .eap import EAP, EAPItem
 from .empresa import Empresa
 from .fiscal import Fiscal
 from .history_project import HistoryProject

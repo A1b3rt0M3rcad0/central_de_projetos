@@ -1,0 +1,97 @@
+from datetime import datetime
+from typing import Optional
+
+from src.domain.entities.eap import EAPItemEntity
+from src.domain.use_cases.i_update_eap_item import IUpdateEAPItem
+from src.domain.use_cases.i_find_eap_item import IFindEAPItem
+from src.data.interface.i_eap_item_repository import IEAPItemRepository
+from src.domain.value_objects.eap_status import EAPStatus
+from src.domain.value_objects.monetary_value import MonetaryValue
+from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
+from src.errors.eap.invalid_status_transition_error import InvalidStatusTransitionError
+
+
+class UpdateEAPItem(IUpdateEAPItem):
+    """Caso de uso para atualização de item da EAP"""
+    
+    def __init__(self, eap_item_repository: IEAPItemRepository, find_eap_item_case: IFindEAPItem):
+        self.__eap_item_repository = eap_item_repository
+        self.__find_eap_item_case = find_eap_item_case
+    
+    def update(self, item_id: int, name: Optional[str] = None, description: Optional[str] = None,
+               responsible: Optional[str] = None, start_date: Optional[datetime] = None,
+               end_date: Optional[datetime] = None, budget: Optional[MonetaryValue] = None,
+               status: Optional[EAPStatus] = None, progress: Optional[int] = None) -> EAPItemEntity:
+        """
+        Atualiza um item da EAP
+        
+        Args:
+            item_id: ID do item
+            name: Novo nome do item (opcional)
+            description: Nova descrição do item (opcional)
+            responsible: Novo responsável (opcional)
+            start_date: Nova data de início (opcional)
+            end_date: Nova data de fim (opcional)
+            budget: Novo orçamento (opcional)
+            status: Novo status (opcional)
+            progress: Novo progresso (opcional)
+            
+        Returns:
+            EAPItemEntity: O item atualizado
+            
+        Raises:
+            EAPItemNotFoundError: Se o item não existir
+            ValueError: Se os dados fornecidos forem inválidos
+            InvalidStatusTransitionError: Se a transição de status for inválida
+        """
+        # Busca o item existente
+        existing_item = self.__find_eap_item_case.find_by_id(item_id)
+        if not existing_item:
+            raise EAPItemNotFoundError(item_id)
+        
+        # Valida os novos dados
+        if name is not None and not name.strip():
+            raise ValueError("Nome do item não pode estar vazio")
+        
+        if description is not None and not description.strip():
+            raise ValueError("Descrição do item não pode estar vazia")
+        
+        if responsible is not None and not responsible.strip():
+            raise ValueError("Responsável não pode estar vazio")
+        
+        if progress is not None and (progress < 0 or progress > 100):
+            raise ValueError("Progresso deve estar entre 0 e 100")
+        
+        # Valida transição de status
+        if status is not None and status != existing_item.status:
+            if not existing_item.status.can_transition_to(status):
+                raise InvalidStatusTransitionError(str(existing_item.status), str(status))
+        
+        # Valida as datas
+        start_date_to_use = start_date if start_date is not None else existing_item.start_date
+        end_date_to_use = end_date if end_date is not None else existing_item.end_date
+        
+        if start_date_to_use > end_date_to_use:
+            raise ValueError("Data de início não pode ser posterior à data de fim")
+        
+        # Cria uma nova instância com os dados atualizados
+        updated_item = EAPItemEntity(
+            id=existing_item.id,
+            eap_id=existing_item.eap_id,
+            code=existing_item.code,
+            name=name if name is not None else existing_item.name,
+            description=description if description is not None else existing_item.description,
+            type=existing_item.type,
+            parent_id=existing_item.parent_id,
+            responsible=responsible if responsible is not None else existing_item.responsible,
+            start_date=start_date_to_use,
+            end_date=end_date_to_use,
+            budget=budget if budget is not None else existing_item.budget,
+            status=status if status is not None else existing_item.status,
+            progress=progress if progress is not None else existing_item.progress,
+            created_at=existing_item.created_at,
+            updated_at=datetime.now()
+        )
+        
+        # Salva as alterações
+        return self.__eap_item_repository.update(updated_item)

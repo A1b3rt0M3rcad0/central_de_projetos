@@ -21,6 +21,7 @@ from src.main.routes.api.project_fiscal.project_fiscal_routes import routes as p
 from src.main.routes.api.work_project.work_project_routes import routes as work_project_routes
 from src.main.routes.api.notification.notification_routes import routes as notification_routes
 from src.main.routes.api.dashboard.dashboard_routes import routes as dashboard_routes
+from src.main.routes.api.eap.eap_routes import router as eap_routes
 
 # Mobile Routes
 from src.main.routes.mobile.fiscal.fiscal_mobile_routes import routes as fiscal_mobile_routes
@@ -58,6 +59,7 @@ app.include_router(project_fiscal_routes, prefix="/api/v1")
 app.include_router(work_project_routes, prefix="/api/v1")
 app.include_router(notification_routes, prefix="/api/v1")
 app.include_router(dashboard_routes, prefix="/api/v1")
+app.include_router(eap_routes, prefix="/api/v1")
 
 # Mobile Routes v1
 app.include_router(fiscal_mobile_routes, prefix="/api/v1")

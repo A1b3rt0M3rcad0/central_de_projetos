@@ -1,4 +1,4 @@
-#pylint:disable=not-callable
+#pylint:disable=not-callable,unused-import
 from src.infra.relational.models.project import Project
 from src.infra.relational.models.bairro import Bairro
 from src.infra.relational.models.empresa import Empresa
@@ -11,6 +11,7 @@ from src.infra.relational.models.project_empresa import ProjectEmpresa
 from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.models.project_type import ProjectType
 from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.eap import EAP, EAPItem
 from src.data.interface.i_dashboard_repository import IDashboardRepository
 from src.errors.dashboard_errors import ErrorOnGetDashboardData
 from sqlalchemy import func
