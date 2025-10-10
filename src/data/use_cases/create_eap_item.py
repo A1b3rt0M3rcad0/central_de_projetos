@@ -14,6 +14,7 @@ from src.errors.eap.eap_not_found_error import EAPNotFoundError
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_eap_code_error import InvalidEAPCodeError
 from src.errors.eap.duplicate_eap_code_error import DuplicateEAPCodeError
+from src.errors.eap.budget_exceeded_error import BudgetExceededError
 
 
 class CreateEAPItem(ICreateEAPItem):
@@ -82,6 +83,17 @@ class CreateEAPItem(ICreateEAPItem):
             expected_parent_code = str(parent_item.code)
             if not str(code).startswith(expected_parent_code + '.'):
                 raise InvalidEAPCodeError(str(code), "Código não é consistente com a hierarquia")
+            
+            # Validação de orçamento: verifica se o orçamento dos filhos não excede o do pai
+            current_children_budget = self.__eap_item_repository.get_children_budget_total(parent_id)
+            new_total_budget = current_children_budget + float(budget.value)
+            
+            if new_total_budget > float(parent_item.budget.value):
+                raise BudgetExceededError(
+                    parent_name=parent_item.name,
+                    parent_budget=float(parent_item.budget.value),
+                    children_budget=new_total_budget
+                )
         else:
             # Para itens raiz, verifica se o tipo é válido
             if eap_type not in EAPType.get_root_types():

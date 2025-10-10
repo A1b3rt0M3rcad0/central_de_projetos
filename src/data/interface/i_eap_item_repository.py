@@ -153,6 +153,19 @@ class IEAPItemRepository(ABC):
         pass
     
     @abstractmethod
+    def get_children_budget_total(self, parent_id: int) -> float:
+        """
+        Calcula o orçamento total de todos os filhos de um item
+        
+        Args:
+            parent_id: ID do item pai
+            
+        Returns:
+            float: Soma do orçamento de todos os filhos
+        """
+        pass
+    
+    @abstractmethod
     def exists_by_code(self, eap_id: int, code: str) -> bool:
         """
         Verifica se um código já existe em uma EAP

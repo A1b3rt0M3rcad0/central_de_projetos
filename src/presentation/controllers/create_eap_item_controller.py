@@ -10,6 +10,7 @@ from src.errors.eap.eap_not_found_error import EAPNotFoundError
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_eap_code_error import InvalidEAPCodeError
 from src.errors.eap.duplicate_eap_code_error import DuplicateEAPCodeError
+from src.errors.eap.budget_exceeded_error import BudgetExceededError
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -97,6 +98,11 @@ class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
                 body={"error": e.message}
             )
         except DuplicateEAPCodeError as e:
+            return HttpResponse(
+                status_code=e.status_code,
+                body={"error": e.message}
+            )
+        except BudgetExceededError as e:
             return HttpResponse(
                 status_code=e.status_code,
                 body={"error": e.message}

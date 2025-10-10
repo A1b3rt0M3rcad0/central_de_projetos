@@ -6,6 +6,7 @@ from src.domain.value_objects.eap_status import EAPStatus
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_status_transition_error import InvalidStatusTransitionError
+from src.errors.eap.budget_exceeded_error import BudgetExceededError
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -87,6 +88,11 @@ class UpdateEAPItemController(ControllerInterface):
                 status_code=e.status_code,
                 body={"error": e.message}
             )
+        except BudgetExceededError as e:
+            return HttpResponse(
+                status_code=e.status_code,
+                body={"error": e.message}
+            )
         except ValueError as e:
             return HttpResponse(
                 status_code=400,
@@ -95,7 +101,7 @@ class UpdateEAPItemController(ControllerInterface):
         except Exception as e:
             return HttpResponse(
                 status_code=500,
-                body={"error": f"Erro interno do servidor: {str(e)}"}
+                body={"error": "Erro interno do servidor"}
             )
     
     def _entity_to_dict(self, item) -> Dict[str, Any]:

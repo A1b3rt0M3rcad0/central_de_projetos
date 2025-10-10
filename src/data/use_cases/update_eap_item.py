@@ -9,6 +9,7 @@ from src.domain.value_objects.eap_status import EAPStatus
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
 from src.errors.eap.invalid_status_transition_error import InvalidStatusTransitionError
+from src.errors.eap.budget_exceeded_error import BudgetExceededError
 
 
 class UpdateEAPItem(IUpdateEAPItem):
@@ -73,6 +74,24 @@ class UpdateEAPItem(IUpdateEAPItem):
         
         if start_date_to_use > end_date_to_use:
             raise ValueError("Data de início não pode ser posterior à data de fim")
+        
+        # Validação de orçamento: se o orçamento está sendo alterado e o item tem pai
+        if budget is not None and existing_item.parent_id is not None:
+            # Busca o item pai
+            parent_item = self.__find_eap_item_case.find_by_id(existing_item.parent_id)
+            if parent_item:
+                # Calcula o orçamento atual dos filhos (excluindo o item sendo atualizado)
+                current_children_budget = self.__eap_item_repository.get_children_budget_total(existing_item.parent_id)
+                current_item_budget = float(existing_item.budget.value)
+                other_children_budget = current_children_budget - current_item_budget
+                new_total_budget = other_children_budget + float(budget.value)
+                
+                if new_total_budget > float(parent_item.budget.value):
+                    raise BudgetExceededError(
+                        parent_name=parent_item.name,
+                        parent_budget=float(parent_item.budget.value),
+                        children_budget=new_total_budget
+                    )
         
         # Cria uma nova instância com os dados atualizados
         updated_item = EAPItemEntity(

@@ -253,6 +253,20 @@ class EAPItemRepository(IEAPItemRepository):
         with self.__db_connection_handler as db:
             return db.session.query(EAPItem).filter(EAPItem.parent_id == parent_id).count()
     
+    def get_children_budget_total(self, parent_id: int) -> float:
+        """
+        Calcula o orçamento total de todos os filhos de um item
+        
+        Args:
+            parent_id: ID do item pai
+            
+        Returns:
+            float: Soma do orçamento de todos os filhos
+        """
+        with self.__db_connection_handler as db:
+            children = db.session.query(EAPItem).filter(EAPItem.parent_id == parent_id).all()
+            return sum(float(child.budget) for child in children)
+    
     def exists_by_code(self, eap_id: int, code: str) -> bool:
         """
         Verifica se um código já existe em uma EAP
