@@ -284,6 +284,23 @@ class EAPItemRepository(IEAPItemRepository):
                 EAPItem.code == code
             ).first() is not None
     
+    def get_average_children_progress(self, parent_id: int) -> float:
+        """
+        Calcula o progresso médio de todos os filhos de um item
+        
+        Args:
+            parent_id: ID do item pai
+            
+        Returns:
+            float: Média do progresso de todos os filhos (0-100)
+        """
+        with self.__db_connection_handler as db:
+            children = db.session.query(EAPItem).filter(EAPItem.parent_id == parent_id).all()
+            if not children:
+                return 0.0
+            total_progress = sum(child.progress for child in children)
+            return total_progress / len(children)
+    
     def _model_to_entity(self, item_model: EAPItem) -> EAPItemEntity:
         """Converte um modelo SQLAlchemy para uma entidade do domínio"""
         return EAPItemEntity(

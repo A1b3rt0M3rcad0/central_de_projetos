@@ -178,3 +178,16 @@ class IEAPItemRepository(ABC):
             bool: True se o código existir
         """
         pass
+    
+    @abstractmethod
+    def get_average_children_progress(self, parent_id: int) -> float:
+        """
+        Calcula o progresso médio de todos os filhos de um item
+        
+        Args:
+            parent_id: ID do item pai
+            
+        Returns:
+            float: Média do progresso de todos os filhos (0-100)
+        """
+        pass
