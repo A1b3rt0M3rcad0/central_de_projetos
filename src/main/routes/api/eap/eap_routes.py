@@ -13,6 +13,7 @@ from src.main.composers.update_eap_composer import update_eap_composer
 from src.main.composers.update_eap_item_composer import update_eap_item_composer
 from src.main.composers.delete_eap_composer import delete_eap_composer
 from src.main.composers.delete_eap_item_composer import delete_eap_item_composer
+from src.main.composers.get_gantt_data_composer import get_gantt_data_composer
 
 # Auth
 from src.main.routes.middleware.authorization import role_required
@@ -318,6 +319,54 @@ async def get_eap_templates(request: Request, user=Security(role_required(["ADMI
         request.query_params["templates"] = "true"
         
         http_response = await request_adapter(request, find_eap_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+
+@router.get("/gantt/project/{project_id}")
+async def get_project_gantt_data(request: Request, project_id: int, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint otimizado para buscar todos os dados necessários para o Gantt Chart
+    
+    Retorna em uma única requisição:
+    - Dados básicos do projeto
+    - EAP formatada
+    - Tarefas no formato Gantt
+    - Estatísticas calculadas
+    
+    Args:
+        request: Objeto da requisição HTTP
+        project_id: ID do projeto
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        Dados completos formatados para Gantt Chart
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        EAPNotFoundError: Se o projeto não tiver EAP
+        UnauthorizedError: Se o usuário não tiver permissão
+    """
+    try:
+        # Adicionar project_id aos path params
+        request.path_params['project_id'] = project_id
+        
+        http_response = await request_adapter(request, get_gantt_data_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
