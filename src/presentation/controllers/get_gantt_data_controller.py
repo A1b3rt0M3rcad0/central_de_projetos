@@ -1,5 +1,4 @@
 """Get Gantt Data Controller"""
-#pylint:disable=all
 from src.presentation.interface.controller_interface import ControllerInterface
 from src.presentation.http_types.http_request import HttpRequest
 from src.presentation.http_types.http_response import HttpResponse
@@ -45,24 +44,24 @@ class GetGanttDataController(ControllerInterface):
                 }
             )
             
-        except ProjectNotFoundError as e:
+        except ProjectNotFoundError as error:
             return HttpResponse(
-                status_code=e.status_code,
-                body={'error': e.message}
+                status_code=404,
+                body={'error': error.message}
             )
-        except EAPNotFoundError as e:
+        except EAPNotFoundError as error:
             return HttpResponse(
-                status_code=e.status_code,
-                body={'error': e.message}
+                status_code=error.status_code,
+                body={'error': error.message}
             )
-        except ValueError as e:
+        except ValueError as error:
             return HttpResponse(
                 status_code=400,
-                body={'error': f'Erro de validação: {str(e)}'}
+                body={'error': f'Erro de validação: {str(error)}'}
             )
-        except Exception as e:
+        except Exception as error:
             return HttpResponse(
                 status_code=500,
-                body={'error': f'Erro interno: {str(e)}'}
+                body={'error': f'Erro interno: {str(error)}'}
             )
 

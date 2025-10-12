@@ -1,5 +1,4 @@
 """Get Gantt Data Use Case"""
-#pylint:disable=all
 from datetime import datetime
 from typing import Dict, Any, List
 from src.domain.use_cases.i_get_gantt_data import IGetGanttData
@@ -20,6 +19,71 @@ class GetGanttData(IGetGanttData):
         self.__project_repository = project_repository
         self.__eap_repository = eap_repository
     
+    def _calculate_executed_value(self, item_dict: Dict[str, Any]) -> float:
+        """
+        Calcula o valor executado de um item (orçamento × progresso)
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            float: Valor executado
+        """
+        budget = float(item_dict.get("budget", 0))
+        progress = float(item_dict.get("progress", 0)) / 100.0
+        return budget * progress
+    
+    def _calculate_total_executed_value(self, item_dict: Dict[str, Any]) -> float:
+        """
+        Calcula o valor executado total de um item e seus filhos recursivamente
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            float: Valor executado total (incluindo filhos)
+        """
+        # Se não tem filhos, calcula só o próprio valor executado
+        if not item_dict.get("children") or len(item_dict["children"]) == 0:
+            return self._calculate_executed_value(item_dict)
+        
+        # Se tem filhos, soma o valor executado de todos os filhos
+        total = 0.0
+        for child in item_dict["children"]:
+            total += self._calculate_total_executed_value(child)
+        return total
+    
+    def _calculate_item_progress(self, item_dict: Dict[str, Any]) -> int:
+        """
+        Calcula o progresso real de um item baseado no valor executado dos filhos
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            int: Progresso calculado (0-100)
+        """
+        # Se não tem filhos, usa o progresso próprio
+        if not item_dict.get("children") or len(item_dict["children"]) == 0:
+            return item_dict.get("progress", 0)
+        
+        # Se tem filhos, calcula o progresso baseado no valor executado
+        total_budget = float(item_dict.get("budget", 0))
+        
+        # Se não tem orçamento definido, não pode calcular progresso
+        if total_budget == 0:
+            return 0
+        
+        # Soma o valor executado de todos os filhos
+        total_executed_value = 0.0
+        for child in item_dict["children"]:
+            total_executed_value += self._calculate_total_executed_value(child)
+        
+        # Calcula o percentual de execução baseado no orçamento total do pai
+        progress_percentage = (total_executed_value / total_budget) * 100
+        
+        return round(min(progress_percentage, 100))  # Máximo 100%
+    
     def execute(self, project_id: int) -> Dict[str, Any]:
         """
         Busca todos os dados necessários para o Gantt Chart
@@ -33,15 +97,39 @@ class GetGanttData(IGetGanttData):
         # Buscar projeto
         project = self.__project_repository.find(project_id)
         if not project:
-            raise ProjectNotFoundError()
+            raise ProjectNotFoundError(f"Projeto com ID {project_id} não encontrado")
         
         # Buscar EAP do projeto
         eap = self.__eap_repository.find_by_project_id(project_id)
         if not eap:
             raise EAPNotFoundError(project_id)
         
-        # Converter itens da EAP para formato Gantt
-        tasks = self._convert_items_to_gantt_format(eap.items)
+        # Construir hierarquia de itens
+        # eap.items é uma lista plana de todos os itens, precisamos construir a árvore
+        items_dict_flat = {item.id: self._item_entity_to_dict(item) for item in eap.items}
+        
+        # Construir hierarquia: adicionar filhos aos pais
+        root_items = []
+        for item_dict in items_dict_flat.values():
+            parent_id = item_dict['parent_id']
+            if parent_id is None:
+                # Item raiz
+                root_items.append(item_dict)
+            else:
+                # Item filho - adicionar ao pai
+                if parent_id in items_dict_flat:
+                    if 'children' not in items_dict_flat[parent_id] or not items_dict_flat[parent_id]['children']:
+                        items_dict_flat[parent_id]['children'] = []
+                    items_dict_flat[parent_id]['children'].append(item_dict)
+        
+        # Aplicar cálculos de execução de verba em todos os itens raiz (recursivo)
+        self._apply_calculated_values(root_items)
+        
+        # Criar mapa de ID -> calculated_progress para usar no Gantt
+        progress_map = self._create_progress_map(root_items)
+        
+        # Converter itens da EAP para formato Gantt usando o progresso calculado
+        tasks = self._convert_items_to_gantt_format(eap.items, progress_map)
         
         # Calcular estatísticas
         statistics = self._calculate_statistics(tasks)
@@ -64,23 +152,68 @@ class GetGanttData(IGetGanttData):
                 'description': eap.description,
                 'total_budget': sum(float(t['budget']) for t in tasks if t['parent'] == 0),
                 'created_at': eap.created_at.isoformat() if eap.created_at else None,
-                'items': [self._item_entity_to_dict(item) for item in eap.items]
+                'items': root_items
             },
             'tasks': tasks,
-            'links': [],  # TODO: Implementar dependências
+            'links': [],  # pylint: disable=fixme  # TODO: Implementar dependências
             'statistics': statistics
         }
     
-    def _convert_items_to_gantt_format(self, items: List[Any]) -> List[Dict[str, Any]]:
+    def _apply_calculated_values(self, items: List[Dict[str, Any]]) -> None:
+        """
+        Aplica cálculos de executed_value e calculated_progress em todos os itens
+        
+        Args:
+            items: Lista de itens (modificada in-place)
+        """
+        for item in items:
+            # Calcular valores executados e progresso
+            executed_value = self._calculate_total_executed_value(item)
+            calculated_progress = self._calculate_item_progress(item)
+            
+            # Adicionar ao dicionário
+            item['executed_value'] = executed_value
+            item['calculated_progress'] = calculated_progress
+            
+            # Aplicar recursivamente aos filhos
+            if item.get('children'):
+                self._apply_calculated_values(item['children'])
+    
+    def _create_progress_map(self, items: List[Dict[str, Any]]) -> Dict[int, int]:
+        """
+        Cria um mapa de ID -> calculated_progress para todos os itens
+        
+        Args:
+            items: Lista de itens com calculated_progress
+            
+        Returns:
+            Dict mapeando item_id para calculated_progress
+        """
+        progress_map = {}
+        
+        def add_to_map(items_list):
+            for item in items_list:
+                progress_map[item['id']] = item.get('calculated_progress', item.get('progress', 0))
+                if item.get('children'):
+                    add_to_map(item['children'])
+        
+        add_to_map(items)
+        return progress_map
+    
+    def _convert_items_to_gantt_format(self, items: List[Any], progress_map: Dict[int, int] = None) -> List[Dict[str, Any]]:
         """
         Converte itens da EAP para formato Gantt recursivamente
         
         Args:
             items: Lista de itens da EAP
+            progress_map: Mapa de ID -> calculated_progress (opcional)
             
         Returns:
             Lista de tarefas no formato Gantt
         """
+        if progress_map is None:
+            progress_map = {}
+        
         gantt_tasks = []
         
         for item in items:
@@ -104,7 +237,7 @@ class GetGanttData(IGetGanttData):
             # Processar filhos recursivamente primeiro para calcular orçamento correto
             child_tasks = []
             if hasattr(item, 'children') and item.children:
-                child_tasks = self._convert_items_to_gantt_format(item.children)
+                child_tasks = self._convert_items_to_gantt_format(item.children, progress_map)
             
             # Calcular orçamento: se tem filhos, soma apenas dos filhos diretos; senão, valor próprio
             if child_tasks:
@@ -114,13 +247,21 @@ class GetGanttData(IGetGanttData):
             else:
                 calculated_budget = budget_value
             
+            # Usar progresso calculado do mapa se disponível, senão usa o progresso direto
+            progress_value = progress_map.get(item.id, item.progress)
+            
+            # Debug: verificar se está enviando o progresso correto
+            if progress_value != item.progress:
+                print(f"🔍 Backend - Task {item.id} ({item.name}): original={item.progress}%, calculated={progress_value}%")
+            
             gantt_task = {
                 'id': item.id,
                 'text': item.name,
                 'start_date': start_date,
                 'end_date': end_date,
                 'duration': duration,
-                'progress': item.progress / 100 if item.progress else 0,  # Converter 0-100 para 0-1
+                'progress': progress_value / 100 if progress_value else 0,  # Converter 0-100 para 0-1
+                'calculated_progress': progress_value,  # Progresso calculado (0-100)
                 'parent': item.parent_id if item.parent_id else 0,
                 'item_type': type_value,
                 'responsible': item.responsible,
@@ -195,15 +336,6 @@ class GetGanttData(IGetGanttData):
         status_value = str(item.status.value) if hasattr(item.status, 'value') else str(item.status)
         budget_value = float(item.budget.value) if hasattr(item.budget, 'value') else float(item.budget)
         
-        # Processar filhos recursivamente
-        children = [self._item_entity_to_dict(child) for child in getattr(item, 'children', [])]
-        
-        # Calcular orçamento: se tem filhos, soma apenas dos filhos diretos; senão, valor próprio
-        if children:
-            calculated_budget = sum(child['budget'] for child in children)
-        else:
-            calculated_budget = budget_value
-        
         return {
             'id': item.id,
             'eap_id': item.eap_id,
@@ -215,11 +347,13 @@ class GetGanttData(IGetGanttData):
             'responsible': item.responsible,
             'start_date': item.start_date.isoformat() if item.start_date else None,
             'end_date': item.end_date.isoformat() if item.end_date else None,
-            'budget': calculated_budget,
+            'budget': budget_value,
             'status': status_value,
             'progress': item.progress,
             'created_at': item.created_at.isoformat() if item.created_at else None,
             'updated_at': item.updated_at.isoformat() if item.updated_at else None,
-            'children': children
+            'children': [],  # Será preenchido pela construção da hierarquia
+            'executed_value': 0.0,  # Será calculado por _apply_calculated_values
+            'calculated_progress': 0  # Será calculado por _apply_calculated_values
         }
 
