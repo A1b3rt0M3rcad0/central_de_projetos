@@ -121,6 +121,71 @@ class FindEAPController(ControllerInterface):  # pylint: disable=too-few-public-
                 body={"error": "Erro interno do servidor"}
             )
     
+    def _calculate_executed_value(self, item_dict: Dict[str, Any]) -> float:
+        """
+        Calcula o valor executado de um item (orçamento × progresso)
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            float: Valor executado
+        """
+        budget = float(item_dict.get("budget", 0))
+        progress = float(item_dict.get("progress", 0)) / 100.0
+        return budget * progress
+    
+    def _calculate_total_executed_value(self, item_dict: Dict[str, Any]) -> float:
+        """
+        Calcula o valor executado total de um item e seus filhos recursivamente
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            float: Valor executado total (incluindo filhos)
+        """
+        # Se não tem filhos, calcula só o próprio valor executado
+        if not item_dict.get("children") or len(item_dict["children"]) == 0:
+            return self._calculate_executed_value(item_dict)
+        
+        # Se tem filhos, soma o valor executado de todos os filhos
+        total = 0.0
+        for child in item_dict["children"]:
+            total += self._calculate_total_executed_value(child)
+        return total
+    
+    def _calculate_item_progress(self, item_dict: Dict[str, Any]) -> int:
+        """
+        Calcula o progresso real de um item baseado no valor executado dos filhos
+        
+        Args:
+            item_dict: Dicionário do item
+            
+        Returns:
+            int: Progresso calculado (0-100)
+        """
+        # Se não tem filhos, usa o progresso próprio
+        if not item_dict.get("children") or len(item_dict["children"]) == 0:
+            return item_dict.get("progress", 0)
+        
+        # Se tem filhos, calcula o progresso baseado no valor executado
+        total_budget = float(item_dict.get("budget", 0))
+        
+        # Se não tem orçamento definido, não pode calcular progresso
+        if total_budget == 0:
+            return 0
+        
+        # Soma o valor executado de todos os filhos
+        total_executed_value = 0.0
+        for child in item_dict["children"]:
+            total_executed_value += self._calculate_total_executed_value(child)
+        
+        # Calcula o percentual de execução baseado no orçamento total do pai
+        progress_percentage = (total_executed_value / total_budget) * 100
+        
+        return round(min(progress_percentage, 100))  # Máximo 100%
+    
     def _entity_to_dict(self, eap) -> Dict[str, Any]:
         """Converte uma entidade EAP para dicionário"""
         # Organiza os itens em estrutura hierárquica
@@ -139,6 +204,14 @@ class FindEAPController(ControllerInterface):  # pylint: disable=too-few-public-
                     if "children" not in parent:
                         parent["children"] = []
                     parent["children"].append(item_data)
+        
+        # Calcula valores executados e progresso para cada item
+        for item_data in items_dict.values():
+            executed_value = self._calculate_total_executed_value(item_data)
+            calculated_progress = self._calculate_item_progress(item_data)
+            
+            item_data["executed_value"] = executed_value
+            item_data["calculated_progress"] = calculated_progress
         
         # Calcula orçamento total da EAP
         total_budget = sum(float(item_data["budget"]) for item_data in items_dict.values())
@@ -191,5 +264,7 @@ class FindEAPController(ControllerInterface):  # pylint: disable=too-few-public-
             "progress": item.progress,
             "created_at": item.created_at.isoformat() if item.created_at else None,
             "updated_at": item.updated_at.isoformat() if item.updated_at else None,
-            "children": []  # Será preenchido pela lógica de hierarquia
+            "children": [],  # Será preenchido pela lógica de hierarquia
+            "executed_value": 0.0,  # Será calculado pela lógica de execução
+            "calculated_progress": 0  # Será calculado pela lógica de progresso
         }
