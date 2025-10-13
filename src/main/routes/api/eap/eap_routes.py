@@ -15,6 +15,7 @@ from src.main.composers.delete_eap_item_composer import delete_eap_item_composer
 from src.main.composers.get_gantt_data_composer import get_gantt_data_composer
 from src.main.composers.create_eap_dependency_composer import create_eap_dependency_composer
 from src.main.composers.get_eap_dependencies_composer import get_eap_dependencies_composer
+from src.main.composers.get_all_eap_dependencies_composer import get_all_eap_dependencies_composer
 from src.main.composers.delete_eap_dependency_composer import delete_eap_dependency_composer
 
 # Auth
@@ -395,6 +396,25 @@ async def create_eap_dependency(request: Request, user=Security(role_required(["
     """Cria uma dependência entre dois itens da EAP"""
     try:
         http_response = await request_adapter(request, create_eap_dependency_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(level='INFO', logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(level='ERROR', logger_name=PREFIX, http_response=error_result, request=request)
+        return response_adapter(error_result)
+
+
+@router.get("/{eap_id}/all-dependencies")
+async def get_all_eap_dependencies(
+    request: Request,
+    eap_id: int,
+    user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
+):
+    """Busca TODAS as dependências de todos os itens de uma EAP de uma só vez (otimizado)"""
+    try:
+        request.path_params['eap_id'] = eap_id
+        http_response = await request_adapter(request, get_all_eap_dependencies_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(level='INFO', logger_name=PREFIX, http_response=http_response, request=request)
         return response_adapter(http_response)
