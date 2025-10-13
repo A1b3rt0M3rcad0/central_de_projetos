@@ -28,6 +28,7 @@ from src.infra.relational.models.types import Types
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.work_project import WorkProject
 from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 from src.infra.relational.models.notification import Notification
 
 # Errors

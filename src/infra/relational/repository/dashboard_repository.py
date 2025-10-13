@@ -12,6 +12,7 @@ from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.models.project_type import ProjectType
 from src.infra.relational.models.user_project import UserProject
 from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 from src.data.interface.i_dashboard_repository import IDashboardRepository
 from src.errors.dashboard_errors import ErrorOnGetDashboardData
 from sqlalchemy import func

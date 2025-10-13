@@ -1,6 +1,5 @@
 #pylint:disable=W0718
 #pylint:disable=W0613
-#pylint:disable=W9016
 from fastapi import APIRouter, Request, Security
 from src.main.adapters.request_adapter import request_adapter
 from src.main.adapters.response_adapter import response_adapter
@@ -14,6 +13,9 @@ from src.main.composers.update_eap_item_composer import update_eap_item_composer
 from src.main.composers.delete_eap_composer import delete_eap_composer
 from src.main.composers.delete_eap_item_composer import delete_eap_item_composer
 from src.main.composers.get_gantt_data_composer import get_gantt_data_composer
+from src.main.composers.create_eap_dependency_composer import create_eap_dependency_composer
+from src.main.composers.get_eap_dependencies_composer import get_eap_dependencies_composer
+from src.main.composers.delete_eap_dependency_composer import delete_eap_dependency_composer
 
 # Auth
 from src.main.routes.middleware.authorization import role_required
@@ -383,4 +385,58 @@ async def get_project_gantt_data(request: Request, project_id: int, user=Securit
             http_response=error_result,
             request=request
         )
+        return response_adapter(error_result)
+
+
+# ========== ENDPOINTS DE DEPENDÊNCIAS ==========
+
+@router.post("/dependencies")
+async def create_eap_dependency(request: Request, user=Security(role_required(["ADMIN"]))):
+    """Cria uma dependência entre dois itens da EAP"""
+    try:
+        http_response = await request_adapter(request, create_eap_dependency_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(level='INFO', logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(level='ERROR', logger_name=PREFIX, http_response=error_result, request=request)
+        return response_adapter(error_result)
+
+
+@router.get("/items/{item_id}/dependencies")
+async def get_item_dependencies(
+    request: Request,
+    item_id: int,
+    user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
+):
+    """Busca todas as dependências de um item da EAP"""
+    try:
+        request.path_params['item_id'] = item_id
+        http_response = await request_adapter(request, get_eap_dependencies_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(level='INFO', logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(level='ERROR', logger_name=PREFIX, http_response=error_result, request=request)
+        return response_adapter(error_result)
+
+
+@router.delete("/dependencies/{dependency_id}")
+async def delete_eap_dependency(
+    request: Request,
+    dependency_id: int,
+    user=Security(role_required(["ADMIN"]))
+):
+    """Remove uma dependência entre itens da EAP"""
+    try:
+        request.path_params['dependency_id'] = dependency_id
+        http_response = await request_adapter(request, delete_eap_dependency_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(level='INFO', logger_name=PREFIX, http_response=http_response, request=request)
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(level='ERROR', logger_name=PREFIX, http_response=error_result, request=request)
         return response_adapter(error_result)

@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from src.domain.use_cases.i_get_gantt_data import IGetGanttData
 from src.data.interface.i_project_repository import IProjectRepository
 from src.data.interface.i_eap_repository import IEAPRepository
+from src.data.interface.i_eap_dependency_repository import IEAPDependencyRepository
 from src.errors.use_cases.project_not_found_error import ProjectNotFoundError
 from src.errors.eap.eap_not_found_error import EAPNotFoundError
 
@@ -14,10 +15,12 @@ class GetGanttData(IGetGanttData):
     def __init__(
         self,
         project_repository: IProjectRepository,
-        eap_repository: IEAPRepository
+        eap_repository: IEAPRepository,
+        dependency_repository: IEAPDependencyRepository = None
     ) -> None:
         self.__project_repository = project_repository
         self.__eap_repository = eap_repository
+        self.__dependency_repository = dependency_repository
     
     def _calculate_executed_value(self, item_dict: Dict[str, Any]) -> float:
         """
@@ -134,6 +137,16 @@ class GetGanttData(IGetGanttData):
         # Calcular estatísticas
         statistics = self._calculate_statistics(tasks)
         
+        # Buscar dependências (se repository disponível)
+        links = []
+        if self.__dependency_repository:
+            try:
+                links = self._build_dependency_links(eap.id)
+            except Exception as e:
+                # Se der erro ao buscar dependências, apenas loga e continua sem links
+                print(f"⚠️ Erro ao buscar dependências: {e}")
+                links = []
+        
         # Preparar resposta
         return {
             'project': {
@@ -155,7 +168,7 @@ class GetGanttData(IGetGanttData):
                 'items': root_items
             },
             'tasks': tasks,
-            'links': [],  # pylint: disable=fixme  # TODO: Implementar dependências
+            'links': links,
             'statistics': statistics
         }
     
@@ -356,4 +369,41 @@ class GetGanttData(IGetGanttData):
             'executed_value': 0.0,  # Será calculado por _apply_calculated_values
             'calculated_progress': 0  # Será calculado por _apply_calculated_values
         }
+    
+    def _build_dependency_links(self, eap_id: int) -> List[Dict[str, Any]]:
+        """
+        Constrói lista de links (dependências) para o Gantt
+        
+        Args:
+            eap_id: ID da EAP
+            
+        Returns:
+            Lista de links no formato do dhtmlx-gantt
+        """
+        if not self.__dependency_repository:
+            return []
+        
+        # Busca todas as dependências da EAP
+        dependencies = self.__dependency_repository.find_all_by_eap(eap_id)
+        
+        # Mapeia tipos de dependência para formato do Gantt
+        # dhtmlx-gantt usa: "0" = FS, "1" = SS, "2" = FF, "3" = SF
+        type_map = {
+            'FS': '0',
+            'SS': '1',
+            'FF': '2',
+            'SF': '3'
+        }
+        
+        # Converte para formato do Gantt
+        links = []
+        for dep in dependencies:
+            links.append({
+                'id': dep.id,
+                'source': dep.predecessor_id,  # De quem parte a seta
+                'target': dep.successor_id,     # Para quem vai a seta
+                'type': type_map.get(dep.dependency_type.value, '0')
+            })
+        
+        return links
 

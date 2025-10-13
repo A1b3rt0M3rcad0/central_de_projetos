@@ -9,6 +9,7 @@ from alembic import context
 from src.infra.relational.config.base.base_model import BaseModel
 from src.infra.relational.models.bairro import Bairro
 from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 from src.infra.relational.models.empresa import Empresa
 from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.models.history_project import HistoryProject

@@ -12,6 +12,7 @@ from src.main.config.database.db_connection_handler_factory import db_connection
 
 # Import models to ensure they are loaded
 from src.infra.relational.models.eap import EAPItem, EAP
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 
 
 class EAPItemRepository(IEAPItemRepository):

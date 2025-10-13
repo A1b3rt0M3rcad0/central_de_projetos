@@ -13,6 +13,7 @@ from src.main.config.database.db_connection_handler_factory import db_connection
 
 # Import models to ensure they are loaded
 from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 from src.infra.relational.models.project import Project
 from src.infra.relational.models.user import User
 from src.infra.relational.models.history_project import HistoryProject

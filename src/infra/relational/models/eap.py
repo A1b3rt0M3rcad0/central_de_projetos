@@ -57,5 +57,22 @@ class EAPItem(BaseModel):
     parent = relationship("EAPItem", remote_side=[id], back_populates="children")
     children = relationship("EAPItem", back_populates="parent", cascade="all, delete-orphan")
     
+    # Relacionamentos de dependências
+    # Este item DEPENDE de (predecessores)
+    predecessor_dependencies = relationship(
+        "EAPItemDependency",
+        foreign_keys="[EAPItemDependency.successor_id]",
+        back_populates="successor",
+        cascade="all, delete-orphan"
+    )
+    
+    # Outros itens DEPENDEM deste (sucessores)
+    successor_dependencies = relationship(
+        "EAPItemDependency",
+        foreign_keys="[EAPItemDependency.predecessor_id]",
+        back_populates="predecessor",
+        cascade="all, delete-orphan"
+    )
+    
     def __repr__(self):
         return f"<EAPItem(id={self.id}, code='{self.code}', name='{self.name}', type='{self.type}', eap_id={self.eap_id})>"
