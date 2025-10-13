@@ -263,10 +263,6 @@ class GetGanttData(IGetGanttData):
             # Usar progresso calculado do mapa se disponível, senão usa o progresso direto
             progress_value = progress_map.get(item.id, item.progress)
             
-            # Debug: verificar se está enviando o progresso correto
-            if progress_value != item.progress:
-                print(f"🔍 Backend - Task {item.id} ({item.name}): original={item.progress}%, calculated={progress_value}%")
-            
             gantt_task = {
                 'id': item.id,
                 'text': item.name,
