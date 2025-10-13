@@ -3,6 +3,8 @@ description: Regra de Pensamento de Agente – Cursor
 alwaysApply: true
 ---
 
+USE SEMPRE O UV, como gerenciador de pacotes
+
 # 🧠 Modo de Pensar de um Agente AI
 
 ## 1. Receber o Pedido

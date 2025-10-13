@@ -2,6 +2,8 @@ from typing import Dict, Any
 from datetime import datetime
 
 from src.domain.use_cases.i_update_eap_item import IUpdateEAPItem
+from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
+from src.domain.use_cases.i_find_eap import IFindEAP
 from src.domain.value_objects.eap_status import EAPStatus
 from src.domain.value_objects.monetary_value import MonetaryValue
 from src.errors.eap.eap_item_not_found_error import EAPItemNotFoundError
@@ -16,10 +18,12 @@ from src.presentation.http_types.http_response import HttpResponse
 class UpdateEAPItemController(ControllerInterface):  # pylint: disable=too-few-public-methods
     """Controller para atualização de item da EAP"""
     
-    def __init__(self, update_eap_item_case: IUpdateEAPItem):
+    def __init__(self, update_eap_item_case: IUpdateEAPItem, create_history_case: ICreateHistoryProject, find_eap_case: IFindEAP):
         self.__update_eap_item_case = update_eap_item_case
+        self.__create_history_case = create_history_case
+        self.__find_eap_case = find_eap_case
     
-    def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements
+    def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements,too-many-branches,too-many-statements
         """
         Manipula a requisição de atualização de item da EAP
         
@@ -82,6 +86,27 @@ class UpdateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
                 status=status,
                 progress=progress
             )
+            
+            # Registra no histórico do projeto
+            try:
+                eap = self.__find_eap_case.find_by_id(item.eap_id)
+                if eap and eap.project_id:
+                    # Monta descrição com campos alterados
+                    changes = []
+                    if name: changes.append(f"nome para '{name}'")
+                    if status: changes.append(f"status para '{status.value}'")
+                    if progress is not None: changes.append(f"progresso para {progress}%")
+                    if budget: changes.append(f"orçamento para R$ {float(budget.value):.2f}")
+                    
+                    changes_text = ", ".join(changes) if changes else "atualizado"
+                    self.__create_history_case.create(
+                        project_id=eap.project_id,
+                        data_name="Item EAP",
+                        description=f"Item EAP '{item.name}' (código {item.code}) {changes_text}"
+                    )
+            except Exception:
+                # Se falhar ao criar histórico, não bloqueia a operação principal
+                pass
             
             # Converte a entidade para dicionário
             item_data = self._entity_to_dict(item)

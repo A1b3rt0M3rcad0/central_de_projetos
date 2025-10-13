@@ -2,6 +2,8 @@ from typing import Dict, Any
 from datetime import datetime
 
 from src.domain.use_cases.i_create_eap_item import ICreateEAPItem
+from src.domain.use_cases.i_create_history_project import ICreateHistoryProject
+from src.domain.use_cases.i_find_eap import IFindEAP
 from src.domain.value_objects.eap_code import EAPCode
 from src.domain.value_objects.eap_type import EAPType
 from src.domain.value_objects.eap_status import EAPStatus
@@ -20,8 +22,10 @@ from src.presentation.http_types.http_response import HttpResponse
 class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-public-methods
     """Controller para criação de item da EAP"""
     
-    def __init__(self, create_eap_item_case: ICreateEAPItem):
+    def __init__(self, create_eap_item_case: ICreateEAPItem, create_history_case: ICreateHistoryProject, find_eap_case: IFindEAP):
         self.__create_eap_item_case = create_eap_item_case
+        self.__create_history_case = create_history_case
+        self.__find_eap_case = find_eap_case
     
     def handle(self, http_request: HttpRequest) -> HttpResponse:  # pylint: disable=too-many-return-statements,too-many-branches
         """
@@ -88,6 +92,19 @@ class CreateEAPItemController(ControllerInterface):  # pylint: disable=too-few-p
                 status=status,
                 progress=progress
             )
+            
+            # Registra no histórico do projeto
+            try:
+                eap = self.__find_eap_case.find_by_id(eap_id)
+                if eap and eap.project_id:
+                    self.__create_history_case.create(
+                        project_id=eap.project_id,
+                        data_name="Item EAP",
+                        description=f"Item EAP '{name}' (código {code}) criado"
+                    )
+            except Exception:
+                # Se falhar ao criar histórico, não bloqueia a operação principal
+                pass
             
             # Converte a entidade para dicionário
             item_data = self._item_to_dict(item)
