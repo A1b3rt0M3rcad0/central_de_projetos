@@ -22,7 +22,7 @@ class FindProjectByStatusController(ControllerInterface):
                     'content': [
                         {'id': project.project_id,
                          'status_id': project.status_id,
-                         'verba_disponivel': float(project.verba_disponivel.value) if project.verba_disponivel else None,
+                         'verba_disponivel': float(project.verba_disponivel) if project.verba_disponivel else None,
                          'andamento_do_projeto': project.andamento_do_projeto,
                          'start_date': project.start_date.strftime(r'%d/%m/%Y') if project.start_date else None,
                          'expected_completion_date': project.expected_completion_date.strftime(r'%d/%m/%Y') if project.expected_completion_date else None,
