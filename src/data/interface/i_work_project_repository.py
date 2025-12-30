@@ -67,4 +67,8 @@ class IWorkProjectRepository(ABC):
     def delete(self, work_project_id:int) -> None:pass
     
     @abstractmethod
-    def delete_all_from_project(self, project_id:int) -> None:pass 
+    def delete_all_from_project(self, project_id:int) -> None:pass
+    
+    @abstractmethod
+    def delete_all_from_fiscal(self, fiscal_id:int) -> None:
+        """Deleta todos os work projects associados a um fiscal""" 

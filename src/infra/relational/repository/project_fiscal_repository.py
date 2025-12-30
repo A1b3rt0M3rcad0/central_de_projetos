@@ -196,6 +196,23 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
                 message=f'Error on delete project fiscal association: {e}'
             ) from e
     
+    def delete_all_from_fiscal(self, fiscal_id:int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                project_fiscals = db.session.query(ProjectFiscal).where(
+                    ProjectFiscal.fiscal_id == fiscal_id
+                ).all()
+                # Não lançar exceção se não houver associações - apenas deletar se existir
+                if any(project_fiscals):
+                    db.session.query(ProjectFiscal).where(
+                        ProjectFiscal.fiscal_id == fiscal_id,
+                    ).delete()
+                    db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectFiscal(
+                message=f'Error on delete all project fiscal associations for fiscal_id={fiscal_id}: {e}'
+            ) from e
+    
     def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int, search_term: str = None) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
         try:
             with self.__db_connection_handler as db:
