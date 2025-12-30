@@ -40,7 +40,9 @@ class TestDeleteDocumentFromWorkProjectMobileController:
         )
         
         self.mock_verify_association_case.verify.return_value = True
-        self.mock_get_work_project_case.get.return_value = None
+        mock_work_project = Mock()
+        mock_work_project.project_id = 1
+        self.mock_get_work_project_case.get.return_value = mock_work_project
         
         # Act
         response = self.controller.handle(http_request)
@@ -67,9 +69,9 @@ class TestDeleteDocumentFromWorkProjectMobileController:
             document_name=document_name
         )
         self.mock_create_history_case.create.assert_called_once_with(
-            project_id=work_project_id,
+            project_id=mock_work_project.project_id,
             data_name='Documento Mobile Deletado',
-            description=f'Documento "{document_name}" deletado via mobile'
+            description=f'Documento "{document_name}" deletado via mobile pelo fiscal {fiscal_id}'
         )
     
     def test_handle_missing_fiscal_id(self):

@@ -12,9 +12,9 @@ class ProjectFolder(BaseModel):
 
     __tablename__ = "project_folders"
 
-    id:Mapped[str] = mapped_column(String(36), primary_key=True)
+    id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_id:Mapped[int] = mapped_column(Integer, ForeignKey('project.id'), nullable=False)
-    folder_id:Mapped[str] = mapped_column(String(36), ForeignKey('folders.id'), nullable=False)
+    folder_id:Mapped[int] = mapped_column(Integer, ForeignKey('folders.id'), nullable=False)
     created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     updated_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc), nullable=False)
 

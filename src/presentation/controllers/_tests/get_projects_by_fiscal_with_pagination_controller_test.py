@@ -17,10 +17,12 @@ class TestGetProjectsByFiscalWithPaginationController:
         """Setup para cada teste"""
         self.mock_get_projects_by_fiscal_with_pagination = Mock()
         self.mock_find_project_case = Mock()
+        self.mock_work_project_repository = Mock()
         
         self.controller = GetProjectsByFiscalWithPaginationController(
             get_projects_by_fiscal_with_pagination=self.mock_get_projects_by_fiscal_with_pagination,
-            find_project_case=self.mock_find_project_case
+            find_project_case=self.mock_find_project_case,
+            work_project_repository=self.mock_work_project_repository
         )
 
     def test_handle_success(self):
@@ -82,7 +84,7 @@ class TestGetProjectsByFiscalWithPaginationController:
         
         # Verificar se os métodos foram chamados corretamente
         self.mock_get_projects_by_fiscal_with_pagination.get.assert_called_once_with(
-            fiscal_id=fiscal_id, page=page, page_size=page_size
+            fiscal_id=fiscal_id, page=page, page_size=page_size, search_term=None
         )
         self.mock_find_project_case.find.assert_called_once_with(project_id=1)
         
@@ -157,7 +159,7 @@ class TestGetProjectsByFiscalWithPaginationController:
         
         # Verificar se os métodos foram chamados corretamente
         self.mock_get_projects_by_fiscal_with_pagination.get.assert_called_once_with(
-            fiscal_id=fiscal_id, page=page, page_size=page_size
+            fiscal_id=fiscal_id, page=page, page_size=page_size, search_term=None
         )
         assert self.mock_find_project_case.find.call_count == 3
         
@@ -207,7 +209,7 @@ class TestGetProjectsByFiscalWithPaginationController:
         
         # Verificar se os métodos foram chamados corretamente
         self.mock_get_projects_by_fiscal_with_pagination.get.assert_called_once_with(
-            fiscal_id=fiscal_id, page=page, page_size=page_size
+            fiscal_id=fiscal_id, page=page, page_size=page_size, search_term=None
         )
         self.mock_find_project_case.find.assert_not_called()
 

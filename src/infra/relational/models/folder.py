@@ -11,7 +11,7 @@ class Folder(BaseModel):
 
     __tablename__ = "folders"
 
-    id:Mapped[str] = mapped_column(String(36), primary_key=True)
+    id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name:Mapped[str] = mapped_column(String(255), nullable=False)
     created_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     updated_at:Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc), nullable=False)

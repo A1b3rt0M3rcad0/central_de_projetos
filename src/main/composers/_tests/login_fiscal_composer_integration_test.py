@@ -131,7 +131,7 @@ class TestLoginFiscalComposerIntegration:
         with pytest.raises(FiscalNotFoundError) as exc_info:
             composer(http_request)
         
-        assert 'does not exists' in str(exc_info.value.message)
+        assert 'Email ou senha incorretos' in str(exc_info.value.message)
     
     def test_login_fiscal_composer_with_invalid_password(self):
         # Arrange
@@ -183,7 +183,7 @@ class TestLoginFiscalComposerIntegration:
         with pytest.raises(InvalidPasswordError) as exc_info:
             composer(http_request)
         
-        assert 'incorrect' in str(exc_info.value.message)
+        assert 'Email ou senha incorretos' in str(exc_info.value.message)
     
     def test_login_fiscal_composer_refresh_token_update(self):
         # Arrange

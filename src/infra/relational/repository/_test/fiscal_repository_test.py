@@ -27,6 +27,8 @@ from src.infra.relational.models.user import User
 from src.infra.relational.models.status import Status
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.project_folder import ProjectFolder
+from src.infra.relational.models.folder import Folder
 # pylint: enable=unused-import
 
 @pytest.fixture(autouse=True)
@@ -210,8 +212,8 @@ def test_update_email() -> None:
         fiscal_id = db.session.execute(text('SELECT LAST_INSERT_ID()')).scalar()
         db.session.commit()
 
-    # Then update email
-    fiscal_repository.update_email(fiscal_id=fiscal_id, email=Email(email='teste@email.com'))
+    # Then update email (método aceita name, não fiscal_id)
+    fiscal_repository.update_email(name='nome_teste', email=Email(email='teste@email.com'))
 
     with db_connection_handler as db:
         result = db.session.execute(text('SELECT * FROM fiscal WHERE id = :id'), {'id': fiscal_id}).fetchone()

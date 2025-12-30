@@ -24,6 +24,8 @@ from src.infra.relational.models.user import User
 from src.infra.relational.models.status import Status
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.project_folder import ProjectFolder
+from src.infra.relational.models.folder import Folder
 # pylint: enable=unused-import
 
 @pytest.fixture(autouse=True)

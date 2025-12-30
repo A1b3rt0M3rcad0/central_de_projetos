@@ -32,7 +32,7 @@ def test_get_projects_by_fiscal_with_pagination_success(mock_project_fiscal_repo
     result = use_case.get(fiscal_id=1, page=1, page_size=10)
     
     mock_project_fiscal_repository.get_projects_by_fiscal_with_pagination.assert_called_once_with(
-        fiscal_id=1, page=1, page_size=10
+        fiscal_id=1, page=1, page_size=10, search_term=None
     )
     assert isinstance(result, dict)
     assert result == expected_result
@@ -57,7 +57,7 @@ def test_get_projects_by_fiscal_with_pagination_default_page_size(mock_project_f
     result = use_case.get(fiscal_id=1, page=2)
     
     mock_project_fiscal_repository.get_projects_by_fiscal_with_pagination.assert_called_once_with(
-        fiscal_id=1, page=2, page_size=10
+        fiscal_id=1, page=2, page_size=10, search_term=None
     )
     assert isinstance(result, dict)
     assert result == expected_result
@@ -79,7 +79,7 @@ def test_get_projects_by_fiscal_with_pagination_empty_result(mock_project_fiscal
     result = use_case.get(fiscal_id=1, page=1, page_size=10)
     
     mock_project_fiscal_repository.get_projects_by_fiscal_with_pagination.assert_called_once_with(
-        fiscal_id=1, page=1, page_size=10
+        fiscal_id=1, page=1, page_size=10, search_term=None
     )
     assert isinstance(result, dict)
     assert result == expected_result
@@ -116,7 +116,7 @@ def test_get_projects_by_fiscal_with_pagination_multiple_pages(mock_project_fisc
     result = use_case.get(fiscal_id=1, page=1, page_size=10)
     
     mock_project_fiscal_repository.get_projects_by_fiscal_with_pagination.assert_called_once_with(
-        fiscal_id=1, page=1, page_size=10
+        fiscal_id=1, page=1, page_size=10, search_term=None
     )
     assert isinstance(result, dict)
     assert result == expected_result
@@ -141,7 +141,7 @@ def test_get_projects_by_fiscal_with_pagination_custom_page_size(mock_project_fi
     result = use_case.get(fiscal_id=1, page=1, page_size=5)
     
     mock_project_fiscal_repository.get_projects_by_fiscal_with_pagination.assert_called_once_with(
-        fiscal_id=1, page=1, page_size=5
+        fiscal_id=1, page=1, page_size=5, search_term=None
     )
     assert isinstance(result, dict)
     assert result == expected_result

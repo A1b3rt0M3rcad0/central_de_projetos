@@ -87,7 +87,8 @@ class TestGetWorkProjectsByFiscalMobile:
             fiscal_id=fiscal_id,
             project_id=project_id,
             page=page,
-            page_size=page_size
+            page_size=page_size,
+            search_term=None
         )
 
     def test_get_by_fiscal_mobile_empty_list(self):

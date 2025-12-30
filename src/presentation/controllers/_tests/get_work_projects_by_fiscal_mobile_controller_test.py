@@ -106,7 +106,8 @@ class TestGetWorkProjectsByFiscalMobileController:
             fiscal_id=fiscal_id,
             project_id=project_id,
             page=page,
-            page_size=page_size
+            page_size=page_size,
+            search_term=None
         )
 
     def test_handle_missing_fiscal_id(self):

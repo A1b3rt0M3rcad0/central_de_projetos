@@ -49,7 +49,7 @@ class TestLoginFiscal:
         with pytest.raises(FiscalNotFoundError) as exc_info:
             login_fiscal.check(email, password)
         
-        assert 'The fiscal with this email: nonexistent@example.com does not exists' in str(exc_info.value.message)
+        assert 'Email ou senha incorretos' in str(exc_info.value.message)
     
     def test_login_fiscal_invalid_password(self):
         # Arrange
@@ -73,4 +73,4 @@ class TestLoginFiscal:
             with pytest.raises(InvalidPasswordError) as exc_info:
                 login_fiscal.check(email, password)
             
-            assert 'The password WrongPassword123 is incorrect' in str(exc_info.value.message) 
+            assert 'Email ou senha incorretos' in str(exc_info.value.message) 
