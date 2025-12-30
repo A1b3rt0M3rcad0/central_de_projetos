@@ -12,6 +12,8 @@ from src.main.routes.api.auth.login_routes import routes as auth_routes
 from src.main.routes.api.project.project_routes import routes as project_routes
 from src.main.routes.api.project_bairro.project_bairro_routes import routes as project_bairro_routes
 from src.main.routes.api.project_empresa.project_empresa_routes import routes as project_empresa_routes
+from src.main.routes.api.folder.folder_routes import routes as folder_routes
+from src.main.routes.api.project_folder.project_folder_routes import routes as project_folder_routes
 from src.main.routes.api.project_type.project_type_routes import routes as project_type_routes
 from src.main.routes.api.status.status_routes import routes as status_routes
 from src.main.routes.api.user_project.user_project_routes import routes as user_project_routes
@@ -50,6 +52,8 @@ app.include_router(auth_routes, prefix="/api/v1")
 app.include_router(project_routes, prefix="/api/v1")
 app.include_router(project_bairro_routes, prefix="/api/v1")
 app.include_router(project_empresa_routes, prefix="/api/v1")
+app.include_router(folder_routes, prefix="/api/v1")
+app.include_router(project_folder_routes, prefix="/api/v1")
 app.include_router(project_type_routes, prefix="/api/v1")
 app.include_router(status_routes, prefix="/api/v1")
 app.include_router(user_project_routes, prefix="/api/v1")
