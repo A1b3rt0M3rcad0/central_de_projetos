@@ -21,9 +21,10 @@ class GetProjectsWithPaginationAndFilterController(ControllerInterface):
             # Transformar os dados para o formato esperado
             projects_data = []
             
-            # Buscar dados de usuário para todos os projetos de uma vez
+            # Buscar dados de usuário e pasta para todos os projetos de uma vez
             project_ids = [p.project_id for p in result['projects']]
             user_data_dict = {}
+            folder_data_dict = {}
             
             if project_ids:
                 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
@@ -51,10 +52,28 @@ class GetProjectsWithPaginationAndFilterController(ControllerInterface):
                             'role': role,
                             'created_at': created_at.strftime(r'%d/%m/%Y') if created_at else None
                         }
+                    
+                    # Query para buscar pastas associadas aos projetos (apenas a primeira, já que garantimos uma pasta por projeto)
+                    query_folders = text(f"""
+                        SELECT pf.project_id, f.id, f.name, f.created_at
+                        FROM project_folders pf
+                        JOIN folders f ON pf.folder_id = f.id
+                        WHERE pf.project_id IN ({placeholders})
+                    """)
+                    folder_results = db.session.execute(query_folders, params).fetchall()
+                    
+                    for row in folder_results:
+                        project_id, folder_id, folder_name, folder_created_at = row
+                        folder_data_dict[project_id] = {
+                            'id': folder_id,
+                            'name': folder_name,
+                            'created_at': folder_created_at.strftime(r'%d/%m/%Y') if folder_created_at else None
+                        }
             
             for project in result['projects']:
-                # Buscar dados do usuário no dicionário
+                # Buscar dados do usuário e pasta no dicionário
                 user_data = user_data_dict.get(project.project_id)
+                folder_data = folder_data_dict.get(project.project_id)
                 
                 project_data = {
                     'id': project.project_id,
@@ -90,6 +109,7 @@ class GetProjectsWithPaginationAndFilterController(ControllerInterface):
                         'description': project.status.description,
                         'created_at': project.status.created_at.strftime(r'%d/%m/%Y') if project.status and project.status.created_at else None
                     } if project.status else None,
+                    'folder': folder_data,
                     'user': user_data
                 }
                 projects_data.append(project_data)

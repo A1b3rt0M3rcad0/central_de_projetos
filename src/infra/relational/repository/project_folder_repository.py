@@ -168,16 +168,12 @@ class ProjectFolderRepository(IProjectFolderRepository):
                 project_folders = db.session.query(ProjectFolder).where(
                     ProjectFolder.project_id == project_id,
                 ).all()
-                if not any(project_folders):
-                    raise ProjectFolderNotExists(
-                        message=f'Project Folder from project project_id={project_id} not exists'
-                    )
-                db.session.query(ProjectFolder).where(
-                    ProjectFolder.project_id == project_id,
-                ).delete()
-                db.session.commit()
-        except ProjectFolderNotExists as e:
-            raise e from e
+                # Não lançar exceção se não houver pastas - apenas deletar se existir
+                if any(project_folders):
+                    db.session.query(ProjectFolder).where(
+                        ProjectFolder.project_id == project_id,
+                    ).delete()
+                    db.session.commit()
         except Exception as e:
             raise ErrorOnDeleteProjectFolder(
                 message=f'Error deleting ProjectFolder (project_id: {project_id}): {e}'

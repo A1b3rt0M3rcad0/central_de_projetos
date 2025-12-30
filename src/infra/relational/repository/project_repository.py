@@ -593,18 +593,41 @@ class ProjectRepository(IProjectRepository):
                     joinedload(Project.project_fiscals).joinedload(ProjectFiscal.fiscal),
                     joinedload(Project.project_types).joinedload(ProjectType.types),
                     joinedload(Project.user_projects).joinedload(UserProject.user),
-                    joinedload(Project.status)
+                    joinedload(Project.status),
+                    joinedload(Project.project_folders).joinedload(ProjectFolder.folder)
                 )
                 
                 # Aplicar filtro de busca se fornecido
                 if search_term and search_term.strip():
                     search_filter = f"%{search_term.strip()}%"
+                    # Adicionar outerjoins para buscar em todas as colunas relacionadas
+                    # Status já está sendo carregado via joinedload, então não precisa de outerjoin
+                    query = query.outerjoin(ProjectBairro, Project.id == ProjectBairro.project_id)
+                    query = query.outerjoin(Bairro, ProjectBairro.bairro_id == Bairro.id)
+                    query = query.outerjoin(ProjectEmpresa, Project.id == ProjectEmpresa.project_id)
+                    query = query.outerjoin(Empresa, ProjectEmpresa.empresa_id == Empresa.id)
+                    query = query.outerjoin(ProjectFiscal, Project.id == ProjectFiscal.project_id)
+                    query = query.outerjoin(Fiscal, ProjectFiscal.fiscal_id == Fiscal.id)
+                    query = query.outerjoin(ProjectType, Project.id == ProjectType.project_id)
+                    query = query.outerjoin(Types, ProjectType.type_id == Types.id)
+                    query = query.outerjoin(UserProject, Project.id == UserProject.project_id)
+                    query = query.outerjoin(User, UserProject.user_cpf == User.cpf)
+                    query = query.outerjoin(ProjectFolder, Project.id == ProjectFolder.project_id)
+                    query = query.outerjoin(Folder, ProjectFolder.folder_id == Folder.id)
+                    
                     query = query.filter(
                         or_(
                             Project.name.ilike(search_filter),
-                            Project.andamento_do_projeto.ilike(search_filter)
+                            Project.andamento_do_projeto.ilike(search_filter),
+                            Bairro.name.ilike(search_filter),
+                            Empresa.name.ilike(search_filter),
+                            Fiscal.name.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            Types.name.ilike(search_filter),
+                            Status.description.ilike(search_filter),
+                            Folder.name.ilike(search_filter)
                         )
-                    )
+                    ).distinct()
                 
                 projects = query.offset(offset).limit(page_size).all()
                 
@@ -670,12 +693,34 @@ class ProjectRepository(IProjectRepository):
                 # Aplicar filtro de busca se fornecido
                 if search_term and search_term.strip():
                     search_filter = f"%{search_term.strip()}%"
+                    # Adicionar outerjoins para buscar em todas as colunas relacionadas (mesma lógica do get)
+                    # Status já está relacionado via foreign key, então não precisa de outerjoin
+                    query = query.outerjoin(ProjectBairro, Project.id == ProjectBairro.project_id)
+                    query = query.outerjoin(Bairro, ProjectBairro.bairro_id == Bairro.id)
+                    query = query.outerjoin(ProjectEmpresa, Project.id == ProjectEmpresa.project_id)
+                    query = query.outerjoin(Empresa, ProjectEmpresa.empresa_id == Empresa.id)
+                    query = query.outerjoin(ProjectFiscal, Project.id == ProjectFiscal.project_id)
+                    query = query.outerjoin(Fiscal, ProjectFiscal.fiscal_id == Fiscal.id)
+                    query = query.outerjoin(ProjectType, Project.id == ProjectType.project_id)
+                    query = query.outerjoin(Types, ProjectType.type_id == Types.id)
+                    query = query.outerjoin(UserProject, Project.id == UserProject.project_id)
+                    query = query.outerjoin(User, UserProject.user_cpf == User.cpf)
+                    query = query.outerjoin(ProjectFolder, Project.id == ProjectFolder.project_id)
+                    query = query.outerjoin(Folder, ProjectFolder.folder_id == Folder.id)
+                    
                     query = query.filter(
                         or_(
                             Project.name.ilike(search_filter),
-                            Project.andamento_do_projeto.ilike(search_filter)
+                            Project.andamento_do_projeto.ilike(search_filter),
+                            Bairro.name.ilike(search_filter),
+                            Empresa.name.ilike(search_filter),
+                            Fiscal.name.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            Types.name.ilike(search_filter),
+                            Status.description.ilike(search_filter),
+                            Folder.name.ilike(search_filter)
                         )
-                    )
+                    ).distinct()
                 
                 count = query.count()
                 return count

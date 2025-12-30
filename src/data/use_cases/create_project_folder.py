@@ -8,6 +8,11 @@ class CreateProjectFolder(ICreateProjectFolder):
     
     def create(self, project_id: int, folder_id: int) -> None:
         try:
+            # Garantir que o projeto tenha apenas uma pasta: deletar todas as associações existentes
+            # antes de criar a nova
+            self.__project_folder_repository.delete_all_from_project(project_id=project_id)
+            
+            # Criar a nova associação
             self.__project_folder_repository.insert(
                 project_id=project_id,
                 folder_id=folder_id
