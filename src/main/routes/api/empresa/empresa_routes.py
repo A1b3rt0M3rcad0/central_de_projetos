@@ -77,7 +77,7 @@ async def find_empresa(empresa_name, request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/empresa/all', response_model=FindAllEmpresaResponse, responses=generate_error_responses())
+@routes.get('/all', response_model=FindAllEmpresaResponse, responses=generate_error_responses())
 async def find_all_empresa(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     """
     Endpoint para buscar todas as empresas do sistema.
@@ -114,7 +114,7 @@ async def find_all_empresa(request:Request, user=Security(role_required(["VEREAD
         )
         return response_adapter(error_result)
 
-@routes.get('/empresa/count/all', response_model=CountEmpresasResponse, responses=generate_error_responses())
+@routes.get('/count/all', response_model=CountEmpresasResponse, responses=generate_error_responses())
 async def count_empresas(request:Request, user=Security(role_required(["VEREADOR", "ADMIN", "ASSESSOR"]))):
     """
     Endpoint para contar o total de empresas no sistema.
@@ -270,7 +270,7 @@ async def update_empresa(body:UpdateEmpresasFormat, request:Request, user=Securi
         )
         return response_adapter(error_result)
 
-@routes.get("/empresa/pagination/{page_size}/{page}", response_model=FindAllEmpresasWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination/{page_size}/{page}", response_model=FindAllEmpresasWithPaginationResponse, responses=generate_error_responses())
 async def find_all_empresas_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todas as empresas com paginação.
@@ -313,7 +313,7 @@ async def find_all_empresas_with_pagination(page_size:int, page:int, request:Req
         )
         return response_adapter(error_result)
 
-@routes.get("/empresa/pagination-filter/{page_size}/{page}", response_model=FindAllEmpresasWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllEmpresasWithPaginationResponse, responses=generate_error_responses())
 async def find_all_empresas_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todas as empresas com paginação e filtro global.

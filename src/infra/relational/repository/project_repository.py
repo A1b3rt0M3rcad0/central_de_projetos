@@ -38,6 +38,8 @@ from src.infra.relational.models.user import User
 # pylint: disable=unused-import
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.folder import Folder
+from src.infra.relational.models.project_folder import ProjectFolder
 from src.infra.relational.models.eap import EAP, EAPItem
 from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 

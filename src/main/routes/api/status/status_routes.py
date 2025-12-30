@@ -38,6 +38,46 @@ PREFIX = '/status'
 TAGS = ['status']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
+# IMPORTANTE: Rotas específicas (como /all) devem vir ANTES de rotas com parâmetros (como /{status_id})
+# O FastAPI faz match na ordem de definição, então /all precisa vir antes de /{status_id}
+
+@routes.get('/all', response_model=FindAllStatusResponse, responses=generate_error_responses())
+async def find_all_status(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os status do sistema.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindAllStatusResponse: Lista com todos os status do sistema
+        
+    Raises:
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        http_response = await request_adapter(request, find_all_status_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            http_response=http_response,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            http_response=error_result,
+            logger_name=PREFIX,
+            request=request
+        )
+        return response_adapter(error_result)
+
 @routes.get('/{status_id}', response_model=FindStatusReponse, responses=generate_error_responses())
 async def find_status(status_id:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
@@ -196,45 +236,8 @@ async def update_status_description(body:UpdateStatusDescriptionFormat, request:
             request=request
         )
         return response_adapter(error_result)
-    
-@routes.get('/status/all/', response_model=FindAllStatusResponse, responses=generate_error_responses())
-async def find_all_status(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
-    """
-    Endpoint para buscar todos os status do sistema.
-    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
-    
-    Args:
-        request: Objeto da requisição HTTP
-        user: Dados do usuário autenticado (injetado pelo middleware)
-        
-    Returns:
-        FindAllStatusResponse: Lista com todos os status do sistema
-        
-    Raises:
-        UnauthorizedError: Se o usuário não tiver permissão
-        InternalServerError: Para outros erros internos
-    """
-    try:
-        http_response = await request_adapter(request, find_all_status_composer())
-        http_response = await insert_access_token(http_response, request.state.new_access_token)
-        log_http(
-            level='INFO',
-            http_response=http_response,
-            logger_name=PREFIX,
-            request=request
-        )
-        return response_adapter(http_response)
-    except Exception as e:
-        error_result = error_handler(e)
-        log_http(
-            level='ERROR',
-            http_response=error_result,
-            logger_name=PREFIX,
-            request=request
-        )
-        return response_adapter(error_result)
 
-@routes.get('/status/pagination/{page_size}/{page}', response_model=FindAllStatusWithPaginationResponse, responses=generate_error_responses())
+@routes.get('/pagination/{page_size}/{page}', response_model=FindAllStatusWithPaginationResponse, responses=generate_error_responses())
 async def find_all_status_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar status com paginação.
@@ -315,7 +318,7 @@ async def find_project_by_status(status_id:int, request:Request, user=Security(r
             request=request
         )
         return response_adapter(error_result)
-@routes.get("/status/pagination-filter/{page_size}/{page}", response_model=FindAllStatusWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllStatusWithPaginationResponse, responses=generate_error_responses())
 async def find_all_status_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os status com paginação e filtro global.

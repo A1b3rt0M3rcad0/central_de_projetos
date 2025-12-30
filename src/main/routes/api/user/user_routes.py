@@ -83,7 +83,7 @@ async def get_user(user_cpf: str, request: Request, user=Security(role_required(
         )
         return response_adapter(error_result)
 
-@routes.get("/users/all", response_model=GetAllUsersResponse, responses=generate_error_responses())
+@routes.get("/all", response_model=GetAllUsersResponse, responses=generate_error_responses())
 async def get_all_users(request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os usuários do sistema.
@@ -120,7 +120,7 @@ async def get_all_users(request: Request, user=Security(role_required(["ADMIN", 
         )
         return response_adapter(error_result)
 
-@routes.get("/users/all/{role}", response_model=GetAllUsersByRoleResponse, responses=generate_error_responses())
+@routes.get("/all/{role}", response_model=GetAllUsersByRoleResponse, responses=generate_error_responses())
 async def get_all_users_by_role(role:str, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os usuários filtrados por role (papel).
@@ -403,7 +403,7 @@ async def update_personal_data(body: UpdateUserPersonalDataFormat, request: Requ
         )
         return response_adapter(error_result)
 
-@routes.get("/users/pagination/{page_size}/{page}", response_model=FindAllUsersWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination/{page_size}/{page}", response_model=FindAllUsersWithPaginationResponse, responses=generate_error_responses())
 async def find_all_users_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os usuários com paginação.
@@ -446,7 +446,7 @@ async def find_all_users_with_pagination(page_size:int, page:int, request:Reques
         )
         return response_adapter(error_result)
 
-@routes.get("/users/pagination-filter/{page_size}/{page}", response_model=FindAllUsersWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllUsersWithPaginationResponse, responses=generate_error_responses())
 async def find_all_users_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os usuários com paginação e filtro global.

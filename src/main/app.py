@@ -67,14 +67,22 @@ app.include_router(fiscal_mobile_routes, prefix="/api/v1")
 # Web
 app.include_router(login_web)
 
-## Local Development URL
+## CORS Configuration
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
-origins = [
-    "http://localhost:5173",
-    "http://192.168.90.163:5173",
-    "http://127.0.0.1:5173",
-]
+# Ler origins de variável de ambiente ou usar fallback para desenvolvimento
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+if cors_origins_env:
+    # Separar múltiplos origins por vírgula
+    origins = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+else:
+    # Fallback para desenvolvimento local
+    origins = [
+        "http://localhost:5173",
+        "http://192.168.90.163:5173",
+        "http://127.0.0.1:5173",
+    ]
 
 app.add_middleware(
     CORSMiddleware,

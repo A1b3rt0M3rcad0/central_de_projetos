@@ -173,7 +173,7 @@ async def find_all_projects(request:Request, user=Security(role_required(["ADMIN
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/associations/all', response_model=FindAssociationProjectsResponse, responses=generate_error_responses())
+@routes.get('/associations/all', response_model=FindAssociationProjectsResponse, responses=generate_error_responses())
 async def find_associations_projects(request:Request, user=Security(role_required(["ADMIN"]))):
     """
     Endpoint para buscar todas as possibilidades de associação de projetos.
@@ -211,7 +211,7 @@ async def find_associations_projects(request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/all/details', response_model=FindAllProjectWithBasicDetailsResponse, responses=generate_error_responses())
+@routes.get('/all/details', response_model=FindAllProjectWithBasicDetailsResponse, responses=generate_error_responses())
 async def find_all_projects_details(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os projetos com detalhes básicos.
@@ -608,7 +608,7 @@ async def update_project_status(body:UpdateStartStatusFormat, request:Request, u
         )
         return response_adapter(error_result)
 
-@routes.get('/project_detail/{project_id}', response_model=ProjectDetailResponse, responses=generate_error_responses())
+@routes.get('/detail/{project_id}', response_model=ProjectDetailResponse, responses=generate_error_responses())
 async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar detalhes completos de um projeto.
@@ -649,7 +649,7 @@ async def project_detail(project_id, request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/pagination/{page_size}/{page}', response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
+@routes.get('/pagination/{page_size}/{page}', response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
 async def get_projects_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar projetos com paginação.
@@ -691,7 +691,7 @@ async def get_projects_with_pagination(page_size:int, page:int, request:Request,
             request=request
         )
         return response_adapter(error_result)
-@routes.get("/projects/pagination-filter/{page_size}/{page}", response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
 async def get_projects_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar projetos com paginação e filtro global.

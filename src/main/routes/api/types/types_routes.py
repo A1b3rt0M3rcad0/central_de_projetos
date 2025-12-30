@@ -232,7 +232,7 @@ async def find_all_types(request:Request, user=Security(role_required(["ADMIN", 
         )
         return response_adapter(error_result)
 
-@routes.get("/types/pagination/{page_size}/{page}", response_model=FindAllTypesWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination/{page_size}/{page}", response_model=FindAllTypesWithPaginationResponse, responses=generate_error_responses())
 async def find_all_types_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os tipos com paginação.
@@ -275,7 +275,7 @@ async def find_all_types_with_pagination(page_size:int, page:int, request:Reques
         )
         return response_adapter(error_result)
 
-@routes.get("/types/pagination-filter/{page_size}/{page}", response_model=FindAllTypesWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllTypesWithPaginationResponse, responses=generate_error_responses())
 async def find_all_types_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os tipos com paginação e filtro global.

@@ -118,7 +118,7 @@ async def count_bairros(request:Request, user=Security(role_required(["ADMIN", "
         )
         return response_adapter(error_result)
 
-@routes.get('/bairro/all', response_model=FindAllBairroResponse, responses=generate_error_responses())
+@routes.get('/all', response_model=FindAllBairroResponse, responses=generate_error_responses())
 async def find_all_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os bairros do sistema.
@@ -275,7 +275,7 @@ async def update_bairro_name(body:UpdateBairroNameFormat, request:Request, user=
         )
         return response_adapter(error_result)
 
-@routes.get("/bairro/pagination/{page_size}/{page}", response_model=FindAllBairrosWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination/{page_size}/{page}", response_model=FindAllBairrosWithPaginationResponse, responses=generate_error_responses())
 async def find_all_bairros_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os bairros com paginação.
@@ -318,7 +318,7 @@ async def find_all_bairros_with_pagination(page_size:int, page:int, request:Requ
         )
         return response_adapter(error_result)
 
-@routes.get("/bairros/pagination-filter/{page_size}/{page}", response_model=FindAllBairrosWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllBairrosWithPaginationResponse, responses=generate_error_responses())
 async def find_all_bairros_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os bairros com paginação e filtro global.

@@ -87,7 +87,7 @@ async def find_fiscal_by_name(fiscal_name, request:Request, user=Security(role_r
         )
         return response_adapter(error_result)
 
-@routes.get('/fiscal/all', response_model=FindAllFiscalReponse, responses=generate_error_responses())
+@routes.get('/all', response_model=FindAllFiscalReponse, responses=generate_error_responses())
 async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os fiscais do sistema.
@@ -124,7 +124,7 @@ async def find_all_fiscal(request:Request, user=Security(role_required(["ADMIN",
         )
         return response_adapter(error_result)
 
-@routes.get('/fiscal/count/all', response_model=CountFiscalReponse, responses=generate_error_responses())
+@routes.get('/count/all', response_model=CountFiscalReponse, responses=generate_error_responses())
 async def count_fiscals(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para contar o total de fiscais no sistema.
@@ -318,7 +318,7 @@ async def insert_all_fiscal_from_user(body:InsertAllFiscalFromUserFormat, reques
         )
         return response_adapter(error_result)
 
-@routes.get("/fiscal/pagination/{page_size}/{page}", response_model=FindAllFiscaisWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination/{page_size}/{page}", response_model=FindAllFiscaisWithPaginationResponse, responses=generate_error_responses())
 async def find_all_fiscais_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os fiscais com paginação.
@@ -361,7 +361,7 @@ async def find_all_fiscais_with_pagination(page_size:int, page:int, request:Requ
         )
         return response_adapter(error_result)
 
-@routes.get("/fiscais/pagination-filter/{page_size}/{page}", response_model=FindAllFiscaisWithPaginationResponse, responses=generate_error_responses())
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=FindAllFiscaisWithPaginationResponse, responses=generate_error_responses())
 async def find_all_fiscais_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os fiscais com paginação e filtro global.
