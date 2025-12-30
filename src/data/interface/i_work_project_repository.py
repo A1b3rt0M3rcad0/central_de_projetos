@@ -64,4 +64,7 @@ class IWorkProjectRepository(ABC):
     def update(self, work_project_id:int, update_params:Dict) -> None:pass
 
     @abstractmethod
-    def delete(self, work_project_id:int) -> None:pass 
+    def delete(self, work_project_id:int) -> None:pass
+    
+    @abstractmethod
+    def delete_all_from_project(self, project_id:int) -> None:pass 

@@ -107,6 +107,16 @@ class IEAPRepository(ABC):
         pass
     
     @abstractmethod
+    def delete_by_project_id(self, project_id: int) -> None:
+        """
+        Exclui todas as EAPs de um projeto
+        
+        Args:
+            project_id: ID do projeto
+        """
+        pass
+    
+    @abstractmethod
     def count_by_project_id(self, project_id: int) -> int:
         """
         Conta quantas EAPs um projeto possui

@@ -842,4 +842,24 @@ class WorkProjectRepository(IWorkProjectRepository):
             except Exception as e:
                 raise ErrorOnDeleteWorkProject(
                     message=f'Error on delete work_project with id: {work_project_id}: {str(e)}'
+                ) from e
+    
+    def delete_all_from_project(self, project_id:int) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                work_projects = db.session.query(WorkProject).where(
+                    WorkProject.project_id == project_id
+                ).all()
+                
+                if not work_projects:
+                    return  # Não há work_projects para deletar, não é erro
+                
+                # Deletar todos os work_projects do projeto
+                for work_project in work_projects:
+                    db.session.delete(work_project)
+                
+                db.session.commit()
+            except Exception as e:
+                raise ErrorOnDeleteWorkProject(
+                    message=f'Error on delete all work_projects from project_id: {project_id}: {str(e)}'
                 ) from e 

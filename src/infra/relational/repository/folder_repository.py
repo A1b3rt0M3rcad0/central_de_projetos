@@ -131,6 +131,13 @@ class FolderRepository(IFolderRepository):
                     raise FolderNotExists(
                         message=f'Folder with id={folder_id} not exists'
                     )
+                
+                # Deletar todas as associações ProjectFolder antes de deletar a pasta
+                db.session.query(ProjectFolder).where(
+                    ProjectFolder.folder_id == folder_id
+                ).delete()
+                
+                # Agora deletar a pasta
                 db.session.query(Folder).where(
                     Folder.id == folder_id
                 ).delete()

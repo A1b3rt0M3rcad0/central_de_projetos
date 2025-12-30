@@ -221,7 +221,7 @@ class TestFolderRepository:
             folder_repository.update(999, "New Name")
     
     def test_delete_success(self, folder_repository, mock_db_connection_handler):
-        """Testa deleção bem-sucedida"""
+        """Testa deleção bem-sucedida (deleta ProjectFolder relacionados e depois a Folder)"""
         # Arrange
         mock_db_context = mock_db_connection_handler.__enter__.return_value
         mock_session = mock_db_context.session
@@ -237,7 +237,8 @@ class TestFolderRepository:
         folder_repository.delete(1)
         
         # Assert
-        mock_query_where.delete.assert_called_once()
+        # Agora delete é chamado 2 vezes: uma para ProjectFolder e outra para Folder
+        assert mock_query_where.delete.call_count == 2
         mock_session.commit.assert_called_once()
     
     def test_delete_not_found(self, folder_repository, mock_db_connection_handler):

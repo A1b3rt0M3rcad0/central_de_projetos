@@ -209,6 +209,33 @@ class EAPRepository(IEAPRepository):
             db.session.delete(eap_model)
             db.session.commit()
     
+    def delete_by_project_id(self, project_id: int) -> None:
+        """
+        Exclui todas as EAPs de um projeto (exclusão em cascata)
+        
+        Args:
+            project_id: ID do projeto
+        """
+        with self.__db_connection_handler as db:
+            eaps = db.session.query(EAP).filter(
+                EAP.project_id == project_id,
+                EAP.is_template.is_(False)
+            ).all()
+            
+            # Deletar cada EAP e seus itens (a exclusão em cascata dos itens já está implementada)
+            for eap in eaps:
+                # Buscar todos os itens da EAP
+                eap_items = db.session.query(EAPItem).filter(EAPItem.eap_id == eap.id).all()
+                
+                # Deletar todos os itens primeiro
+                for item in eap_items:
+                    db.session.delete(item)
+                
+                # Deletar a EAP
+                db.session.delete(eap)
+            
+            db.session.commit()
+    
     def count_by_project_id(self, project_id: int) -> int:
         """
         Conta quantas EAPs um projeto possui
