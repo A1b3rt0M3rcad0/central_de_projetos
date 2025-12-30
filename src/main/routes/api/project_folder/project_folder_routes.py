@@ -34,50 +34,6 @@ PREFIX = '/project_folder'
 TAGS = ['project', 'folder']
 routes = APIRouter(prefix=PREFIX, tags=TAGS)
 
-@routes.get('/{project_id}/{folder_id}', response_model=FindProjectFolderResponse, responses=generate_error_responses())
-async def find_project_folder(project_id: int, folder_id: int, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
-    """
-    Endpoint para buscar uma associação específica entre projeto e pasta.
-    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
-    
-    Args:
-        project_id: ID do projeto
-        folder_id: ID da pasta
-        request: Objeto da requisição HTTP
-        user: Dados do usuário autenticado (injetado pelo middleware)
-        
-    Returns:
-        FindProjectFolderResponse: Dados da associação projeto-pasta
-        
-    Raises:
-        ProjectNotFoundError: Se o projeto não for encontrado
-        FolderNotFoundError: Se a pasta não for encontrada
-        AssociationNotFoundError: Se a associação não existir
-        UnauthorizedError: Se o usuário não tiver permissão
-        InternalServerError: Para outros erros internos
-    """
-    try:
-        request.path_params['project_id'] = project_id
-        request.path_params['folder_id'] = folder_id
-        http_response = await request_adapter(request, find_project_folder_composer())
-        http_response = await insert_access_token(http_response, request.state.new_access_token)
-        log_http(
-            level='INFO',
-            logger_name=PREFIX,
-            http_response=http_response,
-            request=request
-        )
-        return response_adapter(http_response)
-    except Exception as e:
-        error_result = error_handler(e)
-        log_http(
-            level='ERROR',
-            logger_name=PREFIX,
-            http_response=error_result,
-            request=request
-        )
-        return response_adapter(error_result)
-
 @routes.get('/folder/{folder_id}', response_model=FindAllProjectsFromFolderResponse, responses=generate_error_responses())
 async def find_all_projects_from_folder(folder_id: int, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
@@ -142,6 +98,50 @@ async def find_all_folders_from_project(project_id: int, request: Request, user=
     try:
         request.path_params['project_id'] = project_id
         http_response = await request_adapter(request, find_all_folders_from_project_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.get('/{project_id}/{folder_id}', response_model=FindProjectFolderResponse, responses=generate_error_responses())
+async def find_project_folder(project_id: int, folder_id: int, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar uma associação específica entre projeto e pasta.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        project_id: ID do projeto
+        folder_id: ID da pasta
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        FindProjectFolderResponse: Dados da associação projeto-pasta
+        
+    Raises:
+        ProjectNotFoundError: Se o projeto não for encontrado
+        FolderNotFoundError: Se a pasta não for encontrada
+        AssociationNotFoundError: Se a associação não existir
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['project_id'] = project_id
+        request.path_params['folder_id'] = folder_id
+        http_response = await request_adapter(request, find_project_folder_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
