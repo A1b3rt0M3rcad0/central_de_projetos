@@ -16,6 +16,10 @@ class ProjectResponse(BaseModel):
     expected_completion_date: Optional[str] = None
     end_date: Optional[str] = None
 
+class DocumentResponse(BaseModel):
+    name: str
+    type: str
+
 class WorkProjectContentResponse(BaseModel):
     id: int
     project_id: int
@@ -24,6 +28,7 @@ class WorkProjectContentResponse(BaseModel):
     description: str
     photo_name: str
     additional_documents: Optional[List[Any]] = None
+    documents: Optional[List[DocumentResponse]] = None
     created_at: str
     updated_at: str
     fiscal: Optional[FiscalResponse] = None

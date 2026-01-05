@@ -19,6 +19,14 @@ class GetWorkProjectByFiscalMobileController(ControllerInterface):
                 fiscal_id=fiscal_id
             )
             
+            # Construir lista de documentos combinando photo_name e additional_documents
+            documents = []
+            if work_project.photo_name:
+                documents.append({'name': work_project.photo_name, 'type': 'photo'})
+            if work_project.additional_documents:
+                for doc_name in work_project.additional_documents:
+                    documents.append({'name': doc_name, 'type': 'additional'})
+            
             return HttpResponse(
                 status_code=200,
                 body={
@@ -31,6 +39,7 @@ class GetWorkProjectByFiscalMobileController(ControllerInterface):
                         'description': work_project.description,
                         'photo_name': work_project.photo_name,
                         'additional_documents': work_project.additional_documents,
+                        'documents': documents,
                         'created_at': work_project.created_at.strftime(r'%d/%m/%Y %H:%M:%S'),
                         'updated_at': work_project.updated_at.strftime(r'%d/%m/%Y %H:%M:%S'),
                         'fiscal': {

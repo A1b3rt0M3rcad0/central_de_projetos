@@ -1,7 +1,7 @@
 #pylint:disable=W0611
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from typing import List, Dict, Union
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from src.data.interface.i_project_fiscal_repository import IProjectFiscalRepository
 
 # Models
@@ -196,12 +196,50 @@ class ProjectFiscalRepository(IProjectFiscalRepository):
                 message=f'Error on delete project fiscal association: {e}'
             ) from e
     
-    def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
+    def delete_all_from_fiscal(self, fiscal_id:int) -> None:
         try:
             with self.__db_connection_handler as db:
+                project_fiscals = db.session.query(ProjectFiscal).where(
+                    ProjectFiscal.fiscal_id == fiscal_id
+                ).all()
+                # Não lançar exceção se não houver associações - apenas deletar se existir
+                if any(project_fiscals):
+                    db.session.query(ProjectFiscal).where(
+                        ProjectFiscal.fiscal_id == fiscal_id,
+                    ).delete()
+                    db.session.commit()
+        except Exception as e:
+            raise ErrorOnDeleteProjectFiscal(
+                message=f'Error on delete all project fiscal associations for fiscal_id={fiscal_id}: {e}'
+            ) from e
+    
+    def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int, search_term: str = None) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
+        try:
+            with self.__db_connection_handler as db:
+                # Query base
                 query = db.session.query(ProjectFiscal).where(
                     ProjectFiscal.fiscal_id == fiscal_id
                 )
+                
+                # Aplicar filtro de busca se fornecido (join com Project para buscar nos campos)
+                if search_term and search_term.strip():
+                    
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.join(Project, ProjectFiscal.project_id == Project.id)
+                    query = query.outerjoin(ProjectBairro, Project.id == ProjectBairro.project_id)
+                    query = query.outerjoin(Bairro, ProjectBairro.bairro_id == Bairro.id)
+                    query = query.outerjoin(ProjectEmpresa, Project.id == ProjectEmpresa.project_id)
+                    query = query.outerjoin(Empresa, ProjectEmpresa.empresa_id == Empresa.id)
+                    
+                    query = query.filter(
+                        or_(
+                            Project.name.ilike(search_filter),
+                            Project.andamento_do_projeto.ilike(search_filter),
+                            Bairro.name.ilike(search_filter),
+                            Empresa.name.ilike(search_filter)
+                        )
+                    ).distinct()
+                
                 total = query.count()
                 total_pages = (total + page_size - 1) // page_size
                 offset = (page - 1) * page_size

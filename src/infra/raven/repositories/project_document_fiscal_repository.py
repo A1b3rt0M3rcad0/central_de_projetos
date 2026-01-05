@@ -155,3 +155,30 @@ class ProjectDocumentFiscalRepository(IProjectDocumentFiscalRepository):
                 raise Exception(f"Documento {document_name} não encontrado no work project {work_project_id}")
             
             return attachment_result.data
+    
+    def delete_all_fiscal_documents_from_fiscal(self, fiscal_id:int, work_project_ids:List[int]) -> None:
+        """
+        Deleta todos os documentos de todos os work projects de um fiscal.
+        """
+        with self.__db_connection_handler as db:
+            for work_project_id in work_project_ids:
+                try:
+                    dummy_project_documents = ProjectDocumentsFiscal()
+                    project_document_data = dummy_project_documents.make_to_store(work_project_id=work_project_id)
+                    entity = db.load(project_document_data["key"])
+
+                    if entity is None:
+                        continue  # Work project não tem documentos, pular
+
+                    metadata = db.advanced.get_metadata_for(entity)
+                    attachments = metadata.get('@attachments', [])
+                    
+                    # Deleta todos os documentos do work project
+                    for attachment in attachments:
+                        name = attachment['Name']
+                        db.advanced.attachments.delete(entity, name)
+
+                    db.save_changes()
+                except Exception:
+                    # Continuar mesmo se houver erro em um work project específico
+                    continue

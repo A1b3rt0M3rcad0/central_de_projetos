@@ -31,5 +31,9 @@ class IProjectFiscalRepository(ABC):
     def delete_all_from_project(self, project_id:int) -> None:pass
     
     @abstractmethod
+    def delete_all_from_fiscal(self, fiscal_id:int) -> None:
+        """Remove todas as associações de um fiscal com projetos"""
+    
+    @abstractmethod
     def get_projects_by_fiscal_with_pagination(self, fiscal_id: int, page: int, page_size: int) -> Dict[str, Union[int, List[ProjectFiscalEntity]]]:
         """Retorna projetos associados a um fiscal com paginação"""

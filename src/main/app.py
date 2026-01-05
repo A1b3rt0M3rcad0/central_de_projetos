@@ -12,6 +12,8 @@ from src.main.routes.api.auth.login_routes import routes as auth_routes
 from src.main.routes.api.project.project_routes import routes as project_routes
 from src.main.routes.api.project_bairro.project_bairro_routes import routes as project_bairro_routes
 from src.main.routes.api.project_empresa.project_empresa_routes import routes as project_empresa_routes
+from src.main.routes.api.folder.folder_routes import routes as folder_routes
+from src.main.routes.api.project_folder.project_folder_routes import routes as project_folder_routes
 from src.main.routes.api.project_type.project_type_routes import routes as project_type_routes
 from src.main.routes.api.status.status_routes import routes as status_routes
 from src.main.routes.api.user_project.user_project_routes import routes as user_project_routes
@@ -19,6 +21,9 @@ from src.main.routes.api.document.document_routes import routes as document_rout
 from src.main.routes.api.types.types_routes import routes as types_routes
 from src.main.routes.api.project_fiscal.project_fiscal_routes import routes as project_fiscal_routes
 from src.main.routes.api.work_project.work_project_routes import routes as work_project_routes
+from src.main.routes.api.notification.notification_routes import routes as notification_routes
+from src.main.routes.api.dashboard.dashboard_routes import routes as dashboard_routes
+from src.main.routes.api.eap.eap_routes import router as eap_routes
 
 # Mobile Routes
 from src.main.routes.mobile.fiscal.fiscal_mobile_routes import routes as fiscal_mobile_routes
@@ -37,36 +42,41 @@ app.include_router(test_base_route)
 # Static Files
 app.mount("/static", StaticFiles(directory="src/presentation/static"), name="static")
 
-# API Routes
-app.include_router(user_routes)
-app.include_router(bairro_routes)
-app.include_router(empresa_routes)
-app.include_router(fiscal_routes)
-app.include_router(history_project_routes)
-app.include_router(auth_routes)
-app.include_router(project_routes)
-app.include_router(project_bairro_routes)
-app.include_router(project_empresa_routes)
-app.include_router(project_type_routes)
-app.include_router(status_routes)
-app.include_router(user_project_routes)
-app.include_router(document_routes)
-app.include_router(types_routes)
-app.include_router(project_fiscal_routes)
-app.include_router(work_project_routes)
+# API Routes v1
+app.include_router(user_routes, prefix="/api/v1")
+app.include_router(bairro_routes, prefix="/api/v1")
+app.include_router(empresa_routes, prefix="/api/v1")
+app.include_router(fiscal_routes, prefix="/api/v1")
+app.include_router(history_project_routes, prefix="/api/v1")
+app.include_router(auth_routes, prefix="/api/v1")
+app.include_router(project_routes, prefix="/api/v1")
+app.include_router(project_bairro_routes, prefix="/api/v1")
+app.include_router(project_empresa_routes, prefix="/api/v1")
+app.include_router(folder_routes, prefix="/api/v1")
+app.include_router(project_folder_routes, prefix="/api/v1")
+app.include_router(project_type_routes, prefix="/api/v1")
+app.include_router(status_routes, prefix="/api/v1")
+app.include_router(user_project_routes, prefix="/api/v1")
+app.include_router(document_routes, prefix="/api/v1")
+app.include_router(types_routes, prefix="/api/v1")
+app.include_router(project_fiscal_routes, prefix="/api/v1")
+app.include_router(work_project_routes, prefix="/api/v1")
+app.include_router(notification_routes, prefix="/api/v1")
+app.include_router(dashboard_routes, prefix="/api/v1")
+app.include_router(eap_routes, prefix="/api/v1")
 
-# Mobile Routes
-app.include_router(fiscal_mobile_routes)
+# Mobile Routes v1
+app.include_router(fiscal_mobile_routes, prefix="/api/v1")
 
 # Web
 app.include_router(login_web)
 
-## Local Development URL
+## CORS Configuration
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from src.main.config.cors import CORSConfig
 
-origins = [
-    "http://localhost:5173",
-]
+origins = CORSConfig().cors_origins_list
 
 app.add_middleware(
     CORSMiddleware,

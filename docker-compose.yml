@@ -1,0 +1,205 @@
+# ==============================================================================
+# Docker Compose - Central de Projetos (Backend)
+# ==============================================================================
+# 
+# Este arquivo define todos os serviços necessários para executar o backend:
+# - Backend FastAPI (aplicação principal)
+# - MySQL (banco de dados principal)
+# - MongoDB (logs)
+#
+# USO:
+#   Desenvolvimento:
+#     docker-compose up -d
+#   
+#   Produção:
+#     docker-compose -f docker-compose.yml up -d
+#
+#   Parar serviços:
+#     docker-compose down
+#
+#   Ver logs:
+#     docker-compose logs -f backend
+#
+# IMPORTANTE:
+#   - Certifique-se de ter um arquivo .env configurado
+#   - Copie .env.example para .env e preencha os valores
+#
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # MySQL - Banco de Dados Principal
+  # ----------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: central_projetos_mysql
+    restart: unless-stopped
+    environment:
+      # Variáveis do MySQL (usando valores do .env)
+      MYSQL_ROOT_PASSWORD: ${PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DATABASE_NAME:-central_de_projetos}
+      MYSQL_USER: ${USERNAME:-root}
+      MYSQL_PASSWORD: ${PASSWORD:-rootpassword}
+    ports:
+      # Expõe porta MySQL (ajuste se necessário)
+      - "${PORT:-3306}:3306"
+    volumes:
+      # Persistência de dados
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - central_projetos_network
+
+  # ----------------------------------------------------------------------------
+  # MongoDB - Banco de Dados para Logs
+  # ----------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7
+    container_name: central_projetos_mongodb
+    restart: unless-stopped
+    environment:
+      # Variáveis do MongoDB (usando valores do .env)
+      # NOTA: Se MONGO_USERNAME for "null" no .env:
+      #   - MongoDB criará um usuário "null" (comportamento do Docker)
+      #   - Mas a aplicação Python detecta "null" e conecta sem autenticação
+      #   - Isso funciona corretamente, mas não é ideal para produção
+      #   - Para produção, use credenciais reais (não "null")
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-central_de_projetos}
+    ports:
+      # Expõe porta MongoDB (ajuste se necessário)
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      # Persistência de dados
+      - mongodb_data:/data/db
+    healthcheck:
+      # Healthcheck funciona com ou sem autenticação
+      # Se MONGO_USERNAME for "null", o ping funciona sem credenciais
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - central_projetos_network
+
+  # ----------------------------------------------------------------------------
+  # Backend - Aplicação FastAPI
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Escolha o target: 'development' ou 'production'
+      target: ${DOCKER_TARGET:-development}
+    container_name: central_projetos_backend
+    restart: unless-stopped
+    ports:
+      # Porta da aplicação FastAPI
+      - "8000:8000"
+    env_file:
+      # Carrega todas as variáveis do arquivo .env
+      - .env
+    environment:
+      # Sobrescreve HOSTs para usar os nomes dos serviços Docker
+      # IMPORTANTE: Dentro do container, use os nomes dos serviços, não localhost
+      HOST: mysql
+      THOST: mysql
+      MONGO_HOST: mongodb
+      TMONGO_HOST: mongodb
+      # CORS_ORIGINS pode ser definido no .env ou deixado vazio para usar fallback
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    volumes:
+      # Monta código local para desenvolvimento (hot-reload)
+      # Em produção, remova este volume
+      - .:/app
+      # Exclui arquivos desnecessários
+      - /app/.venv
+      - /app/__pycache__
+      - /app/*/__pycache__
+    networks:
+      - central_projetos_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+# ------------------------------------------------------------------------------
+# Volumes - Persistência de Dados
+# ------------------------------------------------------------------------------
+volumes:
+  mysql_data:
+    name: central_projetos_mysql_data
+    driver: local
+  mongodb_data:
+    name: central_projetos_mongodb_data
+    driver: local
+
+# ------------------------------------------------------------------------------
+# Networks - Rede Interna dos Containers
+# ------------------------------------------------------------------------------
+networks:
+  central_projetos_network:
+    name: central_projetos_network
+    driver: bridge
+
+# ==============================================================================
+# NOTAS IMPORTANTES
+# ==============================================================================
+#
+# 1. VARIÁVEIS DE AMBIENTE:
+#    - Todas as variáveis são lidas do arquivo .env
+#    - O backend usa os nomes dos serviços Docker para conexão
+#    - Exemplo: HOST=mysql (não localhost) dentro do container
+#    - HOSTs são sobrescritos automaticamente para usar nomes dos serviços
+#
+# 2. MONGODB:
+#    - Se MONGO_USERNAME e MONGO_PASSWORD forem "null" no .env:
+#      * MongoDB criará um usuário "null" (limitação do Docker)
+#      * A aplicação Python detecta "null" e conecta sem autenticação (funciona)
+#      * Para produção, use credenciais reais (não "null")
+#    - O mesmo serviço MongoDB é usado para produção e testes (TMONGO_HOST=mongodb)
+#    - A aplicação trata "null" automaticamente na string de conexão
+#
+# 3. RAVENDB:
+#    - RavenDB não está incluído aqui (geralmente é externo)
+#    - Configure RAVEN_URL no .env apontando para instância externa
+#    - Exemplo: RAVEN_URL=http://raven-server:8080 (se em Docker) ou URL externa
+#
+# 4. REDIS:
+#    - Redis não está incluído (não está sendo usado na aplicação)
+#    - Se precisar no futuro, adicione o serviço redis e configure REDIS_URL=mongodb
+#
+# 5. DESENVOLVIMENTO vs PRODUÇÃO:
+#    - Desenvolvimento: target=development, volumes montados (hot-reload)
+#    - Produção: target=production, sem volumes (imagem otimizada)
+#    - Defina DOCKER_TARGET=production no .env para produção
+#
+# 6. PERSISTÊNCIA:
+#    - Dados são salvos em volumes Docker
+#    - Para limpar tudo: docker-compose down -v
+#
+# 7. PORTAS:
+#    - Ajuste as portas no .env se houver conflitos
+#    - Backend: 8000
+#    - MySQL: 3306
+#    - MongoDB: 27017
+#
+# 8. CORS:
+#    - Configure CORS_ORIGINS no .env para produção
+#    - Exemplo: CORS_ORIGINS=https://app.example.com,https://www.example.com
+#    - Se não definido, usa fallback para desenvolvimento local
+#
+# ==============================================================================

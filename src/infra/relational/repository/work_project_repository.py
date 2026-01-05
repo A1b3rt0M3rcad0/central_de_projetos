@@ -4,6 +4,7 @@ from typing import List, Dict, Union, Optional
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from datetime import datetime
 from sqlalchemy.orm import joinedload
+from sqlalchemy import and_, or_
 
 from src.domain.entities.work_project import WorkProjectEntity
 from src.domain.entities.project import ProjectEntity
@@ -483,23 +484,34 @@ class WorkProjectRepository(IWorkProjectRepository):
                     message=f'Error on get work_projects with pagination: {str(e)}'
                 ) from e
     
-    def get_work_projects_with_pagination_by_fiscal(self, fiscal_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
+    def get_work_projects_with_pagination_by_fiscal(self, fiscal_id:int, page:int, page_size:int, search_term: str = None) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
         with self.__db_connection_handler as db:
             try:
                 offset = (page - 1) * page_size
                 
-                # Count total work projects for this fiscal
-                total_count = db.session.query(WorkProject).where(
-                    WorkProject.fiscal_id == fiscal_id
-                ).count()
-                
-                # Get paginated work projects for this fiscal
-                work_projects = db.session.query(WorkProject).options(
+                # Query base
+                query = db.session.query(WorkProject).options(
                     joinedload(WorkProject.project),
                     joinedload(WorkProject.fiscal)
                 ).where(
                     WorkProject.fiscal_id == fiscal_id
-                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
+                )
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(
+                        or_(
+                            WorkProject.title.ilike(search_filter),
+                            WorkProject.description.ilike(search_filter)
+                        )
+                    )
+                
+                # Count total work projects (com filtro se houver)
+                total_count = query.count()
+                
+                # Get paginated work projects
+                work_projects = query.order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
                 
                 work_project_entities = [
                     WorkProjectEntity(
@@ -539,25 +551,37 @@ class WorkProjectRepository(IWorkProjectRepository):
                     message=f'Error on get work_projects with pagination by fiscal_id: {fiscal_id}: {str(e)}'
                 ) from e
     
-    def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
+    def get_work_projects_with_pagination_by_fiscal_and_project(self, fiscal_id:int, project_id:int, page:int, page_size:int, search_term: str = None) -> Dict[str, Union[int, List[WorkProjectEntity]]]:
         with self.__db_connection_handler as db:
             try:
                 offset = (page - 1) * page_size
                 
-                # Count total work projects for this fiscal and project
-                total_count = db.session.query(WorkProject).where(
-                    WorkProject.fiscal_id == fiscal_id,
-                    WorkProject.project_id == project_id
-                ).count()
-                
-                # Get paginated work projects for this fiscal and project
-                work_projects = db.session.query(WorkProject).options(
+                # Query base
+                query = db.session.query(WorkProject).options(
                     joinedload(WorkProject.project),
                     joinedload(WorkProject.fiscal)
                 ).where(
-                    WorkProject.fiscal_id == fiscal_id,
-                    WorkProject.project_id == project_id
-                ).order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
+                    and_(
+                        WorkProject.fiscal_id == fiscal_id,
+                        WorkProject.project_id == project_id
+                    )
+                )
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(
+                        or_(
+                            WorkProject.title.ilike(search_filter),
+                            WorkProject.description.ilike(search_filter)
+                        )
+                    )
+                
+                # Count total work projects (com filtro se houver)
+                total_count = query.count()
+                
+                # Get paginated work projects
+                work_projects = query.order_by(WorkProject.created_at.desc()).offset(offset).limit(page_size).all()
                 
                 work_project_entities = [
                     WorkProjectEntity(
@@ -818,4 +842,47 @@ class WorkProjectRepository(IWorkProjectRepository):
             except Exception as e:
                 raise ErrorOnDeleteWorkProject(
                     message=f'Error on delete work_project with id: {work_project_id}: {str(e)}'
+                ) from e
+    
+    def delete_all_from_project(self, project_id:int) -> None:
+        with self.__db_connection_handler as db:
+            try:
+                work_projects = db.session.query(WorkProject).where(
+                    WorkProject.project_id == project_id
+                ).all()
+                
+                if not work_projects:
+                    return  # Não há work_projects para deletar, não é erro
+                
+                # Deletar todos os work_projects do projeto
+                for work_project in work_projects:
+                    db.session.delete(work_project)
+                
+                db.session.commit()
+            except Exception as e:
+                raise ErrorOnDeleteWorkProject(
+                    message=f'Error on delete all work_projects from project_id: {project_id}: {str(e)}'
+                ) from e
+    
+    def delete_all_from_fiscal(self, fiscal_id:int) -> None:
+        """
+        Deleta todos os work projects associados a um fiscal.
+        """
+        with self.__db_connection_handler as db:
+            try:
+                work_projects = db.session.query(WorkProject).where(
+                    WorkProject.fiscal_id == fiscal_id
+                ).all()
+                
+                if not work_projects:
+                    return  # Não há work_projects para deletar, não é erro
+                
+                # Deletar todos os work_projects do fiscal
+                for work_project in work_projects:
+                    db.session.delete(work_project)
+                
+                db.session.commit()
+            except Exception as e:
+                raise ErrorOnDeleteWorkProject(
+                    message=f'Error on delete all work_projects from fiscal_id: {fiscal_id}: {str(e)}'
                 ) from e 

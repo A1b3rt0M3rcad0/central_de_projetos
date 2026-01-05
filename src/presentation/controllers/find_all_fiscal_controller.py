@@ -23,7 +23,8 @@ class FindAllFiscalController(ControllerInterface):
                             "name": fiscal.name,
                             "email": fiscal.email.email if fiscal.email else None,
                             "phone": fiscal.phone,
-                            "created_at": fiscal.created_at.strftime(r'%d/%m/%Y')
+                            "created_at": fiscal.created_at.strftime(r'%d/%m/%Y'),
+                            "is_active": fiscal.is_active
                         }
                         for fiscal in result
                     ]

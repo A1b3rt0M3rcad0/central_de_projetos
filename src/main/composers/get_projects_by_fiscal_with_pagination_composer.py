@@ -15,6 +15,7 @@ Fluxo:
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
 from src.infra.relational.repository.project_repository import ProjectRepository
+from src.infra.relational.repository.work_project_repository import WorkProjectRepository
 from src.data.use_cases.get_projects_by_fiscal_with_pagination import GetProjectsByFiscalWithPagination
 from src.data.use_cases.find_project import FindProject
 from src.presentation.controllers.get_projects_by_fiscal_with_pagination_controller import GetProjectsByFiscalWithPaginationController
@@ -33,5 +34,8 @@ def get_projects_by_fiscal_with_pagination_composer() -> Callable[[HttpRequest],
             project_repository=ProjectRepository(
                 db_connection_handler=db_connection_handler_factory()
             )
+        ),
+        work_project_repository=WorkProjectRepository(
+            db_connection_handler=db_connection_handler_factory()
         )
     ).handle 

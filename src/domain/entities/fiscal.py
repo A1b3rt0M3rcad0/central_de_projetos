@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.domain.value_objects.email import Email
+from typing import Optional
 
 class FiscalEntity:
 
@@ -11,7 +12,8 @@ class FiscalEntity:
                  salt:bytes=None,
                  email:Email=None,
                  phone:str=None,
-                 refresh_token:str=None) -> None:
+                 refresh_token:str=None,
+                 is_active:Optional[int]=None) -> None:
         self.fiscal_id = fiscal_id
         self.name = name
         self.created_at = created_at
@@ -20,3 +22,4 @@ class FiscalEntity:
         self.email = email
         self.phone = phone
         self.refresh_token = refresh_token
+        self.is_active = is_active

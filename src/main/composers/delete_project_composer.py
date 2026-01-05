@@ -6,6 +6,9 @@ from src.data.use_cases.delete_bairro_from_project import DeleteBairroFromProjec
 from src.data.use_cases.delete_empresa_from_project import DeleteEmpresaFromProject
 from src.data.use_cases.delete_fiscal_from_project import DeleteFiscalFromProject
 from src.data.use_cases.delete_type_from_project import DeleteTypeFromProject
+from src.data.use_cases.delete_folder_from_project import DeleteFolderFromProject
+from src.data.use_cases.delete_work_project_from_project import DeleteWorkProjectFromProject
+from src.data.use_cases.delete_eap_from_project import DeleteEAPFromProject
 from src.data.use_cases.delete_all_documents_from_project import DeleteAllDocumentsFromProject
 
 from src.infra.relational.repository.project_repository import ProjectRepository
@@ -15,6 +18,10 @@ from src.infra.relational.repository.project_bairro_repository import ProjectBai
 from src.infra.relational.repository.project_empresa_repository import ProjectEmpresaRepository
 from src.infra.relational.repository.project_fiscal_repository import ProjectFiscalRepository
 from src.infra.relational.repository.project_type_repository import ProjectTypeRepository
+from src.infra.relational.repository.project_folder_repository import ProjectFolderRepository
+from src.infra.relational.repository.work_project_repository import WorkProjectRepository
+from src.infra.relational.repository.eap_repository import EAPRepository
+from src.infra.relational.repository.eap_item_repository import EAPItemRepository
 from src.infra.raven.repositories.project_document_repository import ProjectDocumentRepository
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from src.main.config.database.raven_connection_handler_factory import raven_connection_handler_factory
@@ -24,6 +31,10 @@ from typing import Callable
 
 def delete_project_composer() -> Callable[[HttpRequest], HttpResponse]:
     db_handler = db_connection_handler_factory()
+
+    # Repositórios adicionais necessários
+    eap_item_repository = EAPItemRepository(db_handler)
+    eap_repository = EAPRepository(db_handler, eap_item_repository)
 
     return DeleteProjectController(
         delete_project_case=DeleteProject(
@@ -46,6 +57,15 @@ def delete_project_composer() -> Callable[[HttpRequest], HttpResponse]:
         ),
         delete_type_from_project_case=DeleteTypeFromProject(
             project_type_repository=ProjectTypeRepository(db_connection_handler=db_handler)
+        ),
+        delete_folder_from_project_case=DeleteFolderFromProject(
+            project_folder_repository=ProjectFolderRepository(db_connection_handler=db_handler)
+        ),
+        delete_work_project_from_project_case=DeleteWorkProjectFromProject(
+            work_project_repository=WorkProjectRepository(db_connection_handler=db_handler)
+        ),
+        delete_eap_from_project_case=DeleteEAPFromProject(
+            eap_repository=eap_repository
         ),
         delete_all_documents_from_project_case=DeleteAllDocumentsFromProject(
             project_document_repository=ProjectDocumentRepository(

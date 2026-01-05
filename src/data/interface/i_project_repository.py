@@ -38,3 +38,11 @@ class IProjectRepository(ABC):
 
     @abstractmethod
     def delete(self, project_id:int) -> None:pass
+    
+    @abstractmethod
+    def get_projects_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[ProjectEntity]:
+        """Busca projetos com paginação e filtro global."""
+    
+    @abstractmethod
+    def count_projects_with_filter(self, search_term: str = None) -> int:
+        """Conta o total de projetos no sistema com filtro global."""

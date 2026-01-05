@@ -23,6 +23,7 @@ from src.main.composers.update_status_from_project_composer import update_status
 from src.main.composers.find_all_associations_possibility_from_project_composer import find_all_associations_possibility_from_project_composer
 from src.main.composers.count_projects_composer import count_projects_composer
 from src.main.composers.get_projects_with_pagination_composer import get_projects_with_pagination_composer
+from src.main.composers.get_projects_with_pagination_and_filter_composer import get_projects_with_pagination_and_filter_composer
 
 from src.main.routes.api.project.request_format.create_project_format import CreateProjectFormat
 from src.main.routes.api.project.request_format.update_project_name_format import UpdateProjectNameFormat
@@ -172,7 +173,7 @@ async def find_all_projects(request:Request, user=Security(role_required(["ADMIN
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/associations/all', response_model=FindAssociationProjectsResponse, responses=generate_error_responses())
+@routes.get('/associations/all', response_model=FindAssociationProjectsResponse, responses=generate_error_responses())
 async def find_associations_projects(request:Request, user=Security(role_required(["ADMIN"]))):
     """
     Endpoint para buscar todas as possibilidades de associação de projetos.
@@ -210,7 +211,7 @@ async def find_associations_projects(request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/all/details', response_model=FindAllProjectWithBasicDetailsResponse, responses=generate_error_responses())
+@routes.get('/all/details', response_model=FindAllProjectWithBasicDetailsResponse, responses=generate_error_responses())
 async def find_all_projects_details(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar todos os projetos com detalhes básicos.
@@ -607,7 +608,7 @@ async def update_project_status(body:UpdateStartStatusFormat, request:Request, u
         )
         return response_adapter(error_result)
 
-@routes.get('/project_detail/{project_id}', response_model=ProjectDetailResponse, responses=generate_error_responses())
+@routes.get('/detail/{project_id}', response_model=ProjectDetailResponse, responses=generate_error_responses())
 async def project_detail(project_id, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar detalhes completos de um projeto.
@@ -648,7 +649,7 @@ async def project_detail(project_id, request:Request, user=Security(role_require
         )
         return response_adapter(error_result)
 
-@routes.get('/projects/pagination/{page_size}/{page}', response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
+@routes.get('/pagination/{page_size}/{page}', response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
 async def get_projects_with_pagination(page_size:int, page:int, request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para buscar projetos com paginação.
@@ -685,6 +686,63 @@ async def get_projects_with_pagination(page_size:int, page:int, request:Request,
         error_result = error_handler(e)
         log_http(
             level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+@routes.get("/pagination-filter/{page_size}/{page}", response_model=GetProjectsWithPaginationReponse, responses=generate_error_responses())
+async def get_projects_with_pagination_and_filter(page_size:int, page:int, request:Request, search: str = None, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar projetos com paginação e filtro global.
+    Retorna uma lista paginada de projetos filtrados para otimizar performance em grandes volumes.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        page_size: Número de projetos por página
+        page: Número da página (começa em 1)
+        search: Termo de busca opcional para filtrar projetos
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        GetProjectsWithPaginationResponse: Lista paginada de projetos com metadados de paginação
+        
+    Raises:
+        InvalidPaginationError: Se os parâmetros de paginação forem inválidos
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Criar um novo request com os parâmetros
+        from src.presentation.http_types.http_request import HttpRequest
+        http_request = HttpRequest(
+            body={},
+            headers=dict(request.headers),
+            query_params={
+                "search": search
+            },
+            path_params={
+                "page_size": page_size,
+                "page": page
+            },
+            url=str(request.url)
+        )
+        
+        # Processar requisição
+        http_response = get_projects_with_pagination_and_filter_composer()(http_request)
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level="INFO",
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level="ERROR",
             logger_name=PREFIX,
             http_response=error_result,
             request=request

@@ -24,7 +24,8 @@ class WhoAmIController(ControllerInterface):
                     "message" : "You are founded",
                     "content": {
                         "name": user.name,
-                        "role": user.role.value
+                        "role": user.role.value,
+                        "cpf": user.cpf.value
                     }
                 }
             )

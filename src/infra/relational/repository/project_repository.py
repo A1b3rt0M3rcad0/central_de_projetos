@@ -5,6 +5,7 @@ from src.domain.value_objects.monetary_value import MonetaryValue
 from src.infra.relational.config.interface.i_db_connection_handler import IDBConnectionHandler
 from datetime import datetime
 from sqlalchemy.orm import joinedload, subqueryload
+from sqlalchemy import or_
 
 from src.domain.entities.project import ProjectEntity
 from src.domain.entities.bairro import BairroEntity
@@ -13,6 +14,10 @@ from src.domain.entities.empresa import EmpresaEntity
 from src.domain.entities.types import TypesEntity
 from src.domain.entities.status import StatusEntity
 from src.domain.entities.history_project import HistoryProjectEntity
+from src.domain.entities.user import UserEntity
+from src.domain.value_objects.cpf import CPF
+from src.domain.value_objects.email import Email
+from src.domain.value_objects.roles import Role
 
 from src.infra.relational.models.project import Project
 from src.infra.relational.models.status import Status
@@ -25,14 +30,18 @@ from src.infra.relational.models.project_fiscal import ProjectFiscal
 from src.infra.relational.models.fiscal import Fiscal
 from src.infra.relational.models.project_type import ProjectType
 from src.infra.relational.models.types import Types
+from src.infra.relational.models.user_project import UserProject
+from src.infra.relational.models.user import User
 
 # Import additional models to ensure SQLAlchemy can resolve relationships
 # These imports are necessary for SQLAlchemy to properly configure relationships
 # pylint: disable=unused-import
-from src.infra.relational.models.user_project import UserProject
 from src.infra.relational.models.refresh_token import RefreshToken
-from src.infra.relational.models.user import User
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.folder import Folder
+from src.infra.relational.models.project_folder import ProjectFolder
+from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 
 # Errors
 from src.errors.repository.not_exists_error.projects_does_not_exists import ProjectNotExists
@@ -90,20 +99,40 @@ class ProjectRepository(IProjectRepository):
     def find(self, project_id:int) -> ProjectEntity:
         with self.__db_connection_handler as db:
             try:
-                project = db.session.query(Project).where(
+                project = db.session.query(Project).options(
+                    joinedload(Project.status),
+                    joinedload(Project.project_bairros).joinedload(ProjectBairro.bairro),
+                    joinedload(Project.project_empresas).joinedload(ProjectEmpresa.empresa)
+                ).where(
                     Project.id == project_id
                 ).first()
                 if not project:
                     raise ProjectNotExists(message=f'Project with id: {project_id} does not exists')
+                
                 return ProjectEntity(
                     project_id=project.id,
                     andamento_do_projeto=project.andamento_do_projeto,
                     start_date=project.start_date,
                     expected_completion_date=project.expected_completion_date,
-                    verba_disponivel=project.verba_disponivel,
+                    verba_disponivel=MonetaryValue(project.verba_disponivel),
                     status_id=project.status_id,
                     end_date=project.end_date,
-                    name=project.name
+                    name=project.name,
+                    status=StatusEntity(
+                        status_id=project.status.id,
+                        description=project.status.description,
+                        created_at=project.status.created_at
+                    ) if project.status else None,
+                    bairro=BairroEntity(
+                        bairro_id=project.project_bairros[0].bairro.id,
+                        name=project.project_bairros[0].bairro.name,
+                        created_at=project.project_bairros[0].bairro.created_at
+                    ) if project.project_bairros and len(project.project_bairros) > 0 else None,
+                    empresa=EmpresaEntity(
+                        empresa_id=project.project_empresas[0].empresa.id,
+                        name=project.project_empresas[0].empresa.name,
+                        created_at=project.project_empresas[0].empresa.created_at
+                    ) if project.project_empresas and len(project.project_empresas) > 0 else None
                 )
             except ProjectNotExists as e:
                 raise e from e
@@ -553,3 +582,149 @@ class ProjectRepository(IProjectRepository):
                 ) from e
             except Exception as e:
                 raise ErrorOnDeleteProject(message=f'Error on delete project: {project_id}: {str(e)}') from e
+
+    def get_projects_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[ProjectEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                offset = (page - 1) * page_size
+                query = db.session.query(Project).options(
+                    joinedload(Project.project_bairros).joinedload(ProjectBairro.bairro),
+                    joinedload(Project.project_empresas).joinedload(ProjectEmpresa.empresa),
+                    joinedload(Project.project_fiscals).joinedload(ProjectFiscal.fiscal),
+                    joinedload(Project.project_types).joinedload(ProjectType.types),
+                    joinedload(Project.user_projects).joinedload(UserProject.user),
+                    joinedload(Project.status),
+                    joinedload(Project.project_folders).joinedload(ProjectFolder.folder)
+                )
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    # Adicionar outerjoins para buscar em todas as colunas relacionadas
+                    # Status já está sendo carregado via joinedload, então não precisa de outerjoin
+                    query = query.outerjoin(ProjectBairro, Project.id == ProjectBairro.project_id)
+                    query = query.outerjoin(Bairro, ProjectBairro.bairro_id == Bairro.id)
+                    query = query.outerjoin(ProjectEmpresa, Project.id == ProjectEmpresa.project_id)
+                    query = query.outerjoin(Empresa, ProjectEmpresa.empresa_id == Empresa.id)
+                    query = query.outerjoin(ProjectFiscal, Project.id == ProjectFiscal.project_id)
+                    query = query.outerjoin(Fiscal, ProjectFiscal.fiscal_id == Fiscal.id)
+                    query = query.outerjoin(ProjectType, Project.id == ProjectType.project_id)
+                    query = query.outerjoin(Types, ProjectType.type_id == Types.id)
+                    query = query.outerjoin(UserProject, Project.id == UserProject.project_id)
+                    query = query.outerjoin(User, UserProject.user_cpf == User.cpf)
+                    query = query.outerjoin(ProjectFolder, Project.id == ProjectFolder.project_id)
+                    query = query.outerjoin(Folder, ProjectFolder.folder_id == Folder.id)
+                    
+                    query = query.filter(
+                        or_(
+                            Project.name.ilike(search_filter),
+                            Project.andamento_do_projeto.ilike(search_filter),
+                            Bairro.name.ilike(search_filter),
+                            Empresa.name.ilike(search_filter),
+                            Fiscal.name.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            Types.name.ilike(search_filter),
+                            Status.description.ilike(search_filter),
+                            Folder.name.ilike(search_filter)
+                        )
+                    ).distinct()
+                
+                projects = query.offset(offset).limit(page_size).all()
+                
+                project_entities = []
+                for p in projects:
+                    project_entities.append(ProjectEntity(
+                        project_id=p.id,
+                        verba_disponivel=MonetaryValue(p.verba_disponivel),
+                        andamento_do_projeto=p.andamento_do_projeto,
+                        expected_completion_date=p.expected_completion_date,
+                        start_date=p.start_date,
+                        end_date=p.end_date,
+                        status_id=p.status_id,
+                        name=p.name,
+                        bairro=(
+                            BairroEntity(
+                                bairro_id=p.project_bairros[0].bairro.id,
+                                name=p.project_bairros[0].bairro.name,
+                                created_at=p.project_bairros[0].bairro.created_at
+                            ) if p.project_bairros and len(p.project_bairros) > 0 else None
+                        ),
+                        empresa=(
+                            EmpresaEntity(
+                                empresa_id=p.project_empresas[0].empresa.id,
+                                name=p.project_empresas[0].empresa.name,
+                                created_at=p.project_empresas[0].empresa.created_at
+                            ) if p.project_empresas and len(p.project_empresas) > 0 else None
+                        ),
+                        fiscal=(
+                            FiscalEntity(
+                                fiscal_id=p.project_fiscals[0].fiscal.id,
+                                name=p.project_fiscals[0].fiscal.name,
+                                created_at=p.project_fiscals[0].fiscal.created_at
+                            ) if p.project_fiscals and len(p.project_fiscals) > 0 else None
+                        ),
+                        types=(
+                            TypesEntity(
+                                types_id=p.project_types[0].types.id,
+                                name=p.project_types[0].types.name,
+                                created_at=p.project_types[0].types.created_at
+                            ) if p.project_types and len(p.project_types) > 0 else None
+                        ),
+                        status=(
+                            StatusEntity(
+                                status_id=p.status.id,
+                                description=p.status.description,
+                                created_at=p.status.created_at
+                            ) if p.status else None
+                        )
+                    ))
+                
+                return project_entities
+            except Exception as e:
+                raise ErrorOnFindProject(
+                    message=f'Error on get projects with pagination and filter: {str(e)}'
+                ) from e
+
+    def count_projects_with_filter(self, search_term: str = None) -> int:
+        with self.__db_connection_handler as db:
+            try:
+                query = db.session.query(Project)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    # Adicionar outerjoins para buscar em todas as colunas relacionadas (mesma lógica do get)
+                    # Status já está relacionado via foreign key, então não precisa de outerjoin
+                    query = query.outerjoin(ProjectBairro, Project.id == ProjectBairro.project_id)
+                    query = query.outerjoin(Bairro, ProjectBairro.bairro_id == Bairro.id)
+                    query = query.outerjoin(ProjectEmpresa, Project.id == ProjectEmpresa.project_id)
+                    query = query.outerjoin(Empresa, ProjectEmpresa.empresa_id == Empresa.id)
+                    query = query.outerjoin(ProjectFiscal, Project.id == ProjectFiscal.project_id)
+                    query = query.outerjoin(Fiscal, ProjectFiscal.fiscal_id == Fiscal.id)
+                    query = query.outerjoin(ProjectType, Project.id == ProjectType.project_id)
+                    query = query.outerjoin(Types, ProjectType.type_id == Types.id)
+                    query = query.outerjoin(UserProject, Project.id == UserProject.project_id)
+                    query = query.outerjoin(User, UserProject.user_cpf == User.cpf)
+                    query = query.outerjoin(ProjectFolder, Project.id == ProjectFolder.project_id)
+                    query = query.outerjoin(Folder, ProjectFolder.folder_id == Folder.id)
+                    
+                    query = query.filter(
+                        or_(
+                            Project.name.ilike(search_filter),
+                            Project.andamento_do_projeto.ilike(search_filter),
+                            Bairro.name.ilike(search_filter),
+                            Empresa.name.ilike(search_filter),
+                            Fiscal.name.ilike(search_filter),
+                            User.name.ilike(search_filter),
+                            Types.name.ilike(search_filter),
+                            Status.description.ilike(search_filter),
+                            Folder.name.ilike(search_filter)
+                        )
+                    ).distinct()
+                
+                count = query.count()
+                return count
+            except Exception as e:
+                raise ErrorOnFindProject(
+                    message=f'Error on count projects with filter: {str(e)}'
+                ) from e

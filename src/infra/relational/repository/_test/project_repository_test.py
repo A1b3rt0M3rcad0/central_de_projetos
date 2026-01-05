@@ -6,6 +6,15 @@ from sqlalchemy import text, TextClause
 from src.infra.relational.repository.project_repository import ProjectRepository
 import pytest
 
+# Import models to ensure SQLAlchemy can resolve relationships
+# pylint: disable=unused-import
+from src.infra.relational.models.project import Project
+from src.infra.relational.models.project_folder import ProjectFolder
+from src.infra.relational.models.folder import Folder
+from src.infra.relational.models.status import Status
+from src.infra.relational.models.notification import Notification
+# pylint: enable=unused-import
+
 @pytest.fixture
 def monetary_value() -> MonetaryValue:
     return MonetaryValue(10_000)
@@ -112,7 +121,7 @@ def test_find(
 
     assert project.project_id == project_id
     assert project.status_id == status.id
-    assert project.verba_disponivel == monetary_value.value
+    assert project.verba_disponivel.value == monetary_value.value
     assert project.andamento_do_projeto == andamento_do_projeto
 
 def test_find_all(

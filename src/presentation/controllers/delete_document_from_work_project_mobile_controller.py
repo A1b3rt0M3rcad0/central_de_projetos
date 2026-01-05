@@ -47,9 +47,10 @@ class DeleteDocumentFromWorkProjectMobileController(ControllerInterface):
                     message=f"Fiscal não está autorizado a deletar documentos deste work project. Work Project ID: {work_project_id}"
                 )
             
-            # Validação: Verificar se o work_project existe
+            # Validação: Verificar se o work_project existe e obter project_id
+            work_project = None
             try:
-                self.__get_work_project_case.get(work_project_id=work_project_id)
+                work_project = self.__get_work_project_case.get(work_project_id=work_project_id)
             except Exception as e:
                 raise e from e
             
@@ -66,11 +67,11 @@ class DeleteDocumentFromWorkProjectMobileController(ControllerInterface):
                 document_name=document_name
             )
             
-            # Criar histórico do projeto
+            # Criar histórico do projeto (usar project_id do work_project, não work_project_id)
             self.__create_history_project_case.create(
-                project_id=work_project_id,
+                project_id=work_project.project_id,
                 data_name='Documento Mobile Deletado',
-                description=f'Documento "{document_name}" deletado via mobile'
+                description=f'Documento "{document_name}" deletado via mobile pelo fiscal {fiscal_id}'
             )
             
             return HttpResponse(

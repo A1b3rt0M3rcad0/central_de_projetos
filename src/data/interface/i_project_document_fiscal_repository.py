@@ -76,6 +76,19 @@ class IProjectDocumentFiscalRepository(ABC):
         Raises:
             Exception: Se houver erro na deleção
         """
+    
+    @abstractmethod
+    def delete_all_fiscal_documents_from_fiscal(self, fiscal_id:int, work_project_ids:List[int]) -> None:
+        """
+        Deleta todos os documentos de todos os work projects de um fiscal.
+        
+        Args:
+            fiscal_id: ID do fiscal
+            work_project_ids: Lista de IDs dos work projects do fiscal
+            
+        Raises:
+            Exception: Se houver erro na deleção
+        """
 
     @abstractmethod
     def get_document_by_work_project_and_name(self, work_project_id:int, document_name:str) -> bytes:

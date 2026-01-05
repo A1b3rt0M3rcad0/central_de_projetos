@@ -10,7 +10,7 @@ class WorkProjectEntity(BaseModel):
     fiscal_id: int
     title: str
     description: str
-    photo_name: str
+    photo_name: Optional[str] = None  # Pode ser None se não houver foto
     additional_documents: Optional[list] = None  # JSON array of additional document names
     created_at: datetime
     updated_at: datetime

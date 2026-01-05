@@ -81,7 +81,7 @@ async def find_project_bairro(bairro_id:int, project_id:int, request:Request, us
         )
         return response_adapter(error_result)
 
-@routes.get('/project/count/', response_model=GetProjectCountByBairroResponse, responses=generate_error_responses())
+@routes.get('/project/count', response_model=GetProjectCountByBairroResponse, responses=generate_error_responses())
 async def get_project_counts_by_bairro(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para obter contagem de projetos agrupados por bairro.
@@ -119,7 +119,7 @@ async def get_project_counts_by_bairro(request:Request, user=Security(role_requi
         )
         return response_adapter(error_result)
 
-@routes.get('/project/verba/', response_model=GetProjectVerbaByBairroResponse, responses=generate_error_responses())
+@routes.get('/project/verba', response_model=GetProjectVerbaByBairroResponse, responses=generate_error_responses())
 async def get_project_verba_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para obter soma de verbas de projetos agrupados por bairro.
@@ -157,7 +157,7 @@ async def get_project_verba_by_bairro_r(request:Request, user=Security(role_requ
         )
         return response_adapter(error_result)
 
-@routes.get('/project/status/', response_model=GetProjectStatusCountByBairroResponse, responses=generate_error_responses())
+@routes.get('/project/status', response_model=GetProjectStatusCountByBairroResponse, responses=generate_error_responses())
 async def get_project_status_count_by_bairro_r(request:Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
     """
     Endpoint para obter contagem de projetos por status agrupados por bairro.

@@ -22,6 +22,7 @@ class FindUserController(ControllerInterface):
                     'message': 'User Founded',
                     'content': {
                         'cpf': user.cpf.value,
+                        'name': user.name,
                         'email': user.email.email,
                         'role': user.role.value,
                         'created_at': user.created_at.strftime(r'%d/%m/%Y')

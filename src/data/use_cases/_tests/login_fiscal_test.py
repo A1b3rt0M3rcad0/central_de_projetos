@@ -23,7 +23,7 @@ class TestLoginFiscal:
             m.setattr('src.data.use_cases.login_fiscal.hashedpassword_factory_chk', lambda pwd, salt, pwd_input: True)
             m.setattr('src.data.use_cases.login_fiscal.auth_factory', lambda: Mock(encode=lambda payload: 'jwt_token'))
             m.setattr('src.data.use_cases.login_fiscal.dotenv.load_dotenv', lambda: None)
-            m.setattr('src.data.use_cases.login_fiscal.os.getenv', lambda key: '24')
+            m.setattr('src.data.use_cases.login_fiscal.os.getenv', lambda key, default=None: '24' if key == 'EXPIRE_TIME_TOKEN' else '24' if key == 'EXPIRE_DEADLINE' else default)
             
             login_fiscal = LoginFiscal(mock_repository)
             email = Email('test@example.com')
@@ -49,7 +49,7 @@ class TestLoginFiscal:
         with pytest.raises(FiscalNotFoundError) as exc_info:
             login_fiscal.check(email, password)
         
-        assert 'The fiscal with this email: nonexistent@example.com does not exists' in str(exc_info.value.message)
+        assert 'Email ou senha incorretos' in str(exc_info.value.message)
     
     def test_login_fiscal_invalid_password(self):
         # Arrange
@@ -73,4 +73,4 @@ class TestLoginFiscal:
             with pytest.raises(InvalidPasswordError) as exc_info:
                 login_fiscal.check(email, password)
             
-            assert 'The password WrongPassword123 is incorrect' in str(exc_info.value.message) 
+            assert 'Email ou senha incorretos' in str(exc_info.value.message) 

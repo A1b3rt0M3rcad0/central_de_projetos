@@ -1,0 +1,326 @@
+---
+description: Descrição do Sistema - Gestor de Projetos Públicos (GPP)
+alwaysApply: false
+---
+
+# Central de Projetos - Descrição Conceitual do Sistema
+
+## 🏛️ Propósito e Visão Geral
+
+O **Central de Projetos** é um sistema de gestão desenvolvido especificamente para o **Gabinete de Projetos** de uma câmara municipal. Seu propósito principal é centralizar e organizar todo o ciclo de vida dos projetos legislativos municipais, desde sua concepção até a conclusão, proporcionando transparência, controle e eficiência na gestão pública.
+
+## 🎯 O Que o Sistema Resolve
+
+### Problemas Identificados na Gestão Municipal
+
+**Antes do Sistema:**
+
+- Projetos legislativos espalhados em diferentes planilhas e documentos
+- Falta de visibilidade sobre o andamento dos projetos
+- Dificuldade para acompanhar prazos e orçamentos
+- Documentos perdidos ou mal organizados
+- Comunicação ineficiente entre vereadores, assessores e fiscais
+- Falta de histórico das mudanças nos projetos
+- Controle financeiro inadequado das verbas disponíveis
+
+**Com o Sistema:**
+
+- **Centralização Total**: Todos os projetos em um local único e organizado
+- **Transparência**: Visibilidade completa do status e progresso de cada projeto
+- **Controle Financeiro**: Acompanhamento preciso das verbas disponíveis e gastos
+- **Gestão de Prazos**: Cronogramas claros com datas de início, previsão e conclusão
+- **Organização Documental**: Acesso centralizado a todos os documentos relacionados
+- **Rastreabilidade**: Histórico completo de todas as alterações nos projetos
+- **Comunicação Eficiente**: Sistema integrado entre todos os envolvidos
+
+## 🏢 Contexto de Uso
+
+### Usuários do Sistema
+
+1. **Vereadores**: Legisladores que propõem e acompanham projetos
+2. **Assessores**: Profissionais que auxiliam os vereadores na gestão
+3. **Fiscais**: Responsáveis por fiscalizar e acompanhar a execução dos projetos
+4. **Administradores**: Gestores do sistema com acesso total
+
+### Tipos de Projetos Gerenciados
+
+- **Projetos Legislativos**: Propostas de lei, decretos, resoluções
+- **Projetos de Infraestrutura**: Obras públicas, melhorias urbanas
+- **Projetos Sociais**: Programas de assistência, educação, saúde
+- **Projetos Ambientais**: Sustentabilidade, preservação ambiental
+- **Projetos Culturais**: Eventos, patrimônio histórico, arte
+
+## 🔄 Fluxo de Trabalho Conceitual
+
+### 1. Criação e Proposta
+
+- Vereador ou assessor cria um novo projeto
+- Define tipo, status inicial, verba disponível
+- Estabelece cronograma e responsáveis
+
+### 2. Organização e Classificação
+
+- Projeto é classificado por tipo e status
+- Associado a bairros específicos quando aplicável
+- Vinculado a empresas executoras quando necessário
+
+### 3. Acompanhamento e Fiscalização
+
+- Fiscais acompanham o andamento
+- Registram fotos e documentos de progresso
+- Atualizam status e cronogramas
+
+### 4. Documentação e Histórico
+
+- Todos os documentos são centralizados
+- Histórico de mudanças é mantido
+- Relatórios são gerados automaticamente
+
+### 5. Conclusão e Avaliação
+
+- Projeto é marcado como concluído
+- Documentação final é arquivada
+- Relatório de resultados é gerado
+
+## 📊 Benefícios Conceituais
+
+### Para a Câmara Municipal
+
+- **Eficiência Operacional**: Redução significativa do tempo gasto na gestão manual
+- **Transparência Pública**: Maior visibilidade dos projetos para a população
+- **Controle Orçamentário**: Melhor gestão dos recursos públicos
+- **Compliance**: Atendimento às exigências de transparência governamental
+
+### Para os Vereadores
+
+- **Organização**: Todos os projetos em um local acessível
+- **Acompanhamento**: Visão clara do progresso de suas propostas
+- **Produtividade**: Menos tempo gasto com burocracia, mais tempo para legislar
+- **Prestação de Contas**: Facilidade para demonstrar resultados à população
+
+### Para os Fiscais
+
+- **Ferramentas de Trabalho**: Sistema móvel para registro em campo
+- **Organização**: Documentos e fotos organizados por projeto
+- **Comunicação**: Relatórios automáticos para superiores
+- **Eficiência**: Menos papel, mais tecnologia
+
+### Para a População
+
+- **Transparência**: Acesso às informações dos projetos municipais
+- **Participação**: Maior visibilidade do trabalho dos vereadores
+- **Controle Social**: Possibilidade de acompanhar o uso dos recursos públicos
+
+## 🎯 Objetivos Estratégicos
+
+### Curto Prazo
+
+- Eliminar a gestão manual e desorganizada de projetos
+- Centralizar toda a documentação em um sistema único
+- Melhorar a comunicação entre os envolvidos
+
+### Médio Prazo
+
+- Aumentar a transparência da gestão municipal
+- Reduzir o tempo de tramitação dos projetos
+- Melhorar a qualidade do acompanhamento fiscal
+
+### Longo Prazo
+
+- Estabelecer um modelo de gestão municipal moderno
+- Criar um banco de dados histórico para análise de políticas públicas
+- Servir como referência para outras câmaras municipais
+
+## 🌟 Impacto Social
+
+O Central de Projetos não é apenas um sistema tecnológico, mas uma ferramenta de **democratização da gestão pública**. Ele:
+
+- **Democratiza o Acesso**: Qualquer cidadão pode acompanhar os projetos
+- **Fortalece a Democracia**: Vereadores podem demonstrar seu trabalho de forma transparente
+- **Melhora a Gestão Pública**: Recursos são utilizados de forma mais eficiente
+- **Promove a Participação**: Cidadãos podem se envolver mais no processo legislativo
+
+## 📈 Resultados Esperados
+
+### Quantitativos
+
+- Redução de 70% no tempo de gestão manual de projetos
+- Aumento de 90% na organização documental
+- Redução de 50% no tempo de tramitação de projetos
+- 100% dos projetos com histórico completo de alterações
+
+### Qualitativos
+
+- Maior satisfação dos vereadores com as ferramentas de trabalho
+- Melhoria na qualidade do acompanhamento fiscal
+- Aumento da transparência e credibilidade da câmara
+- Fortalecimento da relação entre poder público e sociedade
+
+## 🔮 Visão de Futuro
+
+O Central de Projetos representa o futuro da gestão municipal: **transparente, eficiente e centrada no cidadão**. É um sistema que não apenas resolve problemas atuais, mas estabelece as bases para uma administração pública moderna, onde a tecnologia serve à democracia e ao bem comum.
+
+---
+
+_Este sistema foi desenvolvido com o propósito de transformar a gestão municipal, tornando-a mais transparente, eficiente e acessível a todos os cidadãos._
+
+# Central de Projetos - Descrição Conceitual do Sistema
+
+## 🏛️ Propósito e Visão Geral
+
+O **Central de Projetos** é um sistema de gestão desenvolvido especificamente para o **Gabinete de Projetos** de uma câmara municipal. Seu propósito principal é centralizar e organizar todo o ciclo de vida dos projetos legislativos municipais, desde sua concepção até a conclusão, proporcionando transparência, controle e eficiência na gestão pública.
+
+## 🎯 O Que o Sistema Resolve
+
+### Problemas Identificados na Gestão Municipal
+
+**Antes do Sistema:**
+
+- Projetos legislativos espalhados em diferentes planilhas e documentos
+- Falta de visibilidade sobre o andamento dos projetos
+- Dificuldade para acompanhar prazos e orçamentos
+- Documentos perdidos ou mal organizados
+- Comunicação ineficiente entre vereadores, assessores e fiscais
+- Falta de histórico das mudanças nos projetos
+- Controle financeiro inadequado das verbas disponíveis
+
+**Com o Sistema:**
+
+- **Centralização Total**: Todos os projetos em um local único e organizado
+- **Transparência**: Visibilidade completa do status e progresso de cada projeto
+- **Controle Financeiro**: Acompanhamento preciso das verbas disponíveis e gastos
+- **Gestão de Prazos**: Cronogramas claros com datas de início, previsão e conclusão
+- **Organização Documental**: Acesso centralizado a todos os documentos relacionados
+- **Rastreabilidade**: Histórico completo de todas as alterações nos projetos
+- **Comunicação Eficiente**: Sistema integrado entre todos os envolvidos
+
+## 🏢 Contexto de Uso
+
+### Usuários do Sistema
+
+1. **Vereadores**: Legisladores que propõem e acompanham projetos
+2. **Assessores**: Profissionais que auxiliam os vereadores na gestão
+3. **Fiscais**: Responsáveis por fiscalizar e acompanhar a execução dos projetos
+4. **Administradores**: Gestores do sistema com acesso total
+
+### Tipos de Projetos Gerenciados
+
+- **Projetos Legislativos**: Propostas de lei, decretos, resoluções
+- **Projetos de Infraestrutura**: Obras públicas, melhorias urbanas
+- **Projetos Sociais**: Programas de assistência, educação, saúde
+- **Projetos Ambientais**: Sustentabilidade, preservação ambiental
+- **Projetos Culturais**: Eventos, patrimônio histórico, arte
+
+## 🔄 Fluxo de Trabalho Conceitual
+
+### 1. Criação e Proposta
+
+- Vereador ou assessor cria um novo projeto
+- Define tipo, status inicial, verba disponível
+- Estabelece cronograma e responsáveis
+
+### 2. Organização e Classificação
+
+- Projeto é classificado por tipo e status
+- Associado a bairros específicos quando aplicável
+- Vinculado a empresas executoras quando necessário
+
+### 3. Acompanhamento e Fiscalização
+
+- Fiscais acompanham o andamento
+- Registram fotos e documentos de progresso
+- Atualizam status e cronogramas
+
+### 4. Documentação e Histórico
+
+- Todos os documentos são centralizados
+- Histórico de mudanças é mantido
+- Relatórios são gerados automaticamente
+
+### 5. Conclusão e Avaliação
+
+- Projeto é marcado como concluído
+- Documentação final é arquivada
+- Relatório de resultados é gerado
+
+## 📊 Benefícios Conceituais
+
+### Para a Câmara Municipal
+
+- **Eficiência Operacional**: Redução significativa do tempo gasto na gestão manual
+- **Transparência Pública**: Maior visibilidade dos projetos para a população
+- **Controle Orçamentário**: Melhor gestão dos recursos públicos
+- **Compliance**: Atendimento às exigências de transparência governamental
+
+### Para os Vereadores
+
+- **Organização**: Todos os projetos em um local acessível
+- **Acompanhamento**: Visão clara do progresso de suas propostas
+- **Produtividade**: Menos tempo gasto com burocracia, mais tempo para legislar
+- **Prestação de Contas**: Facilidade para demonstrar resultados à população
+
+### Para os Fiscais
+
+- **Ferramentas de Trabalho**: Sistema móvel para registro em campo
+- **Organização**: Documentos e fotos organizados por projeto
+- **Comunicação**: Relatórios automáticos para superiores
+- **Eficiência**: Menos papel, mais tecnologia
+
+### Para a População
+
+- **Transparência**: Acesso às informações dos projetos municipais
+- **Participação**: Maior visibilidade do trabalho dos vereadores
+- **Controle Social**: Possibilidade de acompanhar o uso dos recursos públicos
+
+## 🎯 Objetivos Estratégicos
+
+### Curto Prazo
+
+- Eliminar a gestão manual e desorganizada de projetos
+- Centralizar toda a documentação em um sistema único
+- Melhorar a comunicação entre os envolvidos
+
+### Médio Prazo
+
+- Aumentar a transparência da gestão municipal
+- Reduzir o tempo de tramitação dos projetos
+- Melhorar a qualidade do acompanhamento fiscal
+
+### Longo Prazo
+
+- Estabelecer um modelo de gestão municipal moderno
+- Criar um banco de dados histórico para análise de políticas públicas
+- Servir como referência para outras câmaras municipais
+
+## 🌟 Impacto Social
+
+O Central de Projetos não é apenas um sistema tecnológico, mas uma ferramenta de **democratização da gestão pública**. Ele:
+
+- **Democratiza o Acesso**: Qualquer cidadão pode acompanhar os projetos
+- **Fortalece a Democracia**: Vereadores podem demonstrar seu trabalho de forma transparente
+- **Melhora a Gestão Pública**: Recursos são utilizados de forma mais eficiente
+- **Promove a Participação**: Cidadãos podem se envolver mais no processo legislativo
+
+## 📈 Resultados Esperados
+
+### Quantitativos
+
+- Redução de 70% no tempo de gestão manual de projetos
+- Aumento de 90% na organização documental
+- Redução de 50% no tempo de tramitação de projetos
+- 100% dos projetos com histórico completo de alterações
+
+### Qualitativos
+
+- Maior satisfação dos vereadores com as ferramentas de trabalho
+- Melhoria na qualidade do acompanhamento fiscal
+- Aumento da transparência e credibilidade da câmara
+- Fortalecimento da relação entre poder público e sociedade
+
+## 🔮 Visão de Futuro
+
+O Central de Projetos representa o futuro da gestão municipal: **transparente, eficiente e centrada no cidadão**. É um sistema que não apenas resolve problemas atuais, mas estabelece as bases para uma administração pública moderna, onde a tecnologia serve à democracia e ao bem comum.
+
+---
+
+_Este sistema foi desenvolvido com o propósito de transformar a gestão municipal, tornando-a mais transparente, eficiente e acessível a todos os cidadãos._

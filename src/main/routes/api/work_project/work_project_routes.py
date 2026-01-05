@@ -21,12 +21,14 @@ from src.main.composers.download_work_project_document_composer import download_
 from src.main.composers.get_latest_work_project_by_project_composer import get_latest_work_project_by_project_composer
 
 from src.main.routes.api.__error.error_response import generate_error_responses
+from src.main.routes.api.__base_response.base_message_response import BaseMessageResponse
 from src.main.routes.api.work_project.work_project_response.create_work_project_with_fiscal_document_response import CreateWorkProjectWithFiscalDocumentResponse
 from src.main.routes.api.work_project.work_project_response.add_documents_to_work_project_response import AddDocumentsToWorkProjectResponse
 from src.main.routes.api.work_project.work_project_response.delete_work_project_response import DeleteWorkProjectResponse
 from src.main.routes.api.work_project.work_project_response.get_work_project_response import GetWorkProjectResponse
 from src.main.routes.api.work_project.work_project_response.get_work_projects_with_pagination_response import GetWorkProjectsByProjectWithPaginationResponse
 from src.main.routes.api.work_project.work_project_response.get_latest_work_project_by_project_response import GetLatestWorkProjectByProjectResponse
+from src.main.composers.get_latest_work_projects_by_fiscal_composer import get_latest_work_projects_by_fiscal_composer
 
 ## Auth
 from fastapi import Security
@@ -171,11 +173,11 @@ async def add_documents_to_work_project(
 async def get_work_project(
     request: Request,
     work_project_id: int,
-    user: dict = Security(role_required(["ADMIN"]))
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
 ):
     """
     Endpoint para buscar um work project específico.
-    Apenas administradores podem acessar este endpoint.
+    Todos os usuários autenticados (ADMIN, VEREADOR, ASSESSOR) podem visualizar fiscalizações.
     
     Args:
         request: Objeto da requisição HTTP
@@ -265,11 +267,11 @@ async def get_work_projects_by_project_with_pagination(
     project_id: int,
     page_size: int,
     page: int,
-    user: dict = Security(role_required(["ADMIN"]))
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
 ):
     """
     Endpoint para buscar work projects de um projeto específico com paginação.
-    Apenas administradores podem acessar este endpoint.
+    Todos os usuários autenticados (ADMIN, VEREADOR, ASSESSOR) podem visualizar fiscalizações.
     
     Args:
         request: Objeto da requisição HTTP
@@ -308,6 +310,59 @@ async def get_work_projects_by_project_with_pagination(
         )
         return response_adapter(error_result)
 
+@routes.post('/fiscal/{fiscal_id}/pagination/{page_size}/{page}', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def get_work_projects_by_fiscal_with_pagination(
+    request: Request,
+    fiscal_id: int,
+    page_size: int,
+    page: int,
+    user: dict = Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))
+):
+    """
+    Endpoint para buscar work projects de um fiscal específico com paginação.
+    Retorna as fiscalizações realizadas pelo fiscal.
+    
+    Args:
+        request: Objeto da requisição HTTP
+        fiscal_id: ID do fiscal
+        page_size: Número de itens por página
+        page: Número da página
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        Lista de work projects do fiscal com informações de paginação
+        
+    Raises:
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        # Preparar body com fiscal_id para o controller
+        http_req = HttpRequest(
+            body={'fiscal_id': fiscal_id},
+            path_params={'page': page, 'page_size': page_size},
+            query_params={},
+            headers=dict(request.headers),
+            url=str(request.url)
+        )
+        
+        http_response = get_latest_work_projects_by_fiscal_composer()(http_req)
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
 
 @routes.get('/{work_project_id}/document/{document_name}/view', responses=generate_error_responses())
 async def view_work_project_document(

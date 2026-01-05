@@ -20,6 +20,8 @@ from src.infra.relational.models.types import Types
 from src.infra.relational.models.refresh_token import RefreshToken
 from src.infra.relational.models.user import User
 from src.infra.relational.models.work_project import WorkProject
+from src.infra.relational.models.eap import EAP, EAPItem
+from src.infra.relational.models.eap_item_dependency import EAPItemDependency
 
 # Domain
 from src.domain.value_objects.email import Email
@@ -78,14 +80,6 @@ class FiscalRepository(IFiscalRepository):
                 db.session.commit()
             except Exception as e:
                 raise ErrorOnInsertRefreshToken(message=f'Error on insert refresh token: {str(e)}') from e
-    
-    def update_email(self, fiscal_id:int, email:Email) -> None:
-        with self.__db_connection_handler as db:
-            try:
-                db.session.query(Fiscal).where(Fiscal.id == fiscal_id).update({'email':email.email})
-                db.session.commit()
-            except Exception as e:
-                raise ErroronUpdateFiscal(message=f'Error on update email: {str(e)}') from e 
 
     def find_by_name(self, name:str) -> FiscalEntity:
         try:
@@ -103,7 +97,8 @@ class FiscalRepository(IFiscalRepository):
                     phone=fiscal.phone,
                     password=fiscal.password,
                     salt=fiscal.salt,
-                    refresh_token=fiscal.refresh_token
+                    refresh_token=fiscal.refresh_token,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -126,7 +121,8 @@ class FiscalRepository(IFiscalRepository):
                     phone=fiscal.phone,
                     password=fiscal.password,
                     salt=fiscal.salt,
-                    refresh_token=fiscal.refresh_token
+                    refresh_token=fiscal.refresh_token,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -149,7 +145,8 @@ class FiscalRepository(IFiscalRepository):
                     password=fiscal.password,
                     salt=fiscal.salt,
                     refresh_token=fiscal.refresh_token,
-                    created_at=fiscal.created_at
+                    created_at=fiscal.created_at,
+                    is_active=fiscal.is_active
                 )
         except FiscalNotExists as e:
             raise e from e
@@ -168,7 +165,8 @@ class FiscalRepository(IFiscalRepository):
                         name=fiscal.name,
                         email=Email(email=fiscal.email) if fiscal.email else None,
                         phone=fiscal.phone,
-                        created_at=fiscal.created_at
+                        created_at=fiscal.created_at,
+                        is_active=fiscal.is_active
                     )
                      for fiscal in fiscais
                 ]
@@ -204,6 +202,55 @@ class FiscalRepository(IFiscalRepository):
             raise FiscalAlreadyExists(message=f'Fiscal with name {new_name} already exists: {str(e)}') from e
         except Exception as e:
             raise ErroronUpdateFiscal(message=f'Error on update fiscal {name} -> {new_name}: {str(e)}') from e
+
+    def update_email(self, name:str, email:Email) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar o campo diretamente no objeto
+                fiscal.email = email.email
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update email for fiscal {name}: {str(e)}') from e
+
+    def update_password(self, name:str, password:HashedPassword) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar os campos diretamente no objeto
+                fiscal.password = password.hashed_password
+                fiscal.salt = password.salt
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update password for fiscal {name}: {str(e)}') from e
+
+    def update_phone(self, name:str, phone:str) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).where(Fiscal.name == name).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with name {name} does not exists')
+                
+                # Atualizar o campo diretamente no objeto
+                fiscal.phone = phone
+                
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e from e
+        except Exception as e:
+            raise ErroronUpdateFiscal(message=f'Error on update phone for fiscal {name}: {str(e)}') from e
     
     def delete(self, name:str) -> None:
         try:
@@ -221,3 +268,100 @@ class FiscalRepository(IFiscalRepository):
             raise FiscalHasRelatedChildren(f'Fiscal {name} not deleted because has a related children: {str(e)}') from e
         except Exception as e:
             raise ErrorOnDeleteFiscal(message=f'Error on delete fiscal {name}: {str(e)}') from e
+
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[FiscalEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                fiscais = db.session.query(Fiscal).offset(offset).limit(page_size).all()
+                fiscais_entities = [
+                    FiscalEntity(
+                        fiscal_id=fiscal.id,
+                        name=fiscal.name,
+                        email=Email(email=fiscal.email) if fiscal.email else None,
+                        phone=fiscal.phone,
+                        created_at=fiscal.created_at,
+                        is_active=fiscal.is_active
+                    )
+                    for fiscal in fiscais
+                ]
+                return fiscais_entities
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on find all fiscais with pagination: {str(e)}'
+            ) from e
+
+    def count_all(self) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                count = db.session.query(Fiscal).count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on count all fiscais: {str(e)}'
+            ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[FiscalEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Fiscal)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Fiscal.name.ilike(search_filter))
+                
+                fiscais = query.offset(offset).limit(page_size).all()
+                fiscais_entities = [
+                    FiscalEntity(
+                        fiscal_id=fiscal.id,
+                        name=fiscal.name,
+                        created_at=fiscal.created_at,
+                        password=fiscal.password,
+                        salt=fiscal.salt,
+                        email=Email(fiscal.email) if fiscal.email else None,
+                        phone=fiscal.phone,
+                        refresh_token=fiscal.refresh_token,
+                        is_active=fiscal.is_active
+                    )
+                    for fiscal in fiscais
+                ]
+                return fiscais_entities
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on find all fiscais with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Fiscal)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Fiscal.name.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindFiscal(
+                message=f'Error on count all fiscais with filter: {str(e)}'
+            ) from e
+
+    def update_status(self, fiscal_id: int, is_active: int) -> None:
+        try:
+            with self.__db_connection_handler as db:
+                fiscal = db.session.query(Fiscal).filter(Fiscal.id == fiscal_id).first()
+                if not fiscal:
+                    raise FiscalNotExists(message=f'Fiscal with id {fiscal_id} not found')
+                
+                fiscal.is_active = is_active
+                db.session.commit()
+        except FiscalNotExists as e:
+            raise e
+        except Exception as e:
+            raise ErroronUpdateFiscal(
+                message=f'Error on update status for fiscal {fiscal_id}: {str(e)}'
+            ) from e

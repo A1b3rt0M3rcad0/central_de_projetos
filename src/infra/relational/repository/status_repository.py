@@ -91,6 +91,34 @@ class StatusRepository(IStatusRepository):
                 raise ErrorOnFindStatus(
                     message=f'Error on find all status: {str(e)}'
                 ) from e
+
+    def find_all_with_pagination(self, page_size: int, offset: int) -> List[StatusEntity]:
+        with self.__db_connection_handler as db:
+            try:
+                result = db.session.query(Status).offset(offset).limit(page_size).all()
+                status_entities = [
+                    StatusEntity(
+                        status_id=status.id,
+                        description=status.description,
+                        created_at=status.created_at
+                    ) for status in result
+                ]
+
+                return status_entities
+            except Exception as e:
+                raise ErrorOnFindStatus(
+                    message=f'Error on find all status with pagination: {str(e)}'
+                ) from e
+
+    def count_all(self) -> int:
+        with self.__db_connection_handler as db:
+            try:
+                count = db.session.query(Status).count()
+                return count
+            except Exception as e:
+                raise ErrorOnFindStatus(
+                    message=f'Error on count all status: {str(e)}'
+                ) from e
     
     def update(self, status_id: int, new_description: str) -> None:
         with self.__db_connection_handler as db:
@@ -156,3 +184,46 @@ class StatusRepository(IStatusRepository):
                 raise ErrorOnDeleteStatus(
                     message=f'Error on delete status status_id={status_id}: {str(e)}'
                 ) from e
+
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[StatusEntity]:
+        try:
+            with self.__db_connection_handler as db:
+                offset = (page - 1) * page_size
+                query = db.session.query(Status)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Status.description.ilike(search_filter))
+                
+                status = query.offset(offset).limit(page_size).all()
+                status_entities = [
+                    StatusEntity(
+                        status_id=status.id,
+                        description=status.description,
+                        created_at=status.created_at
+                    )
+                    for status in status
+                ]
+                return status_entities
+        except Exception as e:
+            raise ErrorOnFindStatus(
+                message=f'Error on find all status with pagination and filter: {str(e)}'
+            ) from e
+
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        try:
+            with self.__db_connection_handler as db:
+                query = db.session.query(Status)
+                
+                # Aplicar filtro de busca se fornecido
+                if search_term and search_term.strip():
+                    search_filter = f"%{search_term.strip()}%"
+                    query = query.filter(Status.description.ilike(search_filter))
+                
+                count = query.count()
+                return count
+        except Exception as e:
+            raise ErrorOnFindStatus(
+                message=f'Error on count all status with filter: {str(e)}'
+            ) from e

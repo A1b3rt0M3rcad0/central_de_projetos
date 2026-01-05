@@ -1,0 +1,563 @@
+---
+description: Arquitetura do Projeto - Pastas, Organização e Código
+alwaysApply: false
+---
+
+## 🔐 Sistema de Autenticação e Segurança
+
+### 📁 Estrutura:
+
+```
+auth/                   # Autenticação JWT
+├── config/            # Configurações de auth
+└── encrypt/           # Criptografia
+
+security/              # Segurança de senhas
+├── cryptography/      # Algoritmos de criptografia
+└── value_objects/     # Objetos de segurança
+```
+
+### 🔧 Padrões Obrigatórios:
+
+**Autenticação:**
+
+- JWT tokens com refresh token
+- Middleware de autorização por roles
+- Factory pattern para criação de objetos de auth
+
+**Segurança:**
+
+- Senhas hasheadas com Blowfish
+- Salt único por usuário
+- Value objects para senhas e tokens
+
+---
+
+## 📊 Sistema de Logs e Erros
+
+### 📁 Estrutura:
+
+```
+logs/                   # Sistema de logging
+├── config/            # Configurações de log
+├── logger/            # Implementação do logger
+└── sanitize.py        # Sanitização de dados
+
+errors/                 # Sistema de erros
+├── http/              # Erros HTTP
+├── repository/        # Erros de repositório
+├── use_cases/         # Erros de casos de uso
+└── value_object/      # Erros de value objects
+```
+
+### 🔧 Padrões Obrigatórios:
+
+**Logs:**
+
+- Logs estruturados em MongoDB
+- Separação entre logs HTTP e internos
+- Sanitização de dados sensíveis
+- Níveis: INFO, ERROR, DEBUG
+
+**Erros:**
+
+- Hierarquia de exceções bem definida
+- Mapeamento automático para códigos HTTP
+- Mensagens padronizadas
+- Tratamento centralizado
+
+---
+
+## 🗄️ Sistema de Migrações
+
+### 🔧 Padrões Obrigatórios:
+
+**Alembic:**
+
+- Migrações versionadas
+- Importação automática de modelos
+- Nomenclatura: `[hash]_[descrição].py`
+- Rollback suportado
+
+**Modelos:**
+
+- Herdam de `BaseModel`
+- Metadados centralizados
+- Relacionamentos bem definidos
+
+---
+
+## 🚀 Fluxo de Dados
+
+### 1. **Requisição HTTP**
+
+```
+FastAPI Request → request_adapter → HttpRequest
+```
+
+### 2. **Processamento**
+
+```
+HttpRequest → Controller → Use Case → Repository → Database
+```
+
+### 3. **Resposta**
+
+```
+Database → Repository → Use Case → Controller → HttpResponse → response_adapter → FastAPI Response
+```
+
+---
+
+## 📝 Convenções de Nomenclatura
+
+### **Arquivos e Classes:**
+
+- **Entities**: `[Entidade]Entity` (ex: `ProjectEntity`)
+- **Use Cases**: `I[Operação][Entidade]` (ex: `ICreateProject`)
+- **Repositories**: `I[Entidade]Repository` (ex: `IProjectRepository`)
+- **Controllers**: `[Operação][Entidade]Controller` (ex: `CreateProjectController`)
+- **Composers**: `[operação]_[entidade]_composer` (ex: `create_project_composer`)
+
+### **Métodos:**
+
+- **CRUD**: `create`, `find`, `update`, `delete`
+- **Busca**: `find_by_[campo]`, `find_all`
+- **Contagem**: `count_[entidade]`
+- **Paginação**: `get_[entidade]_with_pagination`
+
+### **Diretórios:**
+
+- **Singular**: Para entidades (`project`, `user`, `fiscal`)
+- **Plural**: Para listagens (`projects`, `users`, `fiscals`)
+
+---
+
+## 🔄 Padrões de Injeção de Dependência
+
+### **Composers:**
+
+```python
+def create_project_composer() -> Callable[[HttpRequest], HttpResponse]:
+    return CreateProjectController(
+        create_project_case=CreateProject(
+            ProjectRepository(db_connection_handler_factory())
+        )
+    ).handle
+```
+
+### **Controllers:**
+
+```python
+class CreateProjectController(ControllerInterface):
+    def __init__(self, create_project_case: ICreateProject):
+        self.__create_project_case = create_project_case
+```
+
+### **Use Cases:**
+
+```python
+class CreateProject(ICreateProject):
+    def __init__(self, project_repository: IProjectRepository):
+        self.__project_repository = project_repository
+```
+
+---
+
+## 🧪 Padrões de Teste
+
+### **Estrutura:**
+
+- **Unit Tests**: Para cada camada isoladamente
+- **Integration Tests**: Para fluxos completos
+- **Test Doubles**: Mocks para dependências externas
+
+### **Nomenclatura:**
+
+- **Arquivos**: `[classe]_test.py`
+- **Métodos**: `test_[cenário]_[resultado_esperado]`
+
+---
+
+## 📋 Checklist de Implementação
+
+### ✅ **Ao criar uma nova funcionalidade:**
+
+1. **Domain Layer:**
+
+   - [ ] Criar/atualizar entidade se necessário
+   - [ ] Definir interface do caso de uso
+   - [ ] Criar/atualizar value objects se necessário
+
+2. **Data Layer:**
+
+   - [ ] Implementar caso de uso
+   - [ ] Definir interface do repositório
+   - [ ] Implementar repositório concreto
+
+3. **Presentation Layer:**
+
+   - [ ] Criar controller
+   - [ ] Implementar `ControllerInterface`
+
+4. **Main Layer:**
+
+   - [ ] Criar composer
+   - [ ] Definir rotas
+   - [ ] Configurar middlewares
+
+5. **Infrastructure:**
+
+   - [ ] Implementar repositório
+   - [ ] Criar/atualizar modelos
+   - [ ] Criar migração se necessário
+
+6. **Testes:**
+   - [ ] Testes unitários para cada camada
+   - [ ] Testes de integração
+   - [ ] Testes de endpoints
+
+---
+
+## 🚨 Regras Críticas
+
+### ❌ **NUNCA FAÇA:**
+
+- Dependências do domain para camadas externas
+- Lógica de negócio em controllers
+- Acesso direto ao banco em controllers
+- Bypass do sistema de injeção de dependência
+- Ignorar tratamento de erros
+- Criar entidades sem value objects apropriados
+
+### ✅ **SEMPRE FAÇA:**
+
+- Use interfaces para abstrações
+- Implemente tratamento de erros específicos
+- Documente casos de uso completamente
+- Use value objects para validação
+- Mantenha separação de responsabilidades
+- Siga convenções de nomenclatura
+- Implemente logs apropriados
+- Crie testes para nova funcionalidade
+
+---
+
+## 🔧 Ferramentas e Tecnologias
+
+### **Backend:**
+
+- **FastAPI**: Framework web
+- **SQLAlchemy**: ORM
+- **Alembic**: Migrações
+- **Redis**: Cache
+- **MongoDB**: Logs
+- **RavenDB**: Documentos
+- **JWT**: Autenticação
+- **Blowfish**: Criptografia
+
+### **Desenvolvimento:**
+
+- **pytest**: Testes
+- **pylint**: Linting
+- **pre-commit**: Hooks
+- **UV**: Gerenciador de pacotes
+
+---
+
+## 🚀 Guia Completo para Criação de Novas Features
+
+### 📋 Checklist de Implementação Detalhado
+
+#### 1. **Domain Layer** - Regras de Negócio
+
+**1.1 Entidades (`src/domain/entities/`)**
+
+- [ ] Criar/atualizar entidade se necessário
+- [ ] Nomenclatura: `[Entidade]Entity` (ex: `ProjectEntity`)
+- [ ] Usar value objects para campos complexos
+- [ ] Sem dependências externas (frameworks, banco)
+- [ ] Exemplo: `project.py`, `user.py`, `fiscal.py`
+
+**1.2 Value Objects (`src/domain/value_objects/`)**
+
+- [ ] Criar/atualizar value objects se necessário
+- [ ] Nomenclatura: `[Conceito]` (ex: `MonetaryValue`, `CPF`, `Email`)
+- [ ] Objetos imutáveis com validação interna
+- [ ] Comportamentos específicos do domínio
+- [ ] Exemplo: `monetary_value.py`, `password.py`, `email.py`
+
+**1.3 Use Cases - Interfaces (`src/domain/use_cases/`)**
+
+- [ ] Definir interface do caso de uso
+- [ ] Nomenclatura: `I[Operação][Entidade]` (ex: `ICreateProject`)
+- [ ] Métodos abstratos com documentação completa
+- [ ] Parâmetros tipados com value objects
+- [ ] Exemplo: `i_create_project.py`, `i_find_project.py`
+
+#### 2. **Data Layer** - Implementações
+
+**2.1 Repository Interfaces (`src/data/interface/`)**
+
+- [ ] Definir interface do repositório
+- [ ] Nomenclatura: `I[Entidade]Repository`
+- [ ] Métodos abstratos para operações CRUD
+- [ ] Parâmetros tipados com entidades
+- [ ] Exemplo: `i_project_repository.py`
+
+**2.2 Use Case Implementations (`src/data/use_cases/`)**
+
+- [ ] Implementar caso de uso
+- [ ] Nomenclatura: `[Operação][Entidade]` (ex: `CreateProject`)
+- [ ] Injeção de dependência via construtor
+- [ ] Tratamento de erros específicos
+- [ ] Exemplo: `create_project.py`, `find_project.py`
+
+#### 3. **Infrastructure Layer** - Implementações Concretas
+
+**3.1 Models (`src/infra/relational/models/`)**
+
+- [ ] Criar/atualizar modelo SQLAlchemy
+- [ ] Nomenclatura: `[Entidade]` (ex: `Project`)
+- [ ] Herdar de `BaseModel`
+- [ ] Relacionamentos bem definidos
+- [ ] Exemplo: `project.py`, `user.py`
+
+**3.2 Repositories (`src/infra/relational/repository/`)**
+
+- [ ] Implementar repositório concreto
+- [ ] Nomenclatura: `[Entidade]Repository`
+- [ ] Implementar interface do data layer
+- [ ] SQLAlchemy ORM com modelos tipados
+- [ ] Tratamento de exceções específicas
+- [ ] Exemplo: `project_repository.py`
+
+**3.3 Migrations (`migrations/versions/`)**
+
+- [ ] Criar migração se necessário
+- [ ] Nomenclatura: `[hash]_[descrição].py`
+- [ ] Usar Alembic para versionamento
+- [ ] Exemplo: `0a691f0e95bc_.py`
+
+#### 4. **Presentation Layer** - Controllers
+
+**4.1 Controllers (`src/presentation/controllers/`)**
+
+- [ ] Criar controller
+- [ ] Nomenclatura: `[Operação][Entidade]Controller`
+- [ ] Implementar `ControllerInterface`
+- [ ] Método `handle(HttpRequest) -> HttpResponse`
+- [ ] Validação e transformação de dados HTTP
+- [ ] Exemplo: `create_project_controller.py`
+
+#### 5. **Main Layer** - Composição e Roteamento
+
+**5.1 Composers (`src/main/composers/`)**
+
+- [ ] Criar composer
+- [ ] Nomenclatura: `[operação]_[entidade]_composer`
+- [ ] Função que retorna `Callable[[HttpRequest], HttpResponse]`
+- [ ] Injeção de dependências concretas
+- [ ] Exemplo: `create_project_composer.py`
+
+**5.2 Routes (`src/main/routes/api/[entidade]/`)**
+
+- [ ] Definir rotas FastAPI
+- [ ] Middleware de autenticação e autorização
+- [ ] Logging de requisições e respostas
+- [ ] Tratamento de erros centralizado
+- [ ] Documentação OpenAPI completa
+- [ ] Exemplo: `project_routes.py`
+
+#### 6. **Error Handling** - Tratamento de Erros
+
+**6.1 Error Classes (`src/errors/`)**
+
+- [ ] Criar classes de erro específicas
+- [ ] Herdar de classes base apropriadas
+- [ ] Mapeamento para códigos HTTP
+- [ ] Mensagens padronizadas
+- [ ] Exemplo: `create_project_error.py`
+
+#### 7. **Testing** - Testes
+
+**7.1 Unit Tests**
+
+- [ ] Testes para cada camada isoladamente
+- [ ] Nomenclatura: `[classe]_test.py`
+- [ ] Métodos: `test_[cenário]_[resultado_esperado]`
+- [ ] Mocks para dependências externas
+
+**7.2 Integration Tests**
+
+- [ ] Testes para fluxos completos
+- [ ] Testes de endpoints
+- [ ] Testes com banco de dados real
+
+### 🔄 Fluxo de Criação de Feature - Exemplo Prático
+
+#### Exemplo: Criar Feature "Update Project Status"
+
+**1. Domain Layer:**
+
+```python
+# src/domain/use_cases/i_update_project_status.py
+class IUpdateProjectStatus(ABC):
+    @abstractmethod
+    def update(self, project_id: int, status_id: int) -> None:
+        """Atualiza o status de um projeto"""
+```
+
+**2. Data Layer:**
+
+```python
+# src/data/use_cases/update_project_status.py
+class UpdateProjectStatus(IUpdateProjectStatus):
+    def __init__(self, project_repository: IProjectRepository):
+        self.__project_repository = project_repository
+
+    def update(self, project_id: int, status_id: int) -> None:
+        # Implementação
+```
+
+**3. Infrastructure Layer:**
+
+```python
+# src/infra/relational/repository/project_repository.py
+# Adicionar método update_status na implementação
+```
+
+**4. Presentation Layer:**
+
+```python
+# src/presentation/controllers/update_project_status_controller.py
+class UpdateProjectStatusController(ControllerInterface):
+    def handle(self, http_request: HttpRequest) -> HttpResponse:
+        # Implementação
+```
+
+**5. Main Layer:**
+
+```python
+# src/main/composers/update_project_status_composer.py
+def update_project_status_composer() -> Callable[[HttpRequest], HttpResponse]:
+    return UpdateProjectStatusController(
+        update_project_status_case=UpdateProjectStatus(
+            ProjectRepository(db_connection_handler_factory())
+        )
+    ).handle
+```
+
+**6. Routes:**
+
+```python
+# src/main/routes/api/project/project_routes.py
+# Adicionar endpoint PUT /projects/{project_id}/status
+```
+
+### 📊 Padrões de Nomenclatura Detalhados
+
+#### **Arquivos e Classes:**
+
+| Tipo                              | Padrão                           | Exemplo                   |
+| --------------------------------- | -------------------------------- | ------------------------- |
+| **Entities**                      | `[Entidade]Entity`               | `ProjectEntity`           |
+| **Use Cases (Interface)**         | `I[Operação][Entidade]`          | `ICreateProject`          |
+| **Use Cases (Implementation)**    | `[Operação][Entidade]`           | `CreateProject`           |
+| **Repositories (Interface)**      | `I[Entidade]Repository`          | `IProjectRepository`      |
+| **Repositories (Implementation)** | `[Entidade]Repository`           | `ProjectRepository`       |
+| **Controllers**                   | `[Operação][Entidade]Controller` | `CreateProjectController` |
+| **Composers**                     | `[operação]_[entidade]_composer` | `create_project_composer` |
+| **Models**                        | `[Entidade]`                     | `Project`                 |
+| **Value Objects**                 | `[Conceito]`                     | `MonetaryValue`           |
+
+#### **Métodos:**
+
+| Operação      | Padrão                               | Exemplo                        |
+| ------------- | ------------------------------------ | ------------------------------ |
+| **CRUD**      | `create`, `find`, `update`, `delete` | `create_project`               |
+| **Busca**     | `find_by_[campo]`                    | `find_by_name`                 |
+| **Contagem**  | `count_[entidade]`                   | `count_projects`               |
+| **Paginação** | `get_[entidade]_with_pagination`     | `get_projects_with_pagination` |
+
+#### **Diretórios:**
+
+| Tipo          | Padrão   | Exemplo                        |
+| ------------- | -------- | ------------------------------ |
+| **Entidades** | Singular | `project`, `user`, `fiscal`    |
+| **Listagens** | Plural   | `projects`, `users`, `fiscals` |
+| **Rotas**     | Singular | `project`, `user`, `fiscal`    |
+
+### 🎯 Entidades Principais do Sistema
+
+#### **Entidades Core:**
+
+1. **Project** - Projetos principais
+2. **User** - Usuários do sistema
+3. **Fiscal** - Fiscais responsáveis
+4. **Bairro** - Localidades/regiões
+5. **Empresa** - Empresas executoras
+6. **Status** - Status dos projetos
+7. **Types** - Tipos de projetos
+8. **WorkProject** - Trabalhos de fiscalização
+9. **HistoryProject** - Histórico de alterações
+10. **Document** - Documentos anexos
+
+#### **Entidades de Relacionamento:**
+
+- **ProjectBairro** - Relação projeto-bairro
+- **ProjectEmpresa** - Relação projeto-empresa
+- **ProjectFiscal** - Relação projeto-fiscal
+- **ProjectType** - Relação projeto-tipo
+- **UserProject** - Relação usuário-projeto
+
+### 🔧 Tecnologias e Ferramentas
+
+#### **Backend Stack:**
+
+- **FastAPI** - Framework web moderno
+- **SQLAlchemy** - ORM para banco relacional
+- **Alembic** - Migrações de banco
+- **Redis** - Cache em memória
+- **MongoDB** - Logs estruturados
+- **RavenDB** - Armazenamento de documentos
+- **JWT** - Autenticação stateless
+- **Blowfish** - Criptografia de senhas
+
+#### **Desenvolvimento:**
+
+- **pytest** - Framework de testes
+- **pylint** - Análise estática de código
+- **pre-commit** - Hooks de qualidade
+- **UV** - Gerenciador de pacotes Python
+
+### 🚨 Regras Críticas de Implementação
+
+#### ❌ **NUNCA FAÇA:**
+
+- Dependências do domain para camadas externas
+- Lógica de negócio em controllers
+- Acesso direto ao banco em controllers
+- Bypass do sistema de injeção de dependência
+- Ignorar tratamento de erros
+- Criar entidades sem value objects apropriados
+- Misturar responsabilidades entre camadas
+- Usar frameworks diretamente no domain
+
+#### ✅ **SEMPRE FAÇA:**
+
+- Use interfaces para abstrações
+- Implemente tratamento de erros específicos
+- Documente casos de uso completamente
+- Use value objects para validação
+- Mantenha separação de responsabilidades
+- Siga convenções de nomenclatura
+- Implemente logs apropriados
+- Crie testes para nova funcionalidade
+- Use injeção de dependência
+- Valide dados de entrada
+- Trate exceções adequadamente
+
+---
+
+Esta arquitetura garante **escalabilidade**, **manutenibilidade** e **testabilidade** do sistema, seguindo as melhores práticas de Clean Architecture e Domain-Driven Design.

@@ -34,4 +34,33 @@ class IFiscalRepository(ABC):
     def update(self, name:str, new_name:str) -> None:pass
 
     @abstractmethod
+    def update_email(self, name:str, email:Email) -> None:pass
+
+    @abstractmethod
+    def update_password(self, name:str, password:HashedPassword) -> None:pass
+
+    @abstractmethod
+    def update_phone(self, name:str, phone:str) -> None:pass
+
+    @abstractmethod
     def delete(self, name:str) -> None:pass
+    
+    @abstractmethod
+    def find_all_with_pagination(self, page_size: int, page: int) -> List[FiscalEntity]:
+        """Busca fiscais com paginação."""
+    
+    @abstractmethod
+    def count_all(self) -> int:
+        """Conta o total de fiscais no sistema."""
+    
+    @abstractmethod
+    def find_all_with_pagination_and_filter(self, page_size: int, page: int, search_term: str = None) -> List[FiscalEntity]:
+        """Busca fiscais com paginação e filtro global."""
+    
+    @abstractmethod
+    def count_all_with_filter(self, search_term: str = None) -> int:
+        """Conta o total de fiscais no sistema com filtro global."""
+    
+    @abstractmethod
+    def update_status(self, fiscal_id: int, is_active: int) -> None:
+        """Atualiza o status (ativo/inativo) de um fiscal."""

@@ -8,6 +8,7 @@ from src.errors.error_handle import error_handler
 
 from src.main.composers.create_project_type_composer import create_project_type_composer
 from src.main.composers.find_type_from_project_composer import find_type_from_project_composer
+from src.main.composers.find_all_projects_from_type_composer import find_all_projects_from_type_composer
 from src.main.composers.delete_project_type_composer import delete_project_type_composer
 from src.main.composers.get_project_types_count_by_bairro_composer import get_project_types_count_by_bairro_composer
 
@@ -135,6 +136,47 @@ async def create_project_type(body:CreateProjectTypeFormat, request:Request, use
     """
     try:
         http_response  = await request_adapter(request, create_project_type_composer())
+        http_response = await insert_access_token(http_response, request.state.new_access_token)
+        log_http(
+            level='INFO',
+            logger_name=PREFIX,
+            http_response=http_response,
+            request=request
+        )
+        return response_adapter(http_response)
+    except Exception as e:
+        error_result = error_handler(e)
+        log_http(
+            level='ERROR',
+            logger_name=PREFIX,
+            http_response=error_result,
+            request=request
+        )
+        return response_adapter(error_result)
+
+@routes.get('/type/{type_id}', response_model=BaseMessageResponse, responses=generate_error_responses())
+async def find_all_projects_from_type(type_id: int, request: Request, user=Security(role_required(["ADMIN", "VEREADOR", "ASSESSOR"]))):
+    """
+    Endpoint para buscar todos os projetos de um tipo específico.
+    Retorna lista de projetos que possuem o tipo especificado.
+    Apenas usuários com permissões de ADMIN, VEREADOR ou ASSESSOR podem acessar.
+    
+    Args:
+        type_id: ID do tipo
+        request: Objeto da requisição HTTP
+        user: Dados do usuário autenticado (injetado pelo middleware)
+        
+    Returns:
+        Lista de projetos do tipo
+        
+    Raises:
+        TypeNotFoundError: Se o tipo não for encontrado
+        UnauthorizedError: Se o usuário não tiver permissão
+        InternalServerError: Para outros erros internos
+    """
+    try:
+        request.path_params['type_id'] = type_id
+        http_response = await request_adapter(request, find_all_projects_from_type_composer())
         http_response = await insert_access_token(http_response, request.state.new_access_token)
         log_http(
             level='INFO',
