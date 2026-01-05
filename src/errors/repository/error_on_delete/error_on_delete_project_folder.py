@@ -10,3 +10,4 @@ class ErrorOnDeleteProjectFolder(BaseErrorOnDelete):
             **kwargs
         )
 
+

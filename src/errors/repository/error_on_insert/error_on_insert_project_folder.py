@@ -10,3 +10,4 @@ class ErrorOnInsertProjectFolder(BaseErrorOnInsert):
             **kwargs
         )
 
+
