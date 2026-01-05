@@ -10,3 +10,4 @@ class ErrorOnFindProjectFolder(BaseErrorOnFind):
             **kwargs
         )
 
+
