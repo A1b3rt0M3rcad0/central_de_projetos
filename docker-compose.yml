@@ -88,6 +88,32 @@ services:
       retries: 5
     networks:
       - central_projetos_network
+      
+  # ----------------------------------------------------------------------------
+  # RavenDB - Banco de Dados de Documentos
+  # ----------------------------------------------------------------------------
+  raven:
+    image: ravendb/ravendb:latest
+    container_name: central_projetos_ravendb
+    restart: unless-stopped
+    ports:
+      # Porta do RavenDB Studio e API
+      - "9090:8080"
+    environment:
+      # Configuração básica (sem TLS / certificado)
+      RAVEN_Setup_Mode: None
+      RAVEN_Security_UnsecuredAccessAllowed: PublicNetwork
+      RAVEN_License_Eula_Accepted: "true"
+    volumes:
+      # Persistência dos dados do RavenDB
+      - ravendb_data:/var/lib/ravendb/data
+    networks:
+      - central_projetos_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   # ----------------------------------------------------------------------------
   # Backend - Aplicação FastAPI
@@ -119,6 +145,8 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+      raven:
+        condition: service_healthy
     volumes:
       # Monta código local para desenvolvimento (hot-reload)
       # Em produção, remova este volume
@@ -146,7 +174,9 @@ volumes:
   mongodb_data:
     name: central_projetos_mongodb_data
     driver: local
-
+  ravendb_data:
+    name: central_projetos_ravendb_data
+    driver: local
 # ------------------------------------------------------------------------------
 # Networks - Rede Interna dos Containers
 # ------------------------------------------------------------------------------
