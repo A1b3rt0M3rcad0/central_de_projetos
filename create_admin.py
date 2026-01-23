@@ -10,6 +10,7 @@ from src.infra.relational.repository.user_repository import UserRepository
 from src.infra.relational.repository.refresh_token_repository import RefreshTokenRepository
 from src.main.config.database.db_connection_handler_factory import db_connection_handler_factory
 from getpass import getpass
+import traceback
 
 def main():
     parser = argparse.ArgumentParser(description="Criar usuário admin")
@@ -50,6 +51,7 @@ def main():
         print("Admin criado com sucesso!")
     except Exception as e:
         print(f"Erro ao criar admin: {e}")
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()

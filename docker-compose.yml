@@ -42,9 +42,6 @@ services:
       MYSQL_DATABASE: ${DATABASE_NAME:-central_de_projetos}
       MYSQL_USER: ${USERNAME:-root}
       MYSQL_PASSWORD: ${PASSWORD:-rootpassword}
-    ports:
-      # Expõe porta MySQL (ajuste se necessário)
-      - "${PORT:-3306}:3306"
     volumes:
       # Persistência de dados
       - mysql_data:/var/lib/mysql
@@ -73,9 +70,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-central_de_projetos}
-    ports:
-      # Expõe porta MongoDB (ajuste se necessário)
-      - "${MONGO_PORT:-27017}:27017"
     volumes:
       # Persistência de dados
       - mongodb_data:/data/db
@@ -96,9 +90,6 @@ services:
     image: ravendb/ravendb:latest
     container_name: central_projetos_ravendb
     restart: unless-stopped
-    ports:
-      # Porta do RavenDB Studio e API
-      - "9090:8080"
     environment:
       # Configuração básica (sem TLS / certificado)
       RAVEN_Setup_Mode: None
